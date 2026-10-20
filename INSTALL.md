@@ -32,7 +32,7 @@ npm ci
 npm run db:migrate
 ```
 
-`npm run db:seed` solo prepara el esquema en desarrollo; las cuentas se crean desde el registro y no se cargan automáticamente.
+`npm run db:seed` crea una cuenta de desarrollo con contraseña temporal, mostrada una vez en la consola. No se ejecuta automáticamente y está bloqueado en producción. Las demás cuentas se crean desde el registro.
 
 ## 4. Desarrollo
 
