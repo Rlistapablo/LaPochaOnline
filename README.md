@@ -58,7 +58,7 @@ npm run smoke:advanced # permisos de mesas, bots, comodines, idempotencia y repe
 
 La mesa muestra el orden de predicción y jugada, las bazas y vidas de cada jugador, un panel lateral con historial y una interfaz táctil con confirmación de carta. Las rondas siguen `X → … → 1 → … → X → X−1 → …` mientras nadie pierda todas sus vidas. En cuanto alguien llega a cero al terminar una ronda, la partida acaba y gana quien conserve más vidas, con empate si varios comparten el máximo. Las partidas terminadas se consultan en **Repeticiones**; las partidas privadas solo son visibles para sus participantes.
 
-El anfitrión puede editar nombre, avatar y dificultad de los bots antes de empezar, y cerrar una mesa pública con **Eliminar mesa**. Para habilitar el panel **Moderación**, configura `ADMIN_USER_IDS` con los UUID de los administradores separados por comas. El servidor verifica estos permisos.
+El anfitrión puede editar nombre, avatar y dificultad de los bots antes de empezar, y cerrar una mesa pública con **Eliminar mesa**. Para habilitar el panel **Moderación**, configura `ADMIN_USER_IDS` con los UUID de los administradores separados por comas. El panel muestra las partidas en curso, incluidas las privadas, y permite terminarlas guardando el resultado y la repetición. El servidor verifica estos permisos.
 
 ## Documentación
 
