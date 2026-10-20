@@ -17,7 +17,7 @@ nano database/01_create_database.sql # Cambia CAMBIAR_CONTRASENA_SEGURA
 sudo -u postgres psql -f database/01_create_database.sql
 cp .env.example .env
 nano .env # Ajusta DATABASE_URL y JWT_SECRET; secreto aleatorio de al menos 32 caracteres
-npm ci
+npm ci --include=dev
 npm run db:migrate
 npm run dev
 ```
@@ -29,7 +29,7 @@ Abre `http://localhost:5173`. En otro dispositivo de la red usa `http://IP_DEL_S
 Configura `NODE_ENV=production`, `PUBLIC_APP_URL=http://IP_DEL_SERVIDOR:3001` y `CLIENT_ORIGIN` con la misma URL pública. Después:
 
 ```bash
-npm ci
+npm ci --include=dev
 npm run db:migrate
 npm run build
 npm run start

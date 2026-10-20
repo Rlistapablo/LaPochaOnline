@@ -6,7 +6,7 @@ Si vas a usar el panel de moderación, configura `ADMIN_USER_IDS` con UUID de cu
 
 ```bash
 cd /opt/pocha
-npm ci
+npm ci --include=dev
 npm run db:migrate
 npm run build
 sudo cp pocha.service /etc/systemd/system/pocha.service
@@ -25,7 +25,7 @@ Para actualizar:
 cd /opt/pocha
 sudo systemctl stop pocha
 git pull --ff-only origin main
-npm ci
+npm ci --include=dev
 npm run db:migrate
 npm run build
 sudo systemctl start pocha
@@ -54,7 +54,7 @@ Compila los recursos con la ruta pública. Vite incorpora `/pocha/` en las URL d
 
 ```bash
 cd /opt/pocha
-npm ci
+npm ci --include=dev
 npm run db:migrate
 npm run build:pocha
 sudo systemctl restart pocha

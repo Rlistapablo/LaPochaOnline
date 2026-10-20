@@ -28,7 +28,7 @@ Antes de ejecutar el SQL, sustituye `CAMBIAR_CONTRASENA_SEGURA` por una contrase
 ## 3. Dependencias y migraciones
 
 ```bash
-npm ci
+npm ci --include=dev
 npm run db:migrate
 ```
 
