@@ -61,3 +61,13 @@ it('reconstruye intercambios, cartas mostradas y robos en la repetición',()=>{
   expect(scenes[3].hands.a[0]).toEqual(ace);
   expect(scenes[0].hands.a[0]).toEqual(ace);
 });
+it('muestra una oferta rechazada sin cambiar las manos',()=>{
+  const declined:ReplayData={...replay,events:[
+    event(1,'round_started',{roundIndex:0,wave:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3}}),
+    event(2,'exchange_offered',{to:'b'},'a'),
+    event(3,'exchange_declined',{from:'a'},'b'),
+  ]};
+  const scenes=buildReplayTimeline(declined);
+  expect(scenes[2].title).toContain('rechaza el intercambio');
+  expect(scenes[2].hands).toEqual(scenes[0].hands);
+});

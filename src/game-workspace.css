@@ -55,3 +55,4 @@
   .gameMain .hand{max-height:126px}
   .phase-bid .gameFelt,.phase-exchange .gameFelt,.phase-reveal .gameFelt{height:clamp(230px,calc(100dvh - 525px),280px)}
 }
+.exchangeDecisions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:9px}.exchangeDecisions .primary{margin-top:0}.declineExchange{border-color:#ad7667;color:#f1c5b7}@media(max-width:580px){.exchangeDecisions button{flex:1 1 100%}}

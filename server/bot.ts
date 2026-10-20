@@ -1,4 +1,4 @@
-import {Game,Player,VALUES,Value,Card,allowedBids,bid,play,view,isJoker,rank,configuredDeck,active,offerExchange,selectExchange,selectReveal,preparationActor,stealCard,reshuffleHands,turnOrder} from '../shared/game.js';
+import {Game,Player,VALUES,Value,Card,allowedBids,bid,play,view,isJoker,rank,configuredDeck,active,offerExchange,declineExchange,selectExchange,selectReveal,preparationActor,stealCard,reshuffleHands,turnOrder} from '../shared/game.js';
 
 type Option={card:Card;value?:Value;rank:number};
 const cardRank=(card:Card,trump?:Card['suit'])=>isJoker(card)?VALUES.length-1:(card.suit===trump?VALUES.length:0)+VALUES.indexOf(card.value!);
@@ -130,6 +130,16 @@ function chooseExchangeTarget(g:Game,p:Player){
   return [...others].sort((a,b)=>(b.wins-(b.bid??0))-(a.wins-(a.bid??0))||b.lives-a.lives)[0];
 }
 
+function shouldDeclineExchange(g:Game,p:Player){
+  if(p.bot==='easy')return Math.random()<0.2;
+  const unknown=unseen(g,p),own=p.hand.map(card=>strength(card,g.trumpSuit));
+  if(!unknown.length||!own.length)return false;
+  const possible=unknown.map(card=>strength(card,g.trumpSuit));
+  if(new Set([...own,...possible]).size===1)return true;
+  const average=possible.reduce((sum,value)=>sum+value,0)/possible.length;
+  return Math.min(...own)>average+2.5;
+}
+
 function shouldReshuffle(g:Game,p:Player){
   if(!p.reshuffles||p.hand.length<1||active(g).filter(other=>other.hand.length).length<2)return false;
   const own=view(g,p.id).players.find(player=>player.id===p.id)?.hand||[];
@@ -168,7 +178,16 @@ function specialTarget(g:Game,p:Player){
 }
 
 export function runBotTurn(g:Game){
-  if(g.phase==='exchange'||g.phase==='reveal'){const p=preparationActor(g);if(!p?.bot)return false;if(g.phase==='exchange'){if(!g.exchangePairs?.[0]?.b)offerExchange(g,p.id,chooseExchangeTarget(g,p).id);else selectExchange(g,p.id,p.bot==='easy'?[...p.hand].sort(()=>Math.random()-0.5).slice(0,Math.min(g.settings.modes?.exchangeCount||1,g.cardsPerPlayer)).map(c=>c.id):lowCards(g,p,Math.min(g.settings.modes?.exchangeCount||1,g.cardsPerPlayer)));}else selectReveal(g,p.id,p.bot==='easy'?[...p.hand].sort(()=>Math.random()-0.5).slice(0,Math.ceil(g.cardsPerPlayer*(g.settings.modes?.revealPercent||0)/100)).map(c=>c.id):lowCards(g,p,Math.ceil(g.cardsPerPlayer*(g.settings.modes?.revealPercent||0)/100)));return true;}
+  if(g.phase==='exchange'||g.phase==='reveal'){
+    const p=preparationActor(g);if(!p?.bot)return false;
+    if(g.phase==='exchange'){
+      const pair=g.exchangePairs?.[0];
+      if(!pair?.b)offerExchange(g,p.id,chooseExchangeTarget(g,p).id);
+      else if(pair.b===p.id&&shouldDeclineExchange(g,p))declineExchange(g,p.id);
+      else selectExchange(g,p.id,p.bot==='easy'?[...p.hand].sort(()=>Math.random()-0.5).slice(0,Math.min(g.settings.modes?.exchangeCount||1,g.cardsPerPlayer)).map(c=>c.id):lowCards(g,p,Math.min(g.settings.modes?.exchangeCount||1,g.cardsPerPlayer)));
+    }else selectReveal(g,p.id,p.bot==='easy'?[...p.hand].sort(()=>Math.random()-0.5).slice(0,Math.ceil(g.cardsPerPlayer*(g.settings.modes?.revealPercent||0)/100)).map(c=>c.id):lowCards(g,p,Math.ceil(g.cardsPerPlayer*(g.settings.modes?.revealPercent||0)/100)));
+    return true;
+  }
   if(g.phase!=='bid'&&g.phase!=='play')return false;
   const p=g.players[g.turnIndex];if(!p.bot)return false;
   if((p.bot==='easy'?!!p.reshuffles&&Math.random()<0.3:shouldReshuffle(g,p))){const target=specialTarget(g,p);if(target&&p.hand.length){reshuffleHands(g,p.id,[p.id,target.id]);return true;}}

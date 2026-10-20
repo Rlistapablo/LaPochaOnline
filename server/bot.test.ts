@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {createGame,addPlayer,start,advance,assertIntegrity,makeDeck,bid,type Settings,type Game,type Card} from '../shared/game';
+import {createGame,addPlayer,start,advance,assertIntegrity,makeDeck,bid,offerExchange,selectExchange,type Settings,type Game,type Card} from '../shared/game';
 import {runBots,runBotTurn,chooseBotBid,chooseBotPlay} from './bot';
 
 function putInHand(g:Game,playerId:string,card:Card,index=0){
@@ -68,8 +68,20 @@ it('en un intercambio el bot conserva su triunfo fuerte',()=>{
  g.trumpSuit='Oros';g.exchangePairs=[{a:'bot',b:'human'}];
  putInHand(g,'bot',makeDeck().find(c=>c.id==='Oros_As')!,0);
  putInHand(g,'bot',makeDeck().find(c=>c.id==='Copas_2')!,1);
+ selectExchange(g,'human',[g.players[1].hand[0].id]);
  expect(runBotTurn(g)).toBe(true);
  expect(g.exchangePairs[0].aCards).toEqual(['Copas_2']);
+ assertIntegrity(g);
+});
+
+it('un bot rechaza un intercambio sin ventaja en una baraja de comodines',()=>{
+ const settings:Settings={name:'comodines',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false,modes:{deck:'jokers',exchangeEveryWaves:1}};
+ const g=createGame('DECLINE',{id:'human',name:'Humano',avatar:'H',connected:true},settings);addPlayer(g,{id:'bot',name:'Bot',avatar:'B',connected:true,bot:'hard'});start(g);
+ g.exchangePairs=[{a:'human',b:''}];offerExchange(g,'human','bot');
+ expect(runBotTurn(g)).toBe(true);
+ expect(g.phase).toBe('bid');
+ expect(g.exchangePairs?.[0].declined).toBe(true);
+ expect(g.pendingEvents?.some(event=>event.type==='exchange_declined')).toBe(true);
  assertIntegrity(g);
 });
 

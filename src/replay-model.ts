@@ -52,18 +52,19 @@ export function buildReplayTimeline(replay:ReplayData):ReplayScene[]{
     }else if(event.type==='round_ended'){
       for(const result of data.result||[])lives[result.id]=Number(result.lives);
       table=[];
-    }else if(!['game_finished','exchange_offered','exchange_selected','cards_revealed','cards_exchanged','card_stolen','hands_reshuffled'].includes(event.type))continue;
+    }else if(!['game_finished','exchange_offered','exchange_declined','exchange_selected','cards_revealed','cards_exchanged','card_stolen','hands_reshuffled'].includes(event.type))continue;
     const title=event.type==='round_started'?'Ronda '+(roundIndex+1)+': reparto'
       :event.type==='bid'?name(event.player_id)+' predice '+data.bid
       :event.type==='card_played'?name(event.player_id)+' juega '+(data.card?.value||'comodín')
       :event.type==='trick_won'?name(data.winnerId)+' gana la baza'
-      :event.type==='round_ended'?'Resultado de la ronda':event.type==='exchange_offered'?name(event.player_id)+' ofrece un cambio':event.type==='exchange_selected'?name(event.player_id)+' elige cartas':event.type==='cards_revealed'?name(event.player_id)+' enseña cartas':event.type==='cards_exchanged'?'Cartas intercambiadas':event.type==='card_stolen'?name(event.player_id)+' roba una carta':event.type==='hands_reshuffled'?'Manos redistribuidas':'Resultado final';
+      :event.type==='round_ended'?'Resultado de la ronda':event.type==='exchange_offered'?name(event.player_id)+' ofrece un cambio':event.type==='exchange_declined'?name(event.player_id)+' rechaza el intercambio':event.type==='exchange_selected'?name(event.player_id)+' elige cartas':event.type==='cards_revealed'?name(event.player_id)+' enseña cartas':event.type==='cards_exchanged'?'Cartas intercambiadas':event.type==='card_stolen'?name(event.player_id)+' roba una carta':event.type==='hands_reshuffled'?'Manos redistribuidas':'Resultado final';
     const detail=event.type==='round_started'?cards+' '+(cards===1?'carta':'cartas')+' por jugador'
       :event.type==='bid'?'Predicción '+(data.position||Object.keys(bids).length)+' de '+order.length
       :event.type==='card_played'?'Baza '+(trickIndex+1)+' · carta '+table.length+' de '+order.length
       :event.type==='trick_won'?String(data.reason||'Baza '+(trickIndex+1)+' completada')
       :event.type==='round_ended'?'Vidas y penalizaciones aplicadas'
       :event.type==='exchange_offered'?'Oferta para '+name(data.to)
+      :event.type==='exchange_declined'?'Oferta de '+name(data.from)+' rechazada; no se cambian cartas'
       :event.type==='exchange_selected'?'Esperando la elección de la pareja'
       :event.type==='cards_revealed'?'Cartas visibles antes de predecir'
       :event.type==='cards_exchanged'?name(data.a)+' y '+name(data.b)+' cambian cartas'

@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {active,addPlayer,advance,assertIntegrity,bid,configuredDeck,createGame,offerExchange,play,reshuffleHands,selectExchange,selectReveal,start,stealCard,trickWinnerWithTrump,validateModes,view,type Game,type Modes,type Settings} from './game';
+import {active,addPlayer,advance,assertIntegrity,bid,configuredDeck,createGame,declineExchange,offerExchange,play,preparationActor,reshuffleHands,selectExchange,selectReveal,start,stealCard,trickWinnerWithTrump,validateModes,view,type Game,type Modes,type Settings} from './game';
 
 const settings=(modes:Modes):Settings=>({name:'Modos',private:true,maxPlayers:3,maxCards:1,jokerCount:2,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes});
 function game(modes:Modes,players=2){const g=createGame('MODOS',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings(modes));addPlayer(g,{id:'b',name:'Beto',avatar:'🃏',connected:true});if(players===3)addPlayer(g,{id:'c',name:'Cora',avatar:'🃏',connected:true});start(g);return g;}
@@ -9,6 +9,27 @@ it('intercambia cartas escogidas por ambos antes de predecir y conserva la baraj
   const g=game({exchangeEveryWaves:1,exchangeCount:1});expect(g.phase).toBe('exchange');
   const a=g.players.find(p=>p.id===g.exchangePairs?.[0].a)!,b=g.players.find(p=>p.id!==a.id)!,fromA=a.hand[0],fromB=b.hand[0];offerExchange(g,a.id,b.id);selectExchange(g,a.id,[fromA.id]);expect(g.phase).toBe('exchange');
   selectExchange(g,b.id,[fromB.id]);expect(g.phase).toBe('bid');expect(a.hand[0]).toEqual(fromB);expect(b.hand[0]).toEqual(fromA);assertIntegrity(g);
+});
+
+it('el invitado puede rechazar el intercambio sin mover cartas y seguir a la revelación',()=>{
+  const g=game({exchangeEveryWaves:1,exchangeCount:1,revealPercent:50});
+  const offerer=g.players.find(p=>p.id===g.exchangePairs?.[0].a)!,guest=g.players.find(p=>p.id!==offerer.id)!;
+  const before=Object.fromEntries(g.players.map(p=>[p.id,p.hand.map(card=>card.id)]));
+  expect(()=>declineExchange(g,guest.id)).toThrow();
+  offerExchange(g,offerer.id,guest.id);
+  expect(preparationActor(g)?.id).toBe(guest.id);
+  selectExchange(g,offerer.id,[offerer.hand[0].id]);
+  declineExchange(g,guest.id);
+  expect(g.phase).toBe('reveal');
+  expect(g.exchangePairs?.[0].declined).toBe(true);
+  expect(Object.fromEntries(g.players.map(p=>[p.id,p.hand.map(card=>card.id)]))).toEqual(before);
+  expect(g.pendingEvents?.some(event=>event.type==='exchange_declined'&&event.playerId===guest.id)).toBe(true);
+  expect(()=>declineExchange(g,offerer.id)).toThrow();
+  for(const p of g.players)selectReveal(g,p.id,[p.hand[0].id]);
+  expect(g.phase).toBe('bid');assertIntegrity(g);
+  const accepted=game({exchangeEveryWaves:1});const a=accepted.exchangePairs![0].a,b=accepted.players.find(p=>p.id!==a)!;
+  offerExchange(accepted,a,b.id);selectExchange(accepted,b.id,[b.hand[0].id]);
+  expect(()=>declineExchange(accepted,b.id)).toThrow();
 });
 
 it('muestra solo las cartas elegidas y aplica las tres visiones al predecir',()=>{
