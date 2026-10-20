@@ -13,7 +13,8 @@
     "smoke": "tsx scripts/smoke.ts",
     "smoke:rooms": "tsx scripts/rooms-smoke.ts",
     "smoke:production": "tsx scripts/production-smoke.ts",
-    "smoke:restart": "tsx scripts/restart-smoke.ts"
+    "smoke:restart": "tsx scripts/restart-smoke.ts",
+    "smoke:pacing": "tsx scripts/pacing-smoke.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -46,6 +46,7 @@ npm run smoke # requiere servidor y PostgreSQL activos en localhost:3001
 npm run smoke:rooms # concurrencia, salas privadas y expulsión
 npm run smoke:restart # recupera una partida tras reiniciar Node
 npm run smoke:production # frontend compilado y API en un solo proceso
+npm run smoke:pacing # ritmo de los bots, revelado e historial de cartas
 ```
 
 `simulate` ejecuta 10.000 partidas y comprueba la integridad de la baraja. `smoke` crea usuarios de prueba y juega una partida con dos WebSockets. Las cuentas de prueba persisten hasta borrarlas manualmente. `npm run db:seed` crea una cuenta de desarrollo e imprime una contraseña temporal; nunca se ejecuta automáticamente ni en producción.
