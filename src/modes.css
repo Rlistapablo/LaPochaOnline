@@ -1,1 +1,12 @@
 .modeSettings{margin:20px 0;border:1px solid #5d795d;border-radius:14px;background:#0e261b}.modeSettings>summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:15px 17px;color:#edd59f;font-weight:700}.modeSettings>summary span{font-size:11px;color:#a9c0a9}.modeSections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:4px 16px 15px}.modeSections section{display:grid;align-content:start;gap:11px;border:1px solid #ffffff1b;border-radius:12px;padding:14px;background:#153024}.modeSections h3{font-size:18px;color:#e8d29f;margin:0 0 2px}.modeNumber,.modeSelect,.modeToggle{font-size:12px;color:#e2e7d8}.modeNumber,.modeSelect{display:grid;gap:6px}.modeNumber{grid-template-columns:minmax(0,1fr) 70px;align-items:center}.modeNumber input{padding:8px;text-align:center}.modeNumber small,.modeToggle small{display:block;color:#9eb49f;margin-top:3px;font-size:10px}.modeSelect select{padding:9px}.modeToggle{display:flex;align-items:flex-start;gap:10px}.modeToggle input{width:18px;height:18px;min-width:18px;accent-color:#d7b56b}.modeToggle.disabled{opacity:.5}.modeCompatibility{font-size:11px;margin:0;padding:0 16px 16px;color:#bdcbb8}@media(max-width:700px){.modeSections{grid-template-columns:1fr}.modeSettings>summary span{display:none}}
+.modeSettings>summary .modeCloseLabel{display:none}.modeSettings[open]>summary .modeOpenLabel{display:none}.modeSettings[open]>summary .modeCloseLabel{display:inline;color:#f1d28a}
+@media(min-width:560px){
+  .modeSettings[open]{position:fixed;z-index:40;top:50%;left:50%;transform:translate(-50%,-50%);width:min(1240px,calc(100vw - 36px));max-height:calc(100dvh - 32px);margin:0;overflow-y:auto;background:#10291e;border-color:#b99b61;box-shadow:0 0 0 100vmax #000b,0 24px 80px #000a}
+  .modeSettings[open]>summary{position:sticky;top:0;z-index:1;background:#10291e;border-bottom:1px solid #ffffff24;padding:15px 20px;font-size:17px}
+  .modeSettings[open] .modeSections{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:16px 18px 12px}
+  .modeSettings[open] .modeSections section{padding:12px;gap:9px}
+  .modeSettings[open] .modeSections h3{font-size:17px}
+  .modeSettings[open] .modeCompatibility{padding:5px 20px 18px;font-size:12px}
+}
+@media(min-width:560px) and (max-width:1100px){.modeSettings[open] .modeSections{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:559px){.modeSettings>summary .modeOpenLabel,.modeSettings>summary .modeCloseLabel{display:none}.modeSettings[open] .modeSections{grid-template-columns:1fr}}
