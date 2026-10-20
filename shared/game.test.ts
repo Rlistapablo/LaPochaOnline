@@ -9,6 +9,27 @@ describe('motor físico',()=>{
  it('oculta la carta propia sin enviarla durante la predicción',()=>{const g=game();g.settings.maxCards=1;start(g);const a=view(g,'a'),b=view(g,'b'),spectator=view(g);expect(a.players[0].hand).toEqual([null]);expect(a.players[1].hand?.[0]).toEqual(g.players[1].hand[0]);expect(b.players[1].hand).toEqual([null]);expect(spectator.players.every(p=>p.hand===undefined)).toBe(true);});
  it('entrega la mano antes de predecir en las rondas normales y en una carta visible',()=>{const g=game();start(g);expect(g.phase).toBe('bid');expect(view(g,'a').players[0].hand).toEqual(g.players[0].hand);expect(view(g,'a').players[1].hand).toBeUndefined();const h=game();h.settings.maxCards=1;h.settings.oneCard='visible';start(h);expect(view(h,'a').players[0].hand).toEqual(h.players[0].hand);expect(view(h,'a').players[1].hand).toBeUndefined();});
  it('genera un solo valle de una carta',()=>expect(schedule(5)).toEqual([5,4,3,2,1,2,3,4,5]));
+ it('reparte menos cartas cada ronda y vuelve a subir después de una carta',()=>{
+  const g=game();g.settings.maxCards=3;start(g);
+  g.players.forEach(p=>p.lives=100); // Evita que una eliminación reinicie el ciclo durante esta prueba.
+  const dealt:number[]=[];
+  while(g.phase!=='finished'){
+   dealt.push(g.cardsPerPlayer);
+   expect(g.players.map(p=>p.hand.length)).toEqual([g.cardsPerPlayer,g.cardsPerPlayer]);
+   expect(view(g,'a').schedule).toEqual([3,2,1,2,3]);
+   while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,0,g.version);
+   while(g.phase==='play'){
+    const p=g.players[g.turnIndex],c=p.hand[0];
+    play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);
+   }
+   expect(g.phase).toBe('roundEnd');
+   advance(g,g.version);
+  }
+  expect(dealt).toEqual([3,2,1,2,3]);
+  expect(g.history.map(r=>r.round)).toEqual(dealt);
+  expect(g.endReason).toBe('cycle');
+  expect(view(g,'a').round).toBe(5);
+ });
  it('aumenta la penalización progresiva y reinicia la racha al acertar',()=>{expect(penaltyForRound(2,0,'progressive')).toEqual({streak:1,multiplier:1,lost:2});expect(penaltyForRound(2,1,'progressive')).toEqual({streak:2,multiplier:2,lost:4});expect(penaltyForRound(1,2,'normal')).toEqual({streak:3,multiplier:1,lost:1});expect(penaltyForRound(0,3,'progressive')).toEqual({streak:0,multiplier:1,lost:0});});
  it('permite todos los valores de comodín',()=>{for(const v of VALUES)expect(trickWinner([{playerId:'a',card:{id:'joker_1'},declaredValue:v}])).toBe('a');});
  it('descuenta vidas al final y elimina sin vidas negativas',()=>{const g=game();g.settings.maxCards=1;start(g);g.players.forEach(p=>p.lives=1);bid(g,'a',1,g.version);bid(g,'b',1,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}expect(g.phase).toBe('finished');expect(g.players.filter(p=>p.eliminated)).toHaveLength(1);expect(g.players.some(p=>p.lives<0)).toBe(false);expect(g.winners).toHaveLength(1);assertIntegrity(g);});
