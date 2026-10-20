@@ -100,7 +100,19 @@ export type View = ReturnType<typeof view>;
 export function view(g: Game,viewerId?: string) {
   const hidden=g.phase==='bid'&&g.cardsPerPlayer===1&&oneCardMode(g)==='hidden',activeViewer=!!viewerId&&g.players.some(p=>p.id===viewerId&&!p.eliminated),vision=g.settings.modes?.vision||'normal';
   const neighbor=viewerId?turnOrder(g,g.players.findIndex(p=>p.id===viewerId))[1]:undefined;
-  const visibleHand=(p:Player)=>{if(g.phase==='lobby'||g.phase==='finished')return p.id===viewerId?p.hand:undefined;if(p.id===viewerId){if(g.phase==='exchange'||g.phase==='reveal'||g.phase==='play')return p.hand;if(g.phase==='bid'&&(vision==='blind'||vision==='rivals'||vision==='neighbor'||vision==='normal'&&hidden))return p.hand.map(()=>null);return p.hand;}if(activeViewer&&g.phase==='bid'&&vision==='rivals'||activeViewer&&vision==='neighbor'&&p.id===neighbor&&g.phase==='bid')return p.hand;if(activeViewer&&vision==='normal'&&hidden&&g.phase==='bid'&&!p.eliminated)return p.hand;if(!g.revealed?.[p.id]?.length)return undefined;return p.hand.map(card=>g.revealed?.[p.id]?.includes(card.id)?card:null);};
+  const visibleHand=(p:Player)=>{
+    if(g.phase==='lobby'||g.phase==='finished')return p.id===viewerId?p.hand:undefined;
+    if(p.id===viewerId){
+      if(g.phase==='exchange'||g.phase==='reveal'||g.phase==='play')return p.hand;
+      if(g.phase==='bid'&&(vision==='blind'||vision==='rivals'||vision==='neighbor'||vision==='normal'&&hidden))return p.hand.map(()=>null);
+      return p.hand;
+    }
+    // La prediccion propia no cambia la visibilidad: se ocultan al terminar la ultima.
+    const predicting=activeViewer&&g.phase==='bid'&&!p.eliminated;
+    if(predicting&&(vision==='rivals'||vision==='neighbor'&&p.id===neighbor||vision==='normal'&&hidden))return p.hand;
+    if(!g.revealed?.[p.id]?.length)return undefined;
+    return p.hand.map(card=>g.revealed?.[p.id]?.includes(card.id)?card:null);
+  };
   const leader=g.phase==='play'&&g.tricks.length?g.players.findIndex(p=>p.id===g.tricks.at(-1)!.winnerId):g.firstIndex;
   const order=turnOrder(g,leader);
   return {code:g.code,hostId:g.hostId,settings:g.settings,phase:g.phase,version:g.version,cycle:g.cycle,wave:g.wave??0,round:g.roundIndex+1,roundStep:(g.roundStep??0)+1,schedule:g.schedule,cardsPerPlayer:g.cardsPerPlayer,trickNumber:g.tricks.length+1,turnId:(preparationActor(g)||g.players[g.turnIndex])?.id,turnPosition:order.indexOf((preparationActor(g)||g.players[g.turnIndex])?.id)+1,order,allowedBids:viewerId===current(g)?.id?allowedBids(g):[],trumpSuit:g.trumpSuit,exchangePairs:g.exchangePairs?.map(pair=>({a:pair.a,b:pair.b,aReady:!!pair.aCards,bReady:!!pair.bCards,declined:!!pair.declined})),revealRequired:Math.ceil(g.cardsPerPlayer*(g.settings.modes?.revealPercent||0)/100),revealed:g.revealed,shuffleOwner:g.shuffleOwner,players:g.players.map(p=>({id:p.id,name:p.name,avatar:p.avatar,bot:p.bot,lives:p.lives,connected:p.connected,ready:p.ready,eliminated:p.eliminated,missStreak:p.missStreak,bid:p.bid,wins:p.wins,steals:p.steals||0,reshuffles:p.reshuffles||0,handCount:p.hand.length,hand:visibleHand(p)})),table:g.table,tricks:g.tricks,lastTrick:g.lastTrick,revealUntil:g.revealUntil,autoRestartAt:g.autoRestartAt,endReason:g.endReason,roundResult:g.roundResult,winners:g.winners,history:g.history.map(r=>({...r,hands:g.phase==='finished'?r.hands:undefined}))};

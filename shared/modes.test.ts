@@ -41,6 +41,23 @@ it('muestra solo las cartas elegidas y aplica las tres visiones al predecir',()=
   const neighbor=game({vision:'neighbor'},3);expect(view(neighbor,'a').players.filter(p=>p.id!=='a'&&p.hand?.[0])).toHaveLength(1);
 });
 
+it('mantiene las cartas rivales visibles hasta la ultima prediccion, aunque el espectador ya haya predicho',()=>{
+  const g=game({vision:'rivals'},3);
+  g.firstIndex=0;g.turnIndex=0;
+  const rivalHands=()=>view(g,'a').players.filter(p=>p.id!=='a').map(p=>p.hand);
+  expect(rivalHands()).toEqual([g.players[1].hand,g.players[2].hand]);
+  bid(g,'a',0,g.version);
+  expect(g.phase).toBe('bid');
+  expect(rivalHands()).toEqual([g.players[1].hand,g.players[2].hand]);
+  bid(g,'b',0,g.version);
+  expect(g.phase).toBe('bid');
+  expect(rivalHands()).toEqual([g.players[1].hand,g.players[2].hand]);
+  bid(g,'c',0,g.version);
+  expect(g.phase).toBe('play');
+  expect(rivalHands()).toEqual([undefined,undefined]);
+  expect(view(g,'a').players[0].hand).toEqual(g.players[0].hand);
+});
+
 it('roba sin ver la carta rival y redistribuye solo las manos restantes',()=>{
   const g=game({stealResetRounds:2,reshuffleEveryWaves:1});const [a,b]=g.players,fromA=a.hand[0],fromB=b.hand[0];
   expect(a.steals).toBe(1);stealCard(g,a.id,b.id,fromA.id);expect(a.hand[0]).toEqual(fromB);expect(b.hand[0]).toEqual(fromA);expect(a.steals).toBe(0);
