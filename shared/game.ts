@@ -66,11 +66,11 @@ export function play(g: Game,id: string,cardId: string,declaredValue: Value|unde
 function finishRound(g: Game) {
   const entrants=active(g),order=turnOrder(g);
   g.roundResult=entrants.map(p=>{const difference=Math.abs(p.wins-p.bid!),livesBefore=p.lives,{streak,multiplier,lost}=penaltyForRound(difference,p.missStreak,g.settings.penalty);p.missStreak=streak;p.lives=Math.max(0,p.lives-lost);return{id:p.id,name:p.name,bid:p.bid!,wins:p.wins,difference,streak,multiplier,lost,lives:p.lives,livesBefore};});
-  const eliminated=entrants.filter(p=>p.lives===0),survivors=entrants.filter(p=>p.lives>0);
+  const eliminated=entrants.filter(p=>p.lives===0);
   for(const p of eliminated)p.eliminated=true;
   g.history.push({round:g.cardsPerPlayer,roundIndex:g.roundIndex,wave:g.wave,result:g.roundResult,tricks:[...g.tricks],order,hands:g.roundHands,startedAt:g.roundStartedAt,finishedAt:new Date().toISOString()});
   recordEvent(g,'round_ended',{roundIndex:g.roundIndex,result:g.roundResult,eliminated:eliminated.map(p=>p.id)});
-  if(survivors.length<=1){g.winners=survivors.length?survivors.map(p=>p.id):entrants.map(p=>p.id);g.phase='finished';g.autoRestart=true;g.endReason='elimination';g.finishedAt=new Date().toISOString();recordEvent(g,'game_finished',{winners:g.winners,reason:g.endReason});}
+  if(eliminated.length){const mostLives=Math.max(...entrants.map(p=>p.lives));g.winners=entrants.filter(p=>p.lives===mostLives).map(p=>p.id);g.phase='finished';g.autoRestart=true;g.endReason='elimination';g.finishedAt=new Date().toISOString();recordEvent(g,'game_finished',{winners:g.winners,reason:g.endReason});}
   else g.phase='roundEnd';
 }
 export function advance(g: Game,version: number) {

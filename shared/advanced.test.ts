@@ -12,16 +12,18 @@ describe('partidas continuas',()=>{
     for(let i=0;i<5;i++){cards.push(g.cardsPerPlayer);expect(view(g,'p0').order[0]).toBe(g.players[g.firstIndex].id);finishRound(g);expect(g.phase).toBe('roundEnd');advance(g,g.version);expect(g.firstIndex).toBe((first+i+1)%4);}
     expect(cards).toEqual([2,1,2,1,2]);expect(g.wave).toBe(2);expect(g.roundIndex).toBe(5);
   });
-  it('elimina a uno y deja seguir a los dos supervivientes, sin revelarles cartas al eliminado',()=>{
+  it('termina la partida cuando uno pierde su última vida aunque queden dos supervivientes',()=>{
     const g=game(3);g.settings.maxCards=1;g.settings.oneCard='hidden';start(g);
     const first=g.players[g.firstIndex];first.lives=1;
     const weakest=g.players.reduce((best,p)=>rank({playerId:p.id,card:p.hand[0],declaredValue:isJoker(p.hand[0])?'2':undefined})<rank({playerId:best.id,card:best.hand[0],declaredValue:isJoker(best.hand[0])?'2':undefined})?p:best);
     [first.hand[0],weakest.hand[0]]=[weakest.hand[0],first.hand[0]];
     while(g.phase==='bid'){const p=g.players[g.turnIndex];bid(g,p.id,p.id===first.id?1:allowedBids(g)[0],g.version);}
     while(g.phase==='play'){const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,isJoker(card)?'2':undefined,g.version);}
-    expect(g.phase).toBe('roundEnd');expect(first.eliminated).toBe(true);expect(active(g)).toHaveLength(2);
-    advance(g,g.version);expect(g.phase).toBe('bid');expect(g.players[g.firstIndex].id).not.toBe(first.id);
-    const spectator=view(g,first.id);expect(spectator.players.every(p=>!p.hand?.some(Boolean))).toBe(true);
+    expect(g.phase).toBe('finished');expect(first.eliminated).toBe(true);expect(active(g)).toHaveLength(2);
+    const mostLives=Math.max(...g.players.map(p=>p.lives));
+    expect(g.winners).toEqual(g.players.filter(p=>p.lives===mostLives).map(p=>p.id));
+    expect(g.autoRestart).toBe(true);
+    expect(()=>advance(g,g.version)).toThrow();
     assertIntegrity(g);
   });
   it('declara empate cuando todos pierden la última vida en la misma ronda',()=>{
@@ -35,16 +37,5 @@ describe('partidas continuas',()=>{
     expect(g.phase).toBe('finished');expect(g.winners.toSorted()).toEqual(['p0','p1']);expect(g.players.every(p=>p.eliminated)).toBe(true);
   });
   it('admite barajas de 40 a 44 cartas y comodines físicos únicos',()=>{for(let jokers=0;jokers<=4;jokers++){const cards=makeDeck(jokers);expect(cards).toHaveLength(40+jokers);expect(new Set(cards.map(c=>c.id)).size).toBe(cards.length);const g=game();g.settings.jokerCount=jokers;start(g);assertIntegrity(g);}});
-  it('amplía la subida de cartas cuando el reparto permite una más tras una eliminación',()=>{
-    const g=game(4);g.settings.maxCards=11;start(g);
-    expect(g.schedule[0]).toBe(10);
-    const removed=g.players[g.firstIndex];removed.eliminated=true;removed.lives=0;
-    g.phase='roundEnd';g.roundStep=9;g.roundIndex=9;
-    advance(g,g.version);
-    expect(g.schedule.at(-1)).toBe(11);
-    expect(g.players[g.firstIndex].id).not.toBe(removed.id);
-    expect(g.cardsPerPlayer).toBe(2);
-    assertIntegrity(g);
-  });
   it('registra eventos ordenados sin revelar manos anteriores durante la partida',()=>{const g=game();start(g);finishRound(g);expect(g.phase).toBe('roundEnd');expect(view(g,'p0').history[0].hands).toBeUndefined();const seq=g.pendingEvents?.map(e=>e.sequence)||[];expect(seq).toEqual(seq.toSorted((a,b)=>a-b));expect(new Set(seq).size).toBe(seq.length);expect(g.pendingEvents?.some(e=>e.type==='round_started'&&!!e.data.hands)).toBe(true);});
 });

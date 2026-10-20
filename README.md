@@ -56,7 +56,7 @@ npm run smoke:advanced # permisos de mesas, bots, comodines, idempotencia y repe
 
 `simulate` ejecuta 10.000 partidas y comprueba la integridad de la baraja. `smoke` crea usuarios de prueba y juega una partida con dos WebSockets. Las cuentas de prueba persisten hasta borrarlas manualmente. `npm run db:seed` crea una cuenta de desarrollo e imprime una contraseña temporal; nunca se ejecuta automáticamente ni en producción.
 
-La mesa muestra el orden de predicción y jugada, las bazas y vidas de cada jugador, un panel lateral con historial y una interfaz táctil con confirmación de carta. Las rondas siguen `X → … → 1 → … → X → X−1 → …` hasta que queda un jugador con vidas o todos pierden la última vida a la vez. Los jugadores eliminados observan sin recibir cartas ocultas. Las partidas terminadas se consultan en **Repeticiones**; las partidas privadas solo son visibles para sus participantes.
+La mesa muestra el orden de predicción y jugada, las bazas y vidas de cada jugador, un panel lateral con historial y una interfaz táctil con confirmación de carta. Las rondas siguen `X → … → 1 → … → X → X−1 → …` mientras nadie pierda todas sus vidas. En cuanto alguien llega a cero al terminar una ronda, la partida acaba y gana quien conserve más vidas, con empate si varios comparten el máximo. Las partidas terminadas se consultan en **Repeticiones**; las partidas privadas solo son visibles para sus participantes.
 
 El anfitrión puede editar nombre, avatar y dificultad de los bots antes de empezar, y cerrar una mesa pública con **Eliminar mesa**. Para habilitar el panel **Moderación**, configura `ADMIN_USER_IDS` con los UUID de los administradores separados por comas. El servidor verifica estos permisos.
 
