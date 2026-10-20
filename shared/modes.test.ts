@@ -1,0 +1,56 @@
+import {expect,it} from 'vitest';
+import {active,addPlayer,advance,assertIntegrity,bid,configuredDeck,createGame,offerExchange,play,reshuffleHands,selectExchange,selectReveal,start,stealCard,trickWinnerWithTrump,validateModes,view,type Game,type Modes,type Settings} from './game';
+
+const settings=(modes:Modes):Settings=>({name:'Modos',private:true,maxPlayers:3,maxCards:1,jokerCount:2,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes});
+function game(modes:Modes,players=2){const g=createGame('MODOS',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings(modes));addPlayer(g,{id:'b',name:'Beto',avatar:'🃏',connected:true});if(players===3)addPlayer(g,{id:'c',name:'Cora',avatar:'🃏',connected:true});start(g);return g;}
+function completeOneCardRound(g:Game){while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,0,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}}
+
+it('intercambia cartas escogidas por ambos antes de predecir y conserva la baraja',()=>{
+  const g=game({exchangeEveryWaves:1,exchangeCount:1});expect(g.phase).toBe('exchange');
+  const a=g.players.find(p=>p.id===g.exchangePairs?.[0].a)!,b=g.players.find(p=>p.id!==a.id)!,fromA=a.hand[0],fromB=b.hand[0];offerExchange(g,a.id,b.id);selectExchange(g,a.id,[fromA.id]);expect(g.phase).toBe('exchange');
+  selectExchange(g,b.id,[fromB.id]);expect(g.phase).toBe('bid');expect(a.hand[0]).toEqual(fromB);expect(b.hand[0]).toEqual(fromA);assertIntegrity(g);
+});
+
+it('muestra solo las cartas elegidas y aplica las tres visiones al predecir',()=>{
+  const g=game({revealPercent:50});expect(g.phase).toBe('reveal');
+  for(const p of g.players)selectReveal(g,p.id,[p.hand[0].id]);
+  expect(g.phase).toBe('bid');expect(view(g,'a').players[1].hand).toEqual(g.players[1].hand);
+  const blind=game({vision:'blind'});expect(view(blind,'a').players[0].hand).toEqual([null]);expect(view(blind,'a').players[1].hand).toBeUndefined();
+  const rivals=game({vision:'rivals'});expect(view(rivals,'a').players[0].hand).toEqual([null]);expect(view(rivals,'a').players[1].hand).toEqual(rivals.players[1].hand);
+  const neighbor=game({vision:'neighbor'},3);expect(view(neighbor,'a').players.filter(p=>p.id!=='a'&&p.hand?.[0])).toHaveLength(1);
+});
+
+it('roba sin ver la carta rival y redistribuye solo las manos restantes',()=>{
+  const g=game({stealResetRounds:2,reshuffleEveryWaves:1});const [a,b]=g.players,fromA=a.hand[0],fromB=b.hand[0];
+  expect(a.steals).toBe(1);stealCard(g,a.id,b.id,fromA.id);expect(a.hand[0]).toEqual(fromB);expect(b.hand[0]).toEqual(fromA);expect(a.steals).toBe(0);
+  const owner=active(g).find(p=>p.reshuffles)!;reshuffleHands(g,owner.id,[a.id,b.id]);expect(owner.reshuffles).toBe(0);assertIntegrity(g);
+});
+
+it('crea barajas especiales, reconoce triunfo y rechaza combinaciones imposibles',()=>{
+  expect(configuredDeck(settings({deck:'jokers'})).every(card=>card.id.startsWith('joker'))).toBe(true);
+  expect(configuredDeck(settings({deck:'figures',extraDecks:1}))).toHaveLength(24);
+  const jokers=game({deck:'jokers',extraDecks:1});completeOneCardRound(jokers);assertIntegrity(jokers);expect(jokers.tricks[0].plays.every(played=>played.card.id.startsWith('joker'))).toBe(true);
+  expect(trickWinnerWithTrump([{playerId:'a',card:{id:'Oros_As',suit:'Oros',value:'As'}},{playerId:'b',card:{id:'Copas_2',suit:'Copas',value:'2'}}],'Copas')).toBe('b');
+  expect(()=>validateModes(settings({deck:'jokers',trump:true}))).toThrow();
+  expect(()=>validateModes(settings({infiniteLives:true,lastStanding:true}))).toThrow();
+  expect(()=>validateModes(settings({vision:'blind',revealPercent:20}))).toThrow();
+  expect(()=>validateModes(settings({vision:'neighbor',revealPercent:20}))).toThrow();
+});
+
+it('permite continuar tras una eliminación y evita pérdidas con vidas infinitas',()=>{
+  const survivor=game({lastStanding:true},3);survivor.players.forEach(p=>p.lives=1);completeOneCardRound(survivor);
+  expect(survivor.phase).toBe('roundEnd');expect(active(survivor)).toHaveLength(2);
+  advance(survivor,survivor.version);expect(active(survivor)).toHaveLength(2);expect(survivor.phase).toBe('bid');assertIntegrity(survivor);
+  const endless=game({infiniteLives:true});endless.players.forEach(p=>p.lives=1);completeOneCardRound(endless);
+  expect(endless.phase).toBe('roundEnd');expect(endless.players.map(p=>p.lives)).toEqual([1,1]);
+});
+it('recupera una vida al acertar y entrega acciones por racha de rondas con bazas',()=>{
+  const g=game({recoverEvery:1,stealWinStreak:1,reshuffleWinStreak:1});
+  const first=g.players[g.firstIndex],second=g.players[1-g.firstIndex];
+  const winner=trickWinnerWithTrump([{playerId:first.id,card:first.hand[0],declaredValue:first.hand[0].id.startsWith('joker')?'2':undefined},{playerId:second.id,card:second.hand[0],declaredValue:second.hand[0].id.startsWith('joker')?'2':undefined}]);
+  g.players.find(p=>p.id===winner)!.lives=2;
+  while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,1,g.version);
+  while(g.phase==='play'){const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}
+  const p=g.players.find(p=>p.id===winner)!;
+  expect(p.lives).toBe(3);expect(p.steals).toBe(1);expect(p.reshuffles).toBe(1);
+});

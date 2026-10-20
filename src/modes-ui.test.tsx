@@ -1,0 +1,18 @@
+import {expect,it} from 'vitest';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {ModeSettings} from './ModeSettings';
+import {GameWorkspace} from './GameWorkspace';
+import {addPlayer,createGame,start,view,type Settings} from '../shared/game';
+
+it('ofrece los modos en la creación y muestra el intercambio antes de predecir',()=>{
+  const form=renderToStaticMarkup(<ModeSettings modes={{}} onChange={()=>{}}/>);
+  expect(form).toContain('Intercambiar cada X ciclos');
+  expect(form).toContain('Vidas infinitas');
+  expect(form).toContain('Ver rivales, no la propia mano');
+  const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:2,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes:{exchangeEveryWaves:1,trump:true}};
+  const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);addPlayer(game,{id:'b',name:'Beto',avatar:'🃏',connected:true});start(game);
+  const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
+  expect(html).toContain('Intercambio de cartas');
+  expect(html).toContain('Triunfo:');
+  expect(html).toContain('Información');
+});

@@ -47,3 +47,17 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect(html).toContain('role="progressbar"');
   expect(html).toContain('Mostrar todas las manos');
 });
+it('reconstruye intercambios, cartas mostradas y robos en la repetición',()=>{
+  const altered:ReplayData={...replay,events:[
+    event(1,'round_started',{roundIndex:0,wave:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3},trumpSuit:'Copas'}),
+    event(2,'cards_exchanged',{a:'a',b:'b',aCards:[ace],bCards:[two]}),
+    event(3,'cards_revealed',{cards:[two]},'a'),
+    event(4,'card_stolen',{from:'b',gave:two,took:ace},'a'),
+  ]};
+  const scenes=buildReplayTimeline(altered);
+  expect(scenes[0].trumpSuit).toBe('Copas');
+  expect(scenes[1].hands.a[0]).toEqual(two);
+  expect(scenes[2].revealed.a).toEqual([two.id]);
+  expect(scenes[3].hands.a[0]).toEqual(ace);
+  expect(scenes[0].hands.a[0]).toEqual(ace);
+});
