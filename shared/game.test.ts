@@ -32,8 +32,8 @@ describe('motor físico',()=>{
  });
  it('aumenta la penalización progresiva y reinicia la racha al acertar',()=>{expect(penaltyForRound(2,0,'progressive')).toEqual({streak:1,multiplier:1,lost:2});expect(penaltyForRound(2,1,'progressive')).toEqual({streak:2,multiplier:2,lost:4});expect(penaltyForRound(1,2,'normal')).toEqual({streak:3,multiplier:1,lost:1});expect(penaltyForRound(0,3,'progressive')).toEqual({streak:0,multiplier:1,lost:0});});
  it('permite todos los valores de comodín',()=>{for(const v of VALUES)expect(trickWinner([{playerId:'a',card:{id:'joker_1'},declaredValue:v}])).toBe('a');});
- it('descuenta vidas sin bajarlas de cero y espera al final del calendario',()=>{const g=game();g.settings.maxCards=1;start(g);g.players.forEach(p=>p.lives=1);bid(g,'a',1,g.version);bid(g,'b',1,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}expect(g.phase).toBe('roundEnd');expect(g.players.filter(p=>p.eliminated)).toHaveLength(0);expect(g.players.some(p=>p.lives<0)).toBe(false);advance(g,g.version);expect(g.phase).toBe('finished');expect(g.players.filter(p=>p.eliminated)).toHaveLength(1);expect(g.autoRestart).toBe(true);expect(g.winners).toHaveLength(1);assertIntegrity(g);});
- it('completa la bajada y subida aun con jugadores sin vidas antes de reiniciar',()=>{
+ it('descuenta vidas sin bajarlas de cero y termina al agotar las vidas',()=>{const g=game();g.settings.maxCards=1;start(g);g.players.forEach(p=>p.lives=1);bid(g,'a',1,g.version);bid(g,'b',1,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}expect(g.phase).toBe('finished');expect(g.players.filter(p=>p.eliminated)).toHaveLength(1);expect(g.players.some(p=>p.lives<0)).toBe(false);expect(g.autoRestart).toBe(true);expect(g.winners).toHaveLength(1);expect(()=>advance(g,g.version)).toThrow();assertIntegrity(g);});
+ it('termina la partida antes de la última ronda si alguien pierde todas las vidas',()=>{
   const g=game();g.settings.maxCards=3;start(g);g.players.forEach(p=>p.lives=1);
   const dealt:number[]=[];
   while(g.phase!=='finished'){
@@ -43,12 +43,9 @@ describe('motor físico',()=>{
     const p=g.players[g.turnIndex],card=p.hand[0];
     play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);
    }
-   expect(g.phase).toBe('roundEnd');
-   expect(g.autoRestart).toBe(false);
-   expect(g.players.every(p=>!p.eliminated)).toBe(true);
-   advance(g,g.version);
+   if(g.phase==='roundEnd')advance(g,g.version);
   }
-  expect(dealt).toEqual([3,2,1,2,3]);
+  expect(dealt).toEqual([3]);
   expect(g.history.map(r=>r.round)).toEqual(dealt);
   expect(g.players.some(p=>p.eliminated)).toBe(true);
   expect(g.autoRestart).toBe(true);

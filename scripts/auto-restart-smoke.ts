@@ -16,7 +16,7 @@ async function action(socket:Socket,code:string,type:string,value?:unknown){
   if(va.version<=before||vb.version<=before)throw Error(`Estados no sincronizados tras ${type}`);
 }
 try{
-  const {code}=await emit(a,'create',{name:'Reinicio tras el calendario',private:true,maxPlayers:2,maxCards:3,lives:3,oneCard:'visible',turnSeconds:30});
+  const {code}=await emit(a,'create',{name:'Reinicio al agotar vidas',private:true,maxPlayers:2,maxCards:3,lives:3,oneCard:'visible',turnSeconds:30});
   await emit(b,'join',code);
   await emit(a,'action',{code,type:'ready',version:va.version});
   await emit(b,'action',{code,type:'ready',version:vb.version});
@@ -31,15 +31,16 @@ try{
       const card=state.players.find((p:any)=>p.id===id).hand[0];
       await action(actor,code,'play',{cardId:card.id,...(card.id.startsWith('joker')?{declaredValue:'2'}:{})});
     }
-    if(va.phase!=='roundEnd'||va.autoRestartAt||va.players.some((p:any)=>p.eliminated))throw Error('La partida terminó antes de completar el calendario');
-    if(index===1&&!va.players.some((p:any)=>p.lives===0))throw Error('No se alcanzó cero vidas antes de la última ronda');
+    if(va.phase==='finished')break;
+    if(va.phase!=='roundEnd'||va.players.some((p:any)=>p.lives===0))throw Error('No se terminó la partida al agotar las vidas');
+    if(index===1)throw Error('La partida siguió pese a las vidas agotadas');
     await action(a,code,'advance');
   }
-  if(va.phase!=='finished'||!va.autoRestartAt||!va.players.some((p:any)=>p.eliminated)||va.history.length!==calendar.length)throw Error('No se programó el reinicio tras el calendario completo');
+  if(va.phase!=='finished'||!va.autoRestartAt||!va.players.some((p:any)=>p.eliminated)||va.history.length>=calendar.length)throw Error('No se terminó y programó el reinicio al agotar las vidas');
   const saved=await pool.query('SELECT id FROM games WHERE room_code=$1 AND cycle=0',[code]);
   if(saved.rowCount!==1)throw Error('El ciclo terminado no se guardó antes del reinicio');
   for(let i=0;i<120&&va.cycle===0;i++)await new Promise(resolve=>setTimeout(resolve,100));
   if(va.cycle!==1||va.phase!=='bid'||!va.players.every((p:any)=>p.lives===3&&!p.eliminated))throw Error('La partida no se reinició con las vidas restauradas');
-  console.log('Dos navegadores completaron 3, 2, 1, 2, 3 antes del reinicio automático con vidas restauradas.');
+  console.log('Dos navegadores: fin inmediato al agotar las vidas y reinicio automático con vidas restauradas.');
   a.emit('leave',code);b.emit('leave',code);
 }finally{a.disconnect();b.disconnect();await pool.end();}
