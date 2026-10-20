@@ -37,6 +37,8 @@ npm run start
 
 Node sirve `dist/`, API y Socket.IO en `http://IP_DEL_SERVIDOR:3001`. Para abrirlo en la red local permite TCP 3001 (`sudo ufw allow 3001/tcp` si UFW está activo). Ejecuta el servidor permanentemente con [pocha.service](pocha.service) y las instrucciones de [DEPLOYMENT.md](DEPLOYMENT.md).
 
+Para compartir el puerto 80 mediante Nginx y publicar la app en `/pocha/`, compila con `npm run build:pocha` y sigue la sección de Nginx en [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Comprobación
 
 ```bash

@@ -1,11 +1,12 @@
 import {useEffect,useMemo,useState} from 'react';
 import type {Card,Value} from '../shared/game';
 import {CardView} from './CardView';
+import {apiPath} from './paths';
 import './replay.css';
 
 type Event={sequence:number;type:string;player_id?:string;data:Record<string,any>;occurred_at:string};
 type Replay={game:{id:string;room_name:string;room_code:string;started_at:string;finished_at:string;winners:string[];settings:any};players:{player_id:string;name:string;avatar:string;is_bot:boolean;lives_start:number;lives_end:number}[];events:Event[]};
-const request=async(path:string)=>{const response=await fetch(`/api/replays${path}`,{headers:{Authorization:`Bearer ${localStorage.getItem('pocha_token')||''}`}});const data=await response.json();if(!response.ok)throw Error(data.error||'Error al cargar la repetición');return data;};
+const request=async(path:string)=>{const response=await fetch(apiPath(`/replays${path}`),{headers:{Authorization:`Bearer ${localStorage.getItem('pocha_token')||''}`}});const data=await response.json();if(!response.ok)throw Error(data.error||'Error al cargar la repetición');return data;};
 
 export function ReplayLibrary(){
   const [list,setList]=useState<any[]>([]),[page,setPage]=useState(0),[replay,setReplay]=useState<Replay|null>(null),[round,setRound]=useState(0),[trick,setTrick]=useState(0),[step,setStep]=useState(0),[playing,setPlaying]=useState(false),[error,setError]=useState('');
