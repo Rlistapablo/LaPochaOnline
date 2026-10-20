@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="felt" cx="52%" cy="38%" r="75%">
+      <stop stop-color="#28503a"/>
+      <stop offset="1" stop-color="#0a1d17"/>
+    </radialGradient>
+    <linearGradient id="card" x2="0" y2="1">
+      <stop stop-color="#fffaf0"/>
+      <stop offset="1" stop-color="#eaddbd"/>
+    </linearGradient>
+    <linearGradient id="gold" x2="1" y2="1">
+      <stop stop-color="#ffdf91"/>
+      <stop offset="1" stop-color="#ad7227"/>
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="24" stdDeviation="20" flood-color="#03100b" flood-opacity=".55"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#felt)"/>
+  <rect x="25" y="25" width="1150" height="580" rx="36" fill="none" stroke="#ba965b" stroke-opacity=".65" stroke-width="3"/>
+  <rect x="39" y="39" width="1122" height="552" rx="27" fill="none" stroke="#f1dba4" stroke-opacity=".13" stroke-width="2"/>
+  <g transform="translate(159 130) rotate(-12 145 190)" filter="url(#shadow)">
+    <rect x="0" y="0" width="290" height="380" rx="22" fill="url(#card)" stroke="#e4c687" stroke-width="7"/>
+    <rect x="16" y="16" width="258" height="348" rx="13" fill="none" stroke="#c5a96c" stroke-width="2"/>
+    <text x="34" y="58" fill="#9a6334" font-family="Georgia,serif" font-weight="bold" font-size="36">AS</text>
+    <text x="145" y="267" text-anchor="middle" fill="#9a6334" font-family="Georgia,serif" font-size="27" letter-spacing="5">OROS</text>
+    <circle cx="145" cy="149" r="82" fill="#a26727" stroke="#70431a" stroke-width="5"/>
+    <circle cx="145" cy="149" r="72" fill="url(#gold)" stroke="#fff0b5" stroke-width="5"/>
+    <circle cx="145" cy="149" r="54" fill="none" stroke="#96642c" stroke-width="3"/>
+    <path d="m145 95 13 37 40 1-32 24 12 38-33-23-33 23 12-38-32-24 40-1Z" fill="#96642c"/>
+    <text x="258" y="339" text-anchor="end" fill="#9a6334" font-family="Georgia,serif" font-weight="bold" font-size="36">AS</text>
+  </g>
+  <text x="535" y="196" fill="#d4b678" font-family="Arial,sans-serif" font-size="27" font-weight="bold" letter-spacing="6">CARTAS ONLINE CON AMIGOS</text>
+  <text x="530" y="305" fill="#f8edd1" font-family="Georgia,serif" font-size="85" font-weight="bold">LA POCHA</text>
+  <text x="535" y="375" fill="#e5c379" font-family="Arial,sans-serif" font-size="51" font-weight="bold" letter-spacing="15">ONLINE</text>
+  <path d="M535 414h555" stroke="#bc9a60" stroke-width="2" opacity=".8"/>
+  <text x="535" y="469" fill="#f0e4c7" font-family="Arial,sans-serif" font-size="29" letter-spacing="2">PREDICE  ·  JUEGA  ·  SOBREVIVE</text>
+  <text x="535" y="532" fill="#a9bea9" font-family="Arial,sans-serif" font-size="23">Partidas con amigos, bots y bazas decisivas</text>
+</svg>
