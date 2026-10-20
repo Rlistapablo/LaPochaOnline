@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pocha
+      POSTGRES_PASSWORD: ${POCHA_DB_PASSWORD:?Set POCHA_DB_PASSWORD before starting this optional database}
+      POSTGRES_DB: pocha
+    ports:
+      - "5432:5432"
+    volumes:
+      - pocha_db:/var/lib/postgresql/data
+volumes:
+  pocha_db:
