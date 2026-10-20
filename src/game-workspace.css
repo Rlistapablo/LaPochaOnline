@@ -47,3 +47,11 @@
   .gameMain .playConfirm{padding:2px 0 6px}
 }
 @media(max-width:900px){.gameRail .specialActions{margin-top:18px}}
+@media(min-width:901px) and (max-height:820px){
+  .gameMain>.roundProgress{padding:6px 10px}
+  .gameMain>.roundProgress .roundProgressHeading{margin:0}
+  .gameMain>.roundProgress .roundProgressTrack{display:none}
+  .gameMain .handChoice .playing-card{width:68px;height:100px}
+  .gameMain .hand{max-height:126px}
+  .phase-bid .gameFelt,.phase-exchange .gameFelt,.phase-reveal .gameFelt{height:clamp(230px,calc(100dvh - 525px),280px)}
+}
