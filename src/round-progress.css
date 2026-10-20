@@ -8,3 +8,4 @@
 .roundProgressNumber{font-size:10px;opacity:.8}
 .roundProgressTrack strong{font-size:19px;line-height:1}
 .roundProgressUnit{grid-column:1/-1;font-size:10px}
+.roundProgressNotice{margin:5px 0 0;color:#e2c98c;font-size:12px;line-height:1.4}

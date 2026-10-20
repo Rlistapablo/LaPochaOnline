@@ -1,8 +1,8 @@
 import './round-progress.css';
 
-type Props = { round: number; schedule: number[]; finished: boolean };
+type Props = { round: number; schedule: number[]; finished: boolean; pendingRestart: boolean };
 
-export function RoundProgress({round, schedule, finished}: Props) {
+export function RoundProgress({round, schedule, finished, pendingRestart}: Props) {
   if (!schedule.length) return null;
   const next = schedule[round];
   return <section className="roundProgress" aria-label="Calendario de rondas">
@@ -17,5 +17,6 @@ export function RoundProgress({round, schedule, finished}: Props) {
         <span className="roundProgressUnit">{cards === 1 ? 'carta' : 'cartas'}</span>
       </li>)}
     </ol>
+    {pendingRestart && !finished && <p className="roundProgressNotice">Alguien se ha quedado sin vidas. Terminaremos todas las rondas antes de empezar una nueva partida.</p>}
   </section>;
 }
