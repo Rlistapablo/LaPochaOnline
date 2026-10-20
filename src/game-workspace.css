@@ -67,6 +67,16 @@
 .gameFelt .opponentVisibleCards .card-art-svg{max-width:30px;max-height:30px}
 .gameFelt .played{overflow:visible;flex-wrap:wrap;align-content:center;justify-content:center;gap:4px}
 .gameFelt .feltInner:has(.playedCard:nth-child(5)){min-height:165px}
+.gameFelt .felt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-width:0}
+.gameFelt .feltTrump{display:flex;align-items:center;justify-content:center;gap:12px;width:max-content;max-width:100%;min-height:64px;padding:5px 18px 5px 7px;border:2px solid #edc774;border-radius:18px;background:linear-gradient(130deg,#153629,#2b412a 56%,#17392c);box-shadow:0 0 0 4px #0b3e2c,0 0 22px #f5d27477,inset 0 1px #fff5bc50;color:#ffe7a2;z-index:1;animation:trumpEnter .35s ease-out}
+.gameFelt .feltTrumpArt{display:grid;place-items:center;width:54px;height:54px;flex:none;border-radius:13px;background:#f7edd5;box-shadow:inset 0 0 0 2px #c69b4e,0 2px 6px #0007}
+.gameFelt .feltTrumpArt .card-art-svg{width:46px;height:46px;max-width:none;max-height:none}
+.gameFelt .feltTrumpText{display:flex;flex-direction:column;align-items:flex-start;gap:1px;line-height:1.1;text-align:left}
+.gameFelt .feltTrumpText small{font-size:10px;letter-spacing:.12em;font-weight:800;color:#e3c987}
+.gameFelt .feltTrumpText strong{font:700 clamp(22px,2.8vw,32px) 'Playfair Display',serif;color:#fff2c5;text-shadow:0 2px 8px #0009}
+@keyframes trumpEnter{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@media(max-width:580px){.gameFelt .feltTrump{min-height:56px;gap:8px;padding:4px 12px 4px 5px}.gameFelt .feltTrumpArt{width:45px;height:45px}.gameFelt .feltTrumpArt .card-art-svg{width:39px;height:39px}.gameFelt .feltTrumpText small{font-size:8px}.gameFelt .feltTrumpText strong{font-size:23px}}
+@media(prefers-reduced-motion:reduce){.gameFelt .feltTrump{animation:none}}
 .gameMain .hand{display:flex;flex-wrap:wrap;justify-content:center;overflow:visible;max-height:none;gap:4px;padding:8px 2px 12px}
 .gameMain .hand.handDense .playing-card{width:56px;height:84px}
 .gameMain .hand.handVeryDense .playing-card{width:43px;height:64px}

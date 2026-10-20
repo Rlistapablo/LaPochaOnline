@@ -3,7 +3,7 @@ import type { Card, Value } from '../shared/game';
 
 type Suit = NonNullable<Card['suit']>;
 
-function SuitArt({ suit }: { suit: Suit }) {
+export function SuitArt({ suit }: { suit: Suit }) {
   if (suit === 'Oros') return <svg viewBox="0 0 100 100" aria-hidden="true" className="card-art-svg">
     <circle cx="50" cy="50" r="34" fill="#d7a83e" stroke="#89592d" strokeWidth="3" />
     <circle cx="50" cy="50" r="27" fill="none" stroke="#fff1ba" strokeWidth="2" />
