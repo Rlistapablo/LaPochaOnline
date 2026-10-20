@@ -15,7 +15,8 @@
     "smoke:production": "tsx scripts/production-smoke.ts",
     "smoke:restart": "tsx scripts/restart-smoke.ts",
     "smoke:pacing": "tsx scripts/pacing-smoke.ts",
-    "smoke:auto-restart": "tsx scripts/auto-restart-smoke.ts"
+    "smoke:auto-restart": "tsx scripts/auto-restart-smoke.ts",
+    "smoke:manual-finish": "tsx scripts/manual-finish-smoke.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
