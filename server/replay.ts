@@ -30,15 +30,30 @@ export async function finalizeReplay(g:Game){
 
 export async function listReplays(playerId:string,page:number){
   const offset=Math.max(0,Math.min(10000,page))*20;
-  const result=await pool.query('SELECT g.id,g.room_code,g.room_name,g.started_at,g.finished_at,g.winners,g.settings,g.cycle,gp.won FROM games g JOIN game_players gp ON gp.game_id=g.id WHERE gp.player_id=$1 ORDER BY g.finished_at DESC LIMIT 20 OFFSET $2',[playerId,offset]);
+  const result=await pool.query('SELECT g.id,g.room_code,g.room_name,g.started_at,g.finished_at,g.winners,g.settings,g.cycle,gp.won FROM games g JOIN game_players gp ON gp.game_id=g.id LEFT JOIN game_replays gr ON gr.game_id=g.id WHERE gp.player_id=$1 AND gr.available IS DISTINCT FROM false ORDER BY g.finished_at DESC LIMIT 20 OFFSET $2',[playerId,offset]);
   return result.rows;
 }
 
 export async function getReplay(gameId:string,playerId:string,isAdmin=false){
-  const found=await pool.query('SELECT g.*,EXISTS(SELECT 1 FROM game_players gp WHERE gp.game_id=g.id AND gp.player_id=$2) participant FROM games g WHERE g.id=$1',[gameId,playerId]);
+  const found=await pool.query('SELECT g.*,EXISTS(SELECT 1 FROM game_players gp WHERE gp.game_id=g.id AND gp.player_id=$2) participant FROM games g LEFT JOIN game_replays gr ON gr.game_id=g.id WHERE g.id=$1 AND gr.available IS DISTINCT FROM false',[gameId,playerId]);
   const game=found.rows[0];
   if(!game||(!isAdmin&&!game.participant&&game.settings?.private!==false))throw Error('Repetición no disponible');
   const players=(await pool.query('SELECT player_id,name,avatar,is_bot,bot_difficulty,lives_start,lives_end,eliminated,won FROM game_players WHERE game_id=$1',[gameId])).rows;
   const events=(await pool.query('SELECT sequence,type,player_id,data,occurred_at FROM game_events WHERE room_code=$1 AND match_cycle=$2 ORDER BY sequence',[game.room_code,game.cycle])).rows;
   return {game,players,events};
+}
+
+export async function deleteReplay(gameId:string,playerId:string,isAdmin=false){
+  const client=await pool.connect();
+  try{
+    await client.query('BEGIN');
+    const found=await client.query<{room_code:string;cycle:number;participant:boolean}>('SELECT g.room_code,g.cycle,EXISTS(SELECT 1 FROM game_players gp WHERE gp.game_id=g.id AND gp.player_id=$2) participant FROM games g LEFT JOIN game_replays gr ON gr.game_id=g.id WHERE g.id=$1 AND gr.available IS DISTINCT FROM false FOR UPDATE OF g',[gameId,playerId]);
+    const game=found.rows[0];
+    if(!game)throw Error('Repetición no disponible');
+    if(!game.participant&&!isAdmin)throw Error('No puedes borrar esta repetición');
+    await client.query('DELETE FROM game_events WHERE room_code=$1 AND match_cycle=$2',[game.room_code,game.cycle]);
+    await client.query('DELETE FROM game_snapshots WHERE room_code=$1 AND match_cycle=$2',[game.room_code,game.cycle]);
+    await client.query('INSERT INTO game_replays(game_id,available,event_count) VALUES($1,false,0) ON CONFLICT(game_id) DO UPDATE SET available=false,event_count=0',[gameId]);
+    await client.query('COMMIT');
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
 }

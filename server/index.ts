@@ -10,7 +10,7 @@ import { pool, migrate, saveRoom, loadRooms, deleteRoom } from './db.js';
 import { resolve } from 'node:path';
 import { Game, Settings, createGame, addPlayer, start, bid, play, advance, rematch, finishGame, cancelGame, view, recordEvent } from '../shared/game.js';
 import { runBotTurn } from './bot.js';
-import {finalizeReplay,listReplays,getReplay} from './replay.js';
+import {finalizeReplay,listReplays,getReplay,deleteReplay} from './replay.js';
 
 if(!process.env.JWT_SECRET||process.env.JWT_SECRET.length<32)throw Error('JWT_SECRET debe tener al menos 32 caracteres');
 const origin=process.env.CLIENT_ORIGIN||new URL(process.env.PUBLIC_APP_URL||'http://localhost:5173').origin;
@@ -32,6 +32,7 @@ const adminIds=new Set((process.env.ADMIN_USER_IDS||'').split(',').map(id=>id.tr
 app.get('/api/admin/status',(req,res)=>{try{const u=auth(req.header('authorization'));res.json({admin:adminIds.has(u.id)});}catch(e){error(res,e);}});
 app.get('/api/replays',async(req,res)=>{try{const u=auth(req.header('authorization'));res.json(await listReplays(u.id,Number(req.query.page)||0));}catch(e){error(res,e);}});
 app.get('/api/replays/:id',async(req,res)=>{try{const u=auth(req.header('authorization'));res.json(await getReplay(String(req.params.id),u.id,adminIds.has(u.id)));}catch(e){error(res,e);}});
+app.delete('/api/replays/:id',async(req,res)=>{try{const u=auth(req.header('authorization'));await deleteReplay(String(req.params.id),u.id,adminIds.has(u.id));res.json({ok:true});}catch(e){error(res,e);}});
 app.get('/api/admin/rooms',(req,res)=>{try{const u=auth(req.header('authorization'));if(!adminIds.has(u.id))throw Error('Solo administradores');res.json(publicRooms());}catch(e){error(res,e);}});
 app.delete('/api/admin/rooms/:code',async(req,res)=>{let code='';try{const u=auth(req.header('authorization'));if(!adminIds.has(u.id))throw Error('Solo administradores');code=String(req.params.code).toUpperCase();endRequests.add(code);await serialized(code,async()=>{const g=rooms.get(code);if(!g)throw Error('Sala no encontrada');await closePublicRoom(g,u.id);});res.json({ok:true});}catch(e){error(res,e);}finally{if(code)endRequests.delete(code);}});
 app.post('/api/recovery',async(req,res)=>{try{const email=String(req.body.email||'').toLowerCase();const q=await pool.query('SELECT id FROM users WHERE email=$1',[email]);if(q.rows[0]){const t=randomBytes(32).toString('hex');await pool.query('INSERT INTO password_resets VALUES($1,$2,now()+interval \'30 minutes\')',[createHash('sha256').update(t).digest('hex'),q.rows[0].id]);if(process.env.SMTP_HOST){const nodemailer=await import('nodemailer');const transport=nodemailer.default.createTransport({host:process.env.SMTP_HOST,port:Number(process.env.SMTP_PORT||587),auth:{user:process.env.SMTP_USER,pass:process.env.SMTP_PASS}});await transport.sendMail({from:process.env.SMTP_FROM,to:email,subject:'Recuperar contraseña · La Pocha',text:`Abre ${(process.env.PUBLIC_APP_URL||process.env.CLIENT_ORIGIN||"http://localhost:5173").replace(/\/$/,"")}/?reset=${t}`});}}res.json({ok:true});}catch(e){error(res,e);}});
