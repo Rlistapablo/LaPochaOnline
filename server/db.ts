@@ -21,10 +21,22 @@ export async function saveRoom(g:Game){
   const client=await pool.connect();
   try{await client.query('BEGIN');
     g.updatedAt=new Date().toISOString();
-    await client.query(`INSERT INTO rooms(code,host_id,private,status,settings,state,version,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,now()) ON CONFLICT(code) DO UPDATE SET host_id=EXCLUDED.host_id,private=EXCLUDED.private,status=EXCLUDED.status,settings=EXCLUDED.settings,state=EXCLUDED.state,version=EXCLUDED.version,updated_at=now()`,[g.code,g.hostId,g.settings.private,g.phase,JSON.stringify(g.settings),JSON.stringify(g),g.version]);
+    const state=JSON.stringify({...g,pendingEvents:[],pendingOperations:[]});
+    await client.query(`INSERT INTO rooms(code,host_id,private,status,settings,state,version,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,now()) ON CONFLICT(code) DO UPDATE SET host_id=EXCLUDED.host_id,private=EXCLUDED.private,status=EXCLUDED.status,settings=EXCLUDED.settings,state=EXCLUDED.state,version=EXCLUDED.version,updated_at=now()`,[g.code,g.hostId,g.settings.private,g.phase,JSON.stringify(g.settings),state,g.version]);
+    await client.query(`INSERT INTO room_settings(room_code,settings,joker_count) VALUES($1,$2,$3) ON CONFLICT(room_code) DO UPDATE SET settings=EXCLUDED.settings,joker_count=EXCLUDED.joker_count,updated_at=now()`,[g.code,JSON.stringify(g.settings),g.settings.jokerCount??2]);
     await client.query('DELETE FROM room_players WHERE room_code=$1',[g.code]);
     for(const [seat,p] of g.players.entries()){const user=(await client.query('SELECT id FROM users WHERE id=$1',[p.id])).rows[0]?.id??null;await client.query('INSERT INTO room_players(room_code,player_id,user_id,name,avatar,seat,is_bot,connected,ready,eliminated) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',[g.code,p.id,user,p.name,p.avatar,seat,!!p.bot,p.connected,p.ready,p.eliminated]);}
+    await client.query('DELETE FROM bot_profiles WHERE room_code=$1',[g.code]);
+    for(const p of g.players.filter(p=>p.bot))await client.query('INSERT INTO bot_profiles(room_code,player_id,name,avatar,difficulty) VALUES($1,$2,$3,$4,$5)',[g.code,p.id,p.name,p.avatar,p.bot]);
+    for(const event of g.pendingEvents??[]){
+      await client.query('INSERT INTO game_events(room_code,match_cycle,sequence,type,player_id,data,occurred_at) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT DO NOTHING',[g.code,g.cycle,event.sequence,event.type,event.playerId??null,JSON.stringify(event.data),event.at]);
+      if(event.type==='room_created'||event.type==='settings_changed')await client.query('INSERT INTO room_audit_log(room_code,actor_id,action,data,occurred_at) VALUES($1,$2,$3,$4,$5)',[g.code,event.playerId??null,event.type,JSON.stringify(event.data),event.at]);
+    }
+    for(const operationId of g.pendingOperations??[])await client.query('INSERT INTO room_operations(room_code,match_cycle,operation_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[g.code,g.cycle,operationId]);
+    if((g.pendingEvents?.length??0)>0&&Math.floor((g.eventSeq??0)/25)>Math.floor(((g.eventSeq??0)-(g.pendingEvents?.length??0))/25))await client.query('INSERT INTO game_snapshots(room_code,match_cycle,sequence,state) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[g.code,g.cycle,g.eventSeq,state]);
     await client.query('COMMIT');
+    g.pendingEvents=[];
+    g.pendingOperations=[];
   }catch(e){await client.query('ROLLBACK');throw e;}finally{client.release();}
 }
 export async function deleteRoom(code:string){await pool.query('DELETE FROM rooms WHERE code=$1',[code]);}

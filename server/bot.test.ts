@@ -8,6 +8,7 @@ it('bots de tres niveles completan partidas usando las mismas transiciones',()=>
 it('el bot difícil usa las cartas visibles del rival en la predicción oculta',()=>{
  const settings:Settings={name:'test',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'hidden',bots:1,difficulty:'hard',turnSeconds:30,sounds:false};
  const g=createGame('HIDDEN',{id:'human',name:'Humano',avatar:'🃏',connected:true},settings);addPlayer(g,{id:'bot',name:'Bot',avatar:'🤖',connected:true,bot:'hard'});start(g);
+ g.firstIndex=0;g.turnIndex=0;
  const ace=makeDeck().find(card=>card.id==='Oros_As')!;const old=g.players[0].hand[0];if(old.id!==ace.id){g.players[0].hand[0]=ace;const index=g.deck.findIndex(card=>card.id===ace.id);if(index>=0)g.deck[index]=old;else g.players[1].hand[0]=old;}
  bid(g,'human',0,g.version);expect(chooseBotBid(g,g.players[1])).toBe(0);
 });

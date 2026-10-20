@@ -1,6 +1,6 @@
 # La Pocha Online
 
-Juego multijugador de La Pocha con 42 cartas, predicciones, comodines, bots, salas públicas y privadas, cuentas e historial. React y Socket.IO presentan la partida; Node valida cada acción; PostgreSQL guarda salas, partidas y resultados.
+Juego multijugador de La Pocha con 40 cartas españolas y entre 0 y 20 comodines configurables, predicciones, bots personalizables, salas públicas y privadas, cuentas e historial con repetición de partidas. React y Socket.IO presentan la partida; Node valida cada acción; PostgreSQL guarda salas, eventos, partidas y resultados.
 
 ## Inicio rápido (Ubuntu o Debian)
 
@@ -49,9 +49,14 @@ npm run smoke:production # frontend compilado y API en un solo proceso
 npm run smoke:pacing # ritmo de los bots, revelado e historial de cartas
 npm run smoke:auto-restart # eliminación, guardado y reinicio automático
 npm run smoke:manual-finish # cierre del anfitrión, guardado y revancha
+npm run smoke:advanced # permisos de mesas, bots, comodines, idempotencia y repetición
 ```
 
 `simulate` ejecuta 10.000 partidas y comprueba la integridad de la baraja. `smoke` crea usuarios de prueba y juega una partida con dos WebSockets. Las cuentas de prueba persisten hasta borrarlas manualmente. `npm run db:seed` crea una cuenta de desarrollo e imprime una contraseña temporal; nunca se ejecuta automáticamente ni en producción.
+
+La mesa muestra el orden de predicción y jugada, las bazas y vidas de cada jugador, un panel lateral con historial y una interfaz táctil con confirmación de carta. Las rondas siguen `X → … → 1 → … → X → X−1 → …` hasta que queda un jugador con vidas o todos pierden la última vida a la vez. Los jugadores eliminados observan sin recibir cartas ocultas. Las partidas terminadas se consultan en **Repeticiones**; las partidas privadas solo son visibles para sus participantes.
+
+El anfitrión puede editar nombre, avatar y dificultad de los bots antes de empezar, y cerrar una mesa pública con **Eliminar mesa**. Para habilitar el panel **Moderación**, configura `ADMIN_USER_IDS` con los UUID de los administradores separados por comas. El servidor verifica estos permisos.
 
 ## Documentación
 

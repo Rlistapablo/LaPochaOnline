@@ -25,11 +25,12 @@ try{
   await emit(a,'action',{code:botsRoom,type:'ready',version:stateA.version});
   await emit(a,'action',{code:botsRoom,type:'start',version:stateA.version});
   const beforeBidVersion=stateA.version;
+  const previousBotBids=stateA.players.filter((p:any)=>p.bot).map((p:any)=>p.bid);
   const pendingBid=emit(a,'action',{code:botsRoom,type:'bid',value:0,version:beforeBidVersion});
   await new Promise(resolve=>setTimeout(resolve,100));
   const pendingFinish=emit(a,'action',{code:botsRoom,type:'finish',version:beforeBidVersion+1});
   const [bidResult,finishResult]=await Promise.all([pendingBid,pendingFinish]);
-  if(!bidResult.ok||!finishResult.ok||stateA.phase!=='finished'||stateA.players.filter((p:any)=>p.bot).some((p:any)=>p.bid!==undefined))throw Error('El cierre no interrumpió los turnos pendientes de bots');
+  if(!bidResult.ok||!finishResult.ok||stateA.phase!=='finished'||JSON.stringify(stateA.players.filter((p:any)=>p.bot).map((p:any)=>p.bid))!==JSON.stringify(previousBotBids))throw Error('El cierre no interrumpió los turnos pendientes de bots');
   console.log('Cierre manual: solo anfitrión, resultado guardado sin clasificación competitiva, revancha e interrupción de bots correctos.');
   a.emit('leave',code);b.emit('leave',code);
   a.emit('leave',botsRoom);

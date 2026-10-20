@@ -1,4 +1,4 @@
-import {Game,Player,VALUES,Value,Card,allowedBids,bid,play,view,isJoker,rank,makeDeck,active} from '../shared/game.js';
+import {Game,Player,VALUES,Value,Card,allowedBids,bid,play,view,isJoker,rank,makeDeck,active,jokerCount} from '../shared/game.js';
 
 type Option={card:Card;value?:Value;rank:number};
 const cardRank=(card:Card)=>isJoker(card)?VALUES.length-1:VALUES.indexOf(card.value!);
@@ -8,7 +8,7 @@ const cardRank=(card:Card)=>isJoker(card)?VALUES.length-1:VALUES.indexOf(card.va
 function unseen(g:Game,p:Player){
   const visible=view(g,p.id).players.flatMap(player=>(player.hand||[]).filter((card):card is Card=>!!card));
   const seen=new Set([...visible,...g.used,...g.table.map(item=>item.card)].map(card=>card.id));
-  return makeDeck().filter(card=>!seen.has(card.id));
+  return makeDeck(jokerCount(g.settings)).filter(card=>!seen.has(card.id));
 }
 
 function chanceToWin(r:number,unknown:Card[],before:number,after:number,tableRank=-1){

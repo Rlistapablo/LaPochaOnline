@@ -18,7 +18,7 @@ try{
  for(let i=0;i<2;i++){const v=va.turnId===a.user.id?va:vb,s=v.turnId===a.user.id?sa:sb;[va,vb]=await act(s,'bid',v.version,v.allowedBids[0]);}
  for(let i=0;i<2;i++){const v=va.turnId===a.user.id?va:vb,s=v.turnId===a.user.id?sa:sb;const card=v.players.find((p:any)=>p.id===v.turnId).hand[0];[va,vb]=await act(s,'play',v.version,{cardId:card.id,...(card.id.startsWith('joker')?{declaredValue:'As'}:{})});}
  if(!['roundEnd','finished'].includes(va.phase)||va.players.some((p:any)=>p.lives<0))throw Error('Resultado inválido');
- if(va.phase==='roundEnd')[va,vb]=await act(sa,'advance',va.version);
+ if(va.phase==='roundEnd')[va,vb]=await act(sa,'finish',va.version);
  if(va.phase!=='finished'||!va.winners.length)throw Error('Partida sin ganador');
  [va,vb]=await act(sa,'rematch',va.version);
  if(va.phase!=='lobby'||va.cycle!==1)throw Error('Revancha no iniciada');

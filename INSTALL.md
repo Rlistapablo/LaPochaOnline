@@ -34,6 +34,8 @@ npm run db:migrate
 
 `npm run db:seed` crea una cuenta de desarrollo con contraseña temporal, mostrada una vez en la consola. No se ejecuta automáticamente y está bloqueado en producción. Las demás cuentas se crean desde el registro.
 
+Las migraciones `002_advanced.sql` y `003_operations.sql` amplían el esquema existente sin eliminar cuentas ni partidas. En una instalación existente, haz una copia con `pg_dump` antes de actualizar, ejecuta `npm run db:migrate` y después `npm run build`. El migrador registra cada archivo aplicado en `schema_migrations` y no repite los ya aplicados. Para el panel de moderación, añade `ADMIN_USER_IDS=uuid1,uuid2` a `.env` con los identificadores de cuentas registradas.
+
 ## 4. Desarrollo
 
 ```bash

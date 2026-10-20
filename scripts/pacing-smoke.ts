@@ -19,13 +19,17 @@ try{
   await emit('action',{code,type:'bid',value:started.state.allowedBids[0],version:started.state.version});
   const playing=await waitFor(s=>s.phase==='play'&&s.turnId===guest.user.id,bidIndex);
   const card=playing.state.players.find((p:any)=>p.id===guest.user.id).hand[0];
+  const botLed=playing.state.table.length===1;
+  const botLeadStart=states.slice(bidIndex).find(x=>x.state.phase==='play'&&x.state.table.length===0);
+  const botFirst=botLed?states.slice(bidIndex).find(x=>x.state.phase==='play'&&x.state.table.length===1):undefined;
   const playIndex=states.length;
   await emit('action',{code,type:'play',value:{cardId:card.id,...(card.id.startsWith('joker')?{declaredValue:'As'}:{})},version:playing.state.version});
-  const first=await waitFor(s=>s.table.length===1,playIndex);
+  const first=botLed?botFirst:await waitFor(s=>s.table.length===1,playIndex);
   const completed=await waitFor(s=>s.lastTrick&&s.tricks.length===1,playIndex);
-  if(completed.at-first.at<900)throw Error('La carta del bot apareció demasiado rápido');
+  if(!first||(botLed?(!botLeadStart||first.at-botLeadStart.at<900):completed.at-first.at<900))throw Error('La carta del bot apareció demasiado rápido');
   if(completed.state.revealUntil-completed.at<2400)throw Error('La baza no permanece visible');
-  if(completed.state.tricks[0].plays.length!==2||completed.state.tricks[0].plays[0].playerId!==guest.user.id)throw Error('Orden de cartas incorrecto');
+  const expectedFirst=botLed?completed.state.players.find((p:any)=>p.bot)?.id:guest.user.id;
+  if(completed.state.tricks[0].plays.length!==2||completed.state.tricks[0].plays[0].playerId!==expectedFirst)throw Error('Orden de cartas incorrecto');
   console.log('Cartas de bots espaciadas, baza visible y orden de jugadas correctos.');
   socket.emit('leave',code);
 }finally{socket.disconnect();}
