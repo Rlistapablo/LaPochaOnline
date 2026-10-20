@@ -4,3 +4,46 @@
 .modeBadges{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}.modeBadges span{border:1px solid #bfa366;border-radius:20px;background:#294935;color:#f4d893;padding:8px 13px;font-size:12px;font-weight:700;animation:modeAppear .35s ease-out}.modeBadges .trumpBadge{background:#5b4322;box-shadow:0 0 18px #d6ae4d55}.opponentVisibleCards{display:flex;max-width:100%;overflow-x:auto;gap:2px;padding:5px 1px}.opponentVisibleCards .playing-card{width:34px;height:50px;flex:none}.opponentVisibleCards .card-caption{display:none}.opponentVisibleCards .card-art-svg{max-width:24px;max-height:24px}.modeAction,.specialActions{margin-top:20px;animation:modeAppear .35s ease-out}.modeAction h2,.specialActions h2{font-size:24px}.modeAction .primary{margin-top:8px}.modeAction small{color:#d9c484}.specialActions{display:grid;gap:16px}.specialActions>div{border-top:1px solid #ffffff20;padding-top:10px}.specialActions select{max-width:290px;margin-right:8px}.specialActions .secondary{margin-top:8px}.shuffleChoices{display:flex;flex-wrap:wrap;gap:9px}.shuffleChoices label{display:flex;align-items:center;gap:5px;border:1px solid #567155;border-radius:9px;padding:7px 10px;font-size:12px}.shuffleChoices input{width:17px;height:17px;min-width:17px;accent-color:#d6b46b}@keyframes modeAppear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@media(max-width:650px){.specialActions select{width:100%;max-width:none}.opponentVisibleCards .playing-card{width:29px;height:42px}.modeBadges span{font-size:10px}}
 .offerChoice{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.offerChoice select{max-width:260px}.offerChoice .secondary{white-space:nowrap}@media(max-width:650px){.offerChoice select,.offerChoice .secondary{width:100%;max-width:none}}
 .handChoice,.opponentVisibleCards .playing-card{animation:dealCard .28s ease-out both}.modeBadges .trumpBadge{animation:trumpGlow 2.6s ease-in-out infinite}@keyframes dealCard{from{opacity:0;transform:translateY(12px) rotate(-3deg)}to{opacity:1;transform:translateY(0) rotate(0)}}@keyframes trumpGlow{0%,100%{box-shadow:0 0 8px #d6ae4d55}50%{box-shadow:0 0 20px #e5bd67aa}}@media(prefers-reduced-motion:reduce){.handChoice,.opponentVisibleCards .playing-card,.modeBadges .trumpBadge,.modeAction,.specialActions{animation:none}}
+
+.gameRail{min-width:0}.gameRail .specialActions{margin-top:12px}
+@media(min-width:901px){
+  .gamePage{padding-top:16px}
+  .gamePage .roomTop{margin-bottom:12px}
+  .gamePage .roomTop h1{font-size:clamp(27px,2.6vw,36px);margin-top:3px}
+  .gamePage .roomTopActions{flex-wrap:wrap;justify-content:flex-end}
+  .gameStatus{margin:0 0 9px;align-items:center}
+  .gameStatus h2{font-size:24px;margin-top:2px}
+  .gameTurnMessage{padding:7px 11px}
+  .modeBadges{margin:0 0 9px}
+  .gameLayout{grid-template-columns:minmax(0,1fr) minmax(265px,29%);gap:14px}
+  .gameRail{position:sticky;top:90px;height:calc(100dvh - 105px);display:flex;flex-direction:column;gap:12px;min-height:0}
+  .gameSidebar{position:static;top:auto;max-height:none;min-height:90px;flex:1;overflow-y:auto}
+  .gameRail .specialActions{flex:none;max-height:45dvh;overflow-y:auto;margin:0;padding:16px}
+  .gameRail .specialActions h2{font-size:20px;margin-bottom:6px}
+  .gameRail .specialActions p{font-size:12px;margin:0 0 8px}
+  .gameRail .specialActions select{width:100%;max-width:none;margin:0}
+  .gameRail .specialActions .secondary{width:100%;margin-top:8px}
+  .gameMain>.roundProgress{margin:0 0 9px;padding:7px 11px}
+  .gameMain>.roundProgress .roundProgressHeading{margin-bottom:5px}
+  .gameMain>.roundProgress .roundProgressTrack{gap:5px;padding-bottom:2px}
+  .gameMain>.roundProgress .roundProgressTrack li{flex-basis:44px;min-width:44px;padding:5px 6px}
+  .gameMain>.roundProgress .roundProgressTrack strong{font-size:15px}
+  .gameMain>.roundProgress .roundProgressUnit{display:none}
+  .gameFelt{height:clamp(290px,calc(100dvh - 470px),390px);min-height:0;padding:14px 20px 12px;border-width:9px}
+  .phase-bid .gameFelt,.phase-exchange .gameFelt,.phase-reveal .gameFelt{height:clamp(245px,calc(100dvh - 530px),320px)}
+  .gameFelt .feltInner{min-height:85px}
+  .gameFelt .seat{padding:3px;min-width:75px}
+  .gameFelt .seat .playerAvatar{width:29px;height:29px;font-size:15px;margin-top:0}
+  .gameFelt .mySeat{padding:5px 12px}
+  .gameMain .actionPanel,.gameMain .modeAction{margin-top:8px;padding:12px 15px}
+  .gameMain .actionPanel h2,.gameMain .modeAction h2{font-size:19px;margin-bottom:3px}
+  .gameMain .actionPanel p,.gameMain .modeAction p{font-size:12px;margin:0 0 7px}
+  .gameMain .bidOptions{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;gap:6px}
+  .gameMain .bidOptions button{flex:none;min-width:37px;height:36px}
+  .gameMain .handArea{margin-top:7px}
+  .gameMain .handArea p{margin:0;font-size:12px}
+  .gameMain .hand{max-height:140px;overflow-x:auto;justify-content:safe center;gap:4px;padding:7px 6px 17px}
+  .gameMain .handChoice .playing-card{width:clamp(59px,6vw,78px);height:clamp(89px,9vw,116px)}
+  .gameMain .playConfirm{padding:2px 0 6px}
+}
+@media(max-width:900px){.gameRail .specialActions{margin-top:18px}}
