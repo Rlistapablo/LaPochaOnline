@@ -71,3 +71,12 @@ it('muestra una oferta rechazada sin cambiar las manos',()=>{
   expect(scenes[2].title).toContain('rechaza el intercambio');
   expect(scenes[2].hands).toEqual(scenes[0].hands);
 });
+it('muestra un intercambio omitido antes de predecir',()=>{
+  const skipped:ReplayData={...replay,events:[
+    event(1,'round_started',{roundIndex:0,wave:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3}}),
+    event(2,'exchange_skipped',{roundIndex:0},'a'),
+  ]};
+  const scenes=buildReplayTimeline(skipped);
+  expect(scenes[1].title).toContain('pasa el intercambio');
+  expect(scenes[1].hands).toEqual(scenes[0].hands);
+});

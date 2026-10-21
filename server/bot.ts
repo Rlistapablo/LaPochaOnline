@@ -182,7 +182,10 @@ export function runBotTurn(g:Game){
     const p=preparationActor(g);if(!p?.bot)return false;
     if(g.phase==='exchange'){
       const pair=g.exchangePairs?.[0];
-      if(!pair?.b)offerExchange(g,p.id,chooseExchangeTarget(g,p).id);
+      if(!pair?.b){
+        if(shouldDeclineExchange(g,p))declineExchange(g,p.id);
+        else offerExchange(g,p.id,chooseExchangeTarget(g,p).id);
+      }
       else if(pair.b===p.id&&shouldDeclineExchange(g,p))declineExchange(g,p.id);
       else selectExchange(g,p.id,p.bot==='easy'?[...p.hand].sort(()=>Math.random()-0.5).slice(0,Math.min(g.settings.modes?.exchangeCount||1,g.cardsPerPlayer)).map(c=>c.id):lowCards(g,p,Math.min(g.settings.modes?.exchangeCount||1,g.cardsPerPlayer)));
     }else selectReveal(g,p.id,p.bot==='easy'?[...p.hand].sort(()=>Math.random()-0.5).slice(0,Math.ceil(g.cardsPerPlayer*(g.settings.modes?.revealPercent||0)/100)).map(c=>c.id):lowCards(g,p,Math.ceil(g.cardsPerPlayer*(g.settings.modes?.revealPercent||0)/100)));

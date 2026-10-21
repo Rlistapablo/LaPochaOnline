@@ -6,9 +6,11 @@ import {addPlayer,createGame,offerExchange,start,view,type Settings} from '../sh
 
 it('ofrece los modos en la creación y muestra el intercambio antes de predecir',()=>{
   const form=renderToStaticMarkup(<ModeSettings modes={{}} onChange={()=>{}}/>);
-  expect(form).toContain('Intercambiar cada X ciclos');
+  expect(form).toContain('Ofrecer intercambio cada X ciclos');
+  expect(form).toContain('Recompensas por racha');
+  expect(form).not.toContain('Un robo cada X rondas');
   expect(form).toContain('Vidas infinitas');
-  expect(form).toContain('Ver rivales, no la propia mano');
+  expect(form).toContain('Ves rivales, no tu mano');
   const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:2,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes:{exchangeEveryWaves:1,trump:true}};
   const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);addPlayer(game,{id:'b',name:'Beto',avatar:'🃏',connected:true});start(game);
   const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
@@ -16,6 +18,7 @@ it('ofrece los modos en la creación y muestra el intercambio antes de predecir'
   expect(html).toContain('Triunfo:');
   expect(html).toContain('Información');
   const owner=game.exchangePairs![0].a,guest=game.players.find(player=>player.id!==owner)!.id;
+  expect(renderToStaticMarkup(<GameWorkspace game={view(game,owner)} userId={owner} action={()=>{}}/>)).toContain('No intercambiar');
   offerExchange(game,owner,guest);
   expect(renderToStaticMarkup(<GameWorkspace game={view(game,guest)} userId={guest} action={()=>{}}/>)).toContain('Rechazar intercambio');
   expect(renderToStaticMarkup(<GameWorkspace game={view(game,owner)} userId={owner} action={()=>{}}/>)).not.toContain('Rechazar intercambio');

@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {active,addPlayer,advance,assertIntegrity,bid,configuredDeck,createGame,declineExchange,offerExchange,play,preparationActor,reshuffleHands,selectExchange,selectReveal,start,stealCard,trickWinnerWithTrump,validateModes,view,type Game,type Modes,type Settings} from './game';
+import {active,addPlayer,advance,assertIntegrity,bid,configuredDeck,createGame,declineExchange,finishGame,normalizeModes,offerExchange,play,preparationActor,rematch,reshuffleHands,selectExchange,selectReveal,start,stealCard,trickWinnerWithTrump,validateModes,view,type Game,type Modes,type Settings} from './game';
 
 const settings=(modes:Modes):Settings=>({name:'Modos',private:true,maxPlayers:3,maxCards:1,jokerCount:2,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes});
 function game(modes:Modes,players=2){const g=createGame('MODOS',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings(modes));addPlayer(g,{id:'b',name:'Beto',avatar:'🃏',connected:true});if(players===3)addPlayer(g,{id:'c',name:'Cora',avatar:'🃏',connected:true});start(g);return g;}
@@ -32,6 +32,18 @@ it('el invitado puede rechazar el intercambio sin mover cartas y seguir a la rev
   expect(()=>declineExchange(accepted,b.id)).toThrow();
 });
 
+it('permite al oferente omitir el intercambio y empezar la predicción sin cambiar cartas',()=>{
+  const g=game({exchangeEveryWaves:1,revealPercent:50});
+  const owner=g.exchangePairs![0].a;
+  const before=g.players.map(p=>p.hand.map(card=>card.id));
+  declineExchange(g,owner);
+  expect(g.phase).toBe('reveal');
+  expect(g.players.map(p=>p.hand.map(card=>card.id))).toEqual(before);
+  expect(g.pendingEvents?.some(event=>event.type==='exchange_skipped'&&event.playerId===owner)).toBe(true);
+  for(const p of g.players)selectReveal(g,p.id,[p.hand[0].id]);
+  expect(g.phase).toBe('bid');
+});
+
 it('muestra solo las cartas elegidas y aplica las tres visiones al predecir',()=>{
   const g=game({revealPercent:50});expect(g.phase).toBe('reveal');
   for(const p of g.players)selectReveal(g,p.id,[p.hand[0].id]);
@@ -59,9 +71,34 @@ it('mantiene las cartas rivales visibles hasta la ultima prediccion, aunque el e
 });
 
 it('roba sin ver la carta rival y redistribuye solo las manos restantes',()=>{
-  const g=game({stealResetRounds:2,reshuffleEveryWaves:1});const [a,b]=g.players,fromA=a.hand[0],fromB=b.hand[0];
-  expect(a.steals).toBe(1);stealCard(g,a.id,b.id,fromA.id);expect(a.hand[0]).toEqual(fromB);expect(b.hand[0]).toEqual(fromA);expect(a.steals).toBe(0);
-  const owner=active(g).find(p=>p.reshuffles)!;reshuffleHands(g,owner.id,[a.id,b.id]);expect(owner.reshuffles).toBe(0);assertIntegrity(g);
+  const g=game({stealWinStreak:2,reshuffleWinStreak:2});const [a,b]=g.players,fromA=a.hand[0],fromB=b.hand[0];
+  a.steals=1;expect(a.steals).toBe(1);stealCard(g,a.id,b.id,fromA.id);expect(a.hand[0]).toEqual(fromB);expect(b.hand[0]).toEqual(fromA);expect(a.steals).toBe(0);
+  a.reshuffles=1;reshuffleHands(g,a.id,[a.id,b.id]);expect(a.reshuffles).toBe(0);assertIntegrity(g);
+});
+
+it('entrega poderes solo tras rachas de predicciones exactas y los limpia en la revancha',()=>{
+  const g=game({stealWinStreak:2,reshuffleWinStreak:2});
+  const target=g.players[0];
+  expect(g.players.every(p=>!p.steals&&!p.reshuffles)).toBe(true);
+  const round=(makeExact:boolean)=>{
+    const order=[g.players[g.firstIndex],g.players[1-g.firstIndex]];
+    const winner=trickWinnerWithTrump(order.map(p=>({playerId:p.id,card:p.hand[0],declaredValue:p.hand[0].id.startsWith('joker')?'2':undefined})),g.trumpSuit);
+    const bidValue=Number((winner===target.id)===makeExact);
+    while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,bidValue,g.version);
+    while(g.phase==='play'){const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}
+  };
+  round(true);
+  expect(target.cleanRounds).toBe(1);
+  expect(target.steals).toBeFalsy();expect(target.reshuffles).toBeFalsy();
+  advance(g,g.version);round(true);
+  expect(target.cleanRounds).toBe(2);
+  expect(target.steals).toBe(1);expect(target.reshuffles).toBe(1);
+  advance(g,g.version);round(false);
+  expect(target.cleanRounds).toBe(0);
+  expect(target.steals).toBe(1);expect(target.reshuffles).toBe(1);
+  finishGame(g,'a',g.version);rematch(g);
+  expect(g.players.every(p=>!p.steals&&!p.reshuffles&&!p.cleanRounds)).toBe(true);
+  expect(normalizeModes({stealWinStreak:2,reshuffleWinStreak:2})).toMatchObject({stealWinStreak:2,reshuffleWinStreak:2});
 });
 
 it('crea barajas especiales, reconoce triunfo y rechaza combinaciones imposibles',()=>{

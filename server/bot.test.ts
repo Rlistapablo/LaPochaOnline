@@ -30,12 +30,12 @@ it('el bot difícil gana con comodín cuando necesita la última baza',()=>{
  const choice=chooseBotPlay(g,g.players[1]);expect(choice.card.id).toBe('joker_1');expect(choice.value).toBe('As');
 });
 it('los bots resuelven intercambio y revelación antes de jugar con triunfo',()=>{
- const settings:Settings={name:'modos',private:true,maxPlayers:2,maxCards:2,lives:3,penalty:'normal',oneCard:'visible',bots:2,difficulty:'normal',turnSeconds:30,sounds:false,modes:{exchangeEveryWaves:1,exchangeCount:1,revealPercent:50,trump:true,deck:'figures',stealResetRounds:1,reshuffleEveryWaves:1}};
+ const settings:Settings={name:'modos',private:true,maxPlayers:2,maxCards:2,lives:3,penalty:'normal',oneCard:'visible',bots:2,difficulty:'normal',turnSeconds:30,sounds:false,modes:{exchangeEveryWaves:1,exchangeCount:1,revealPercent:50,trump:true,deck:'figures',stealWinStreak:1,reshuffleWinStreak:1}};
  const g=createGame('MODBOT',{id:'a',name:'A',avatar:'🤖',connected:true,bot:'normal'},settings);addPlayer(g,{id:'b',name:'B',avatar:'🤖',connected:true,bot:'hard'});start(g);
- expect(g.phase).toBe('exchange');runBots(g);expect(['roundEnd','finished']).toContain(g.phase);expect(g.pendingEvents?.some(event=>['cards_exchanged','exchange_declined'].includes(event.type))).toBe(true);expect(g.pendingEvents?.some(event=>event.type==='cards_revealed')).toBe(true);assertIntegrity(g);
+ expect(g.phase).toBe('exchange');runBots(g);expect(['roundEnd','finished']).toContain(g.phase);expect(g.pendingEvents?.some(event=>['cards_exchanged','exchange_declined','exchange_skipped'].includes(event.type))).toBe(true);expect(g.pendingEvents?.some(event=>event.type==='cards_revealed')).toBe(true);assertIntegrity(g);
 });
 it('un bot a ciegas espera a la jugada para usar un robo',()=>{
- const settings:Settings={name:'ciego',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:2,difficulty:'normal',turnSeconds:30,sounds:false,modes:{vision:'blind',stealResetRounds:1}};
+ const settings:Settings={name:'ciego',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:2,difficulty:'normal',turnSeconds:30,sounds:false,modes:{vision:'blind',stealWinStreak:1}};
  const g=createGame('BLIND',{id:'a',name:'A',avatar:'🤖',connected:true,bot:'normal'},settings);addPlayer(g,{id:'b',name:'B',avatar:'🤖',connected:true,bot:'normal'});start(g);
  runBots(g);expect(['roundEnd','finished']).toContain(g.phase);assertIntegrity(g);
 });
@@ -86,7 +86,7 @@ it('un bot rechaza un intercambio sin ventaja en una baraja de comodines',()=>{
 });
 
 it('el bot guarda un robo cuando todas las cartas son comodines equivalentes',()=>{
- const settings:Settings={name:'comodines',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false,modes:{deck:'jokers',stealResetRounds:1}};
+ const settings:Settings={name:'comodines',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false,modes:{deck:'jokers',stealWinStreak:1}};
  const g=createGame('JOKERS',{id:'bot',name:'Bot',avatar:'B',connected:true,bot:'hard'},settings);addPlayer(g,{id:'human',name:'Humano',avatar:'H',connected:true});start(g);
  g.turnIndex=0;g.firstIndex=0;g.players[0].steals=1;
  expect(runBotTurn(g)).toBe(true);
@@ -96,7 +96,7 @@ it('el bot guarda un robo cuando todas las cartas son comodines equivalentes',()
 });
 
 it('el bot conserva la redistribución si ya tiene las bazas previstas',()=>{
- const settings:Settings={name:'redistribución',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false,modes:{reshuffleEveryWaves:1}};
+ const settings:Settings={name:'redistribución',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false,modes:{reshuffleWinStreak:1}};
  const g=createGame('SHUFFLE',{id:'bot',name:'Bot',avatar:'B',connected:true,bot:'hard'},settings);addPlayer(g,{id:'human',name:'Humano',avatar:'H',connected:true});start(g);
  g.phase='play';g.turnIndex=0;g.players[0].bid=0;g.players[0].reshuffles=1;
  expect(runBotTurn(g)).toBe(true);
@@ -106,7 +106,7 @@ it('el bot conserva la redistribución si ya tiene las bazas previstas',()=>{
 });
 
 it('el bot roba una carta fuerte mostrada a cambio de una débil',()=>{
- const settings:Settings={name:'robo',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false,modes:{revealPercent:100,stealResetRounds:1}};
+ const settings:Settings={name:'robo',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false,modes:{revealPercent:100,stealWinStreak:1}};
  const g=createGame('STEAL',{id:'bot',name:'Bot',avatar:'B',connected:true,bot:'hard'},settings);addPlayer(g,{id:'human',name:'Humano',avatar:'H',connected:true});start(g);
  putInHand(g,'bot',makeDeck().find(c=>c.id==='Oros_2')!);
  putInHand(g,'human',makeDeck().find(c=>c.id==='Oros_As')!);
