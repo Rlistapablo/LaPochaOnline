@@ -17,3 +17,33 @@
 .gamePage{display:flex;flex-direction:column}.gamePage .handArea{order:1}.gamePage .actionPanel{order:2}.gamePage .result{order:3}
 @media(max-width:800px){.playing-card{width:79px;height:118px}.card-illustration{inset:18px 6px 16px}.card-art-svg{max-width:68px;max-height:68px}.hand{justify-content:flex-start}.playing-card.small{width:49px;height:72px}.playing-card.small.is-figure .card-illustration{inset:22px 3px 12px}}
 @media(max-width:520px){.playing-card{width:62px;height:93px}.card-index strong{font-size:12px}.card-art-svg{max-width:56px;max-height:56px}.playing-card.is-figure .card-illustration{inset:26px 4px 14px}.playing-card.small{width:43px;height:63px}.playing-card.small .card-caption{font-size:5px}.playing-card.small.is-figure .card-illustration{inset:19px 2px 11px}.hand{gap:5px;padding:16px 0 20px}}
+
+/* Original Spanish-deck styling: cream stock, suit pips and the traditional broken border marks. */
+.playing-card{border:2px solid #8f734c;border-radius:4px;background:#f6efd9;color:var(--ink);box-shadow:0 1px 0 #624c31,1px 4px 10px #07140f91}
+.playing-card::before{inset:3px;border:2px solid var(--ink);border-radius:1px;opacity:.9}
+.playing-card::after{inset:7px;border:1px solid #cfad75;border-radius:0;opacity:.8}
+.playing-card.suit-oros{--ink:#b07d2c}.playing-card.suit-copas{--ink:#ac4039}.playing-card.suit-espadas{--ink:#476990}.playing-card.suit-bastos{--ink:#3c754f}
+.playing-card.is-figure{background:#f5edda;border-color:#8f734c}
+.card-pintas{position:absolute;z-index:3;left:36%;right:12%;height:3px;color:var(--ink);background:currentColor}
+.card-pintas-top{top:5px}.card-pintas-bottom{bottom:5px}
+.playing-card.suit-copas .card-pintas{background:linear-gradient(90deg,currentColor 0 43%,transparent 43% 57%,currentColor 57%)}
+.playing-card.suit-espadas .card-pintas{background:linear-gradient(90deg,currentColor 0 27%,transparent 27% 37%,currentColor 37% 63%,transparent 63% 73%,currentColor 73%)}
+.playing-card.suit-bastos .card-pintas{background:linear-gradient(90deg,currentColor 0 19%,transparent 19% 27%,currentColor 27% 46%,transparent 46% 54%,currentColor 54% 73%,transparent 73% 81%,currentColor 81%)}
+.card-index{top:8px;left:9px;z-index:4;min-width:18px;align-items:flex-start;text-shadow:1px 1px #fff8e5}
+.card-index strong{font:800 19px Georgia,serif}.card-index i{font:800 9px Georgia,serif}
+.card-filigree{color:#aa7d45;opacity:.65}.card-caption{color:var(--ink);font:800 8px Georgia,serif;letter-spacing:.11em}
+.pipField{position:absolute;inset:21px 8px 18px;--pip-size:30%}
+.pipField.pips-1{--pip-size:70%}.pipField.pips-2{--pip-size:42%}.pipField.pips-3{--pip-size:35%}.pipField.pips-4{--pip-size:32%}.pipField.pips-5{--pip-size:28%}.pipField.pips-6{--pip-size:25%}.pipField.pips-7{--pip-size:20%}
+.pipField .pip{position:absolute;left:var(--pip-x);top:var(--pip-y);display:grid;place-items:center;width:var(--pip-size);aspect-ratio:1;transform:translate(-50%,-50%)}
+.pipField .pip .card-art-svg{width:100%;height:100%;max-width:none;max-height:none;filter:none}
+.playing-card.is-figure .card-illustration{inset:27px 6px 16px}.playing-card.is-figure .figure-art-svg{filter:none}
+.playing-card.is-joker{border-color:#c9a76e;background:#182d38}.playing-card.is-joker::before{border-color:#e9cc88}
+.playing-card.is-back{border-color:#d7b576;background:radial-gradient(circle at 25% 25%,#ba5857 1px,transparent 2px) 0 0/9px 9px,radial-gradient(circle at 75% 75%,#d69c80 1px,transparent 2px) 0 0/9px 9px,#752c35;color:#f5dea8}
+.playing-card.is-back::before{inset:4px;border:2px solid #f0d59a}.playing-card.is-back::after{inset:9px;border:1px solid #f0d59a}
+.playing-card.is-back .card-back-frame{inset:13px;background:repeating-linear-gradient(45deg,transparent 0 7px,#efd8a31f 7px 9px);border:1px solid #efd8a3}
+.playing-card.is-back .card-back-core{background:#762f39;border:2px solid #efd8a3}
+.playing-card.small{border-radius:3px}.playing-card.small .card-pintas{top:3px;height:2px}.playing-card.small .card-pintas-bottom{top:auto;bottom:3px}
+.playing-card.small .card-index{top:5px;left:5px;min-width:0}.playing-card.small .card-index strong{font-size:12px}.playing-card.small .card-index i{font-size:7px}
+.playing-card.small .pipField{inset:14px 4px 11px}.playing-card.small.is-figure .card-illustration{inset:20px 3px 10px}
+@media(max-width:800px){.pipField{inset:18px 6px 15px}.playing-card.is-figure .card-illustration{inset:24px 5px 13px}}
+@media(max-width:520px){.card-index{top:5px;left:6px}.card-index strong{font-size:14px}.card-index i{font-size:7px}.card-pintas{height:2px}.pipField{inset:16px 5px 12px}.playing-card.is-figure .card-illustration{inset:22px 4px 11px}.playing-card.small .pipField{inset:12px 3px 9px}.playing-card.small.is-figure .card-illustration{inset:18px 2px 9px}}

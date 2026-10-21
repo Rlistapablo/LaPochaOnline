@@ -1,17 +1,19 @@
-import type {CSSProperties} from 'react';
+import {Fragment,type CSSProperties} from 'react';
 import type {View} from '../shared/game';
 import {CardView,SuitArt} from './CardView';
-import {TableCards} from './TrickHistory';
+import {useVisibleTrick} from './TrickHistory';
 import './table-board.css';
 
 const avatarOf=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:data.icon||'🃏';}catch{return raw||'🃏';}};
 
 export function TableBoard({game,userId}:{game:View;userId:string}){
+  const {plays,revealing}=useVisibleTrick(game);
   const order=game.order.filter(id=>game.players.some(player=>player.id===id));
   const count=order.length;
   const vertices=order.map((id,index)=>{
     const angle=Math.PI/2-index*2*Math.PI/count;
-    return {id,x:50+46*Math.cos(angle),y:50+44*Math.sin(angle),seatX:50+38*Math.cos(angle),seatY:50+35*Math.sin(angle)};
+    const playRadiusX=count===2?0:28,playRadiusY=count===2?14:18;
+    return {id,x:50+46*Math.cos(angle),y:50+44*Math.sin(angle),seatX:50+38*Math.cos(angle),seatY:50+35*Math.sin(angle),playX:50+playRadiusX*Math.cos(angle),playY:50+playRadiusY*Math.sin(angle)};
   });
   const points=vertices.map(vertex=>`${vertex.x},${vertex.y}`).join(' ');
   const lens=count===2;
@@ -27,15 +29,17 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
       {lens?<><path className="rotationArrow" d="M60 76 Q85 50 60 24" markerEnd="url(#pocha-turn-arrow)"/><path className="rotationArrow" d="M40 24 Q15 50 40 76" markerEnd="url(#pocha-turn-arrow)"/></>:arrows.map((arrow,index)=><line className="rotationArrow" key={index} {...arrow} markerEnd="url(#pocha-turn-arrow)"/>)}
       <defs><marker id="pocha-turn-arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
     </svg>
-    <div className="tableCenter"><span className="tableDirection"><span aria-hidden="true">↶</span> SENTIDO ANTIHORARIO</span>{game.trumpSuit&&<div className="tableTrump" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/><span><small>TRIUNFO · GANA ESTE PALO</small><strong>{game.trumpSuit}</strong></span></div>}<div className="feltInner"><span className="feltTitle">LA POCHA</span><TableCards game={game}/></div></div>
+    <div className="tableCenter">{game.trumpSuit?<div className="tableTrumpSymbol" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
     {vertices.map((vertex,index)=>{
       const player=game.players.find(item=>item.id===vertex.id)!;
       const active=game.turnId===player.id&&['bid','play'].includes(game.phase);
       const style={'--seat-x':`${vertex.seatX}%`,'--seat-y':`${vertex.seatY}%`} as CSSProperties;
-      return <div className={`tableSeat ${active?'isTurn':''} ${player.id===userId?'isMe':''} ${player.eliminated?'isOut':''}`} style={style} key={player.id} aria-label={`${player.name}. ${index===0?'Comienza':index===count-1?'Termina':'Jugador'} la secuencia. ${player.lives} vidas, ${player.wins} bazas ganadas, ${player.bid??'sin'} predichas.${active?' Su turno.':''}`}>
+      const play=plays.find(item=>item.playerId===player.id);
+      const playStyle={'--play-x':`${vertex.playX}%`,'--play-y':`${vertex.playY}%`} as CSSProperties;
+      return <Fragment key={player.id}><div className={`tableSeat ${active?'isTurn':''} ${player.id===userId?'isMe':''} ${player.eliminated?'isOut':''}`} style={style} aria-label={`${player.name}. ${index===0?'Comienza':index===count-1?'Termina':'Jugador'} la secuencia. ${player.lives} vidas, ${player.wins} bazas ganadas, ${player.bid??'sin'} predichas.${active?' Su turno.':''}`}>
         <span className="tableSeatMarker">{index===0?'INICIO':index===count-1?'FINAL':null}</span><div className="tableSeatHead"><span className="playerAvatar">{avatarOf(player.avatar)}</span><b>{player.name}{player.id===userId?' · Tú':''}</b></div><small>❤️ {game.settings.modes?.infiniteLives?'∞':player.lives} <span>🏆 {player.wins}/{player.bid??'—'}</span></small>{active&&<strong className="tableTurnIndicator">{game.phase==='bid'?'PREDICE':'JUEGA'}</strong>}
         {player.id!==userId&&player.hand?.some(Boolean)&&<div className="opponentVisibleCards">{player.hand.map((card,cardIndex)=>card?<CardView key={card.id} card={card} small/>:<CardView key={cardIndex} card={null} hidden small/>)}</div>}
-      </div>;
+      </div>{play&&<div className={`tablePlay ${revealing&&game.lastTrick?.winnerId===player.id?'isWinningPlay':''}`} style={playStyle} aria-label={`${player.name} jugó en posición ${plays.indexOf(play)+1}`}><CardView card={play.card} small declaredValue={play.declaredValue}/></div>}</Fragment>;
     })}
   </div>;
 }

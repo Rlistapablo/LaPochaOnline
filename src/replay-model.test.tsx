@@ -44,6 +44,8 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect(html).toContain('Momentos de la ronda');
   expect(html).toContain('Ana gana la baza');
   expect(html).toContain('As de Oros');
+  expect((html.match(/replaySeatPlay/g)||[])).toHaveLength(2);
+  expect(html).not.toContain('replayPlayed');
   expect(html).toContain('role="progressbar"');
   expect(html).toContain('Mostrar todas las manos');
 });
@@ -62,7 +64,7 @@ it('reconstruye intercambios, cartas mostradas y robos en la repetición',()=>{
   expect(scenes[0].hands.a[0]).toEqual(ace);
   const html=renderToStaticMarkup(<ReplayBoard replay={altered} scenes={scenes} index={0} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="a" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
   expect(html).toContain('trump-copas');
-  expect(html).toContain('trumpWatermark');
+  expect(html).toContain('replayTrumpSymbol');
 });
 it('muestra los poderes disponibles en cada situación, también en repeticiones antiguas',()=>{
   const powered:ReplayData={...replay,game:{...replay.game,settings:{modes:{stealWinStreak:1,reshuffleWinStreak:2,exchangeUses:2,exchangeRefreshRounds:2}}},events:[

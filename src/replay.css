@@ -13,3 +13,14 @@
 .replayFelt .mySeat .replayPowerList{justify-content:flex-start}
 .replayFelt .felt{position:relative;isolation:isolate}
 .replayFelt .feltInner{position:relative;z-index:1}
+.replayFelt .seat,.replayFelt .mySeat{position:relative}
+.replayFelt .opponents{overflow:visible;flex-wrap:wrap;justify-content:center}
+.replayFelt .felt{display:grid;place-items:center}
+.replayFelt .feltInner{display:grid;place-items:center;width:100%;min-height:130px}
+.replayTrumpSymbol{display:grid;place-items:center;width:clamp(95px,22vw,155px);aspect-ratio:1;filter:drop-shadow(0 5px 6px #0009) drop-shadow(0 0 18px var(--felt-ring,#c7a970))}
+.replayTrumpSymbol .card-art-svg{width:100%;height:100%;max-width:none;max-height:none;filter:none}
+.replaySeatPlay{position:absolute;top:calc(100% + 5px);left:50%;z-index:4;transform:translateX(-50%);filter:drop-shadow(0 5px 5px #000b)}
+.replaySeatPlay .playing-card{pointer-events:none;width:46px;height:67px}
+.replaySeatPlay.winner .playing-card{box-shadow:0 0 0 3px #ffe083,0 0 22px #ffe083}
+.replaySeatPlay.replayOwnPlay{top:auto;bottom:calc(100% + 5px)}
+@media(max-width:620px){.replayTrumpSymbol{width:90px}.replaySeatPlay .playing-card{width:35px;height:51px}}

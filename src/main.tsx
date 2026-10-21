@@ -9,7 +9,7 @@ import './style.css';
 import './cards.css';
 import './rooms.css';
 import {RoomSearch} from './RoomSearch';
-import {TableCards,TrickHistory} from './TrickHistory';
+import {TrickHistory} from './TrickHistory';
 import {GameWorkspace} from './GameWorkspace';
 import {BotEditor} from './BotEditor';
 import {ReplayLibrary} from './ReplayLibrary';

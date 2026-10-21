@@ -42,3 +42,19 @@ it('muestra los valores numéricos de las figuras y mantiene su dibujo',()=>{
     expect(html).toContain(`data-figure="${value}"`);
   }
 });
+
+it('coloca cada carta jugada frente a su jugador y deja solo el palo de triunfo en el centro',()=>{
+  const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes:{trump:true}};
+  const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
+  addPlayer(game,{id:'b',name:'Berta',avatar:'🤖',connected:true});
+  start(game);
+  game.trumpSuit='Copas';
+  game.phase='play';
+  game.table=[{playerId:'a',card:{id:'a-card',suit:'Oros',value:'2'}},{playerId:'b',card:{id:'b-card',suit:'Copas',value:'3'}}];
+  const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
+  expect((html.match(/class="tablePlay /g)||[])).toHaveLength(2);
+  expect(html).toContain('Ana jugó en posición 1');
+  expect(html).toContain('Berta jugó en posición 2');
+  expect(html).toContain('tableTrumpSymbol');
+  expect(html).not.toContain('TRIUNFO · GANA ESTE PALO');
+});

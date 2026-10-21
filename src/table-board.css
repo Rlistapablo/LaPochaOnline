@@ -6,13 +6,11 @@
 .polygonTable .tableOutline{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 18px 24px #0009)}
 .polygonTable .tableRim{fill:var(--felt-edge);stroke:var(--felt-ring);stroke-width:2;vector-effect:non-scaling-stroke}
 .polygonTable .rotationArrow{fill:none;stroke:#ffe69a;stroke-width:2.5;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:1;filter:drop-shadow(0 0 3px #ffe69a)}
-.polygonTable .tableCenter{position:absolute;inset:26% 19%;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;pointer-events:none}
+.polygonTable .tableCenter{position:absolute;inset:27% 22%;z-index:1;display:grid;place-items:center;text-align:center;pointer-events:none}
 .polygonTable .tableCenter::before{content:"";position:absolute;inset:-15% -18%;z-index:-1;border-radius:50%;background:radial-gradient(ellipse,var(--felt-center),transparent 73%)}
-.polygonTable .tableDirection{display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.13em;color:#ffe3a0;text-shadow:0 2px 5px #000c}.polygonTable .tableDirection span{font-size:26px;line-height:.8}
-.polygonTable .tableTrump{display:flex;align-items:center;justify-content:center;gap:8px;padding:5px 12px;border:2px solid var(--felt-ring);border-radius:14px;background:#0c221ee8;box-shadow:0 7px 18px #0009,0 0 25px var(--felt-ring);color:#fff4d5}
-.polygonTable .tableTrump .card-art-svg{width:36px;height:36px;max-width:none;max-height:none;filter:drop-shadow(0 0 5px #ffefb7)}
-.polygonTable .tableTrump span{display:grid;gap:1px;text-align:left}.polygonTable .tableTrump small{font-size:8px;font-weight:900;letter-spacing:.08em;color:#ffe08c}.polygonTable .tableTrump strong{font:700 22px 'Playfair Display',serif;line-height:1}
-.polygonTable .feltInner{z-index:1;min-height:80px;width:100%;pointer-events:auto}.polygonTable .feltTitle{font-size:20px}
+.polygonTable .tableTrumpSymbol{display:grid;place-items:center;width:clamp(90px,20vw,148px);aspect-ratio:1;filter:drop-shadow(0 5px 6px #0008) drop-shadow(0 0 18px var(--felt-ring))}
+.polygonTable .tableTrumpSymbol .card-art-svg{width:100%;height:100%;max-width:none;max-height:none;filter:none}
+.polygonTable .feltTitle{font-size:20px}
 .polygonTable .tableSeat{position:absolute;left:var(--seat-x);top:var(--seat-y);z-index:2;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;width:clamp(88px,16%,124px);padding:3px 2px;border:0;background:none;box-shadow:none;color:#fff3d5;text-align:center;text-shadow:0 2px 5px #00190f,0 0 8px #00190f;font-size:11px}
 .polygonTable .tableSeat.isTurn{animation:tableTurnPulse 1.7s ease-in-out infinite}
 .polygonTable .tableSeat.isTurn .playerAvatar{border:3px solid #ffe189;box-shadow:0 0 0 4px #f4d16c66,0 0 23px #ffe17d}
@@ -22,10 +20,12 @@
 .polygonTable .tableSeat>small{white-space:nowrap;font-size:10px;color:#f8e7c6}.polygonTable .tableSeat>small span{margin-left:2px}.polygonTable .tableTurnIndicator{font-size:9px;color:#ffe38f}
 .polygonTable .opponentVisibleCards{position:absolute;top:calc(100% + 3px);left:50%;z-index:3;transform:translateX(-50%);width:max-content;max-width:min(42vw,360px);justify-content:center;padding:3px;background:#09271fe8;border-radius:8px}
 .polygonTable .opponentVisibleCards .playing-card.small{width:36px;height:52px}
-.polygonTable .played{position:relative;inset:auto;min-height:68px;gap:3px;max-width:100%;overflow:visible;flex-wrap:wrap;align-content:center;justify-content:center}.polygonTable .playedCard{padding:2px;background:#08251ec9}.polygonTable .playedCard .playing-card.small{width:38px;height:55px}.polygonTable .playedCard span{font-size:8px}
-.polygonTable .trickWinner,.polygonTable .lastTrick{position:relative;bottom:auto;font-size:10px;color:#f6e2aa}
+.polygonTable .tablePlay{position:absolute;left:var(--play-x);top:var(--play-y);z-index:3;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;filter:drop-shadow(0 4px 5px #0009);animation:tableCardIn .25s ease-out}
+.polygonTable .tablePlay .playing-card.small{width:42px;height:62px;pointer-events:none}
+.polygonTable .tablePlay.isWinningPlay .playing-card{box-shadow:0 0 0 3px #ffe381,0 0 23px #ffe381}
+@keyframes tableCardIn{from{opacity:0;transform:translate(-50%,-35%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @keyframes tableTurnPulse{50%{filter:drop-shadow(0 0 12px #ffe17dbd)}}
-@media(max-width:900px){.gameWorkspace .gameFelt.polygonTable{min-height:380px}.polygonTable .tableSeat{width:clamp(77px,20%,108px)}.polygonTable .tableCenter{inset:29% 21%}.polygonTable .tableTrump .card-art-svg{width:28px;height:28px}.polygonTable .tableTrump strong{font-size:18px}}
-@media(max-width:580px){.gameWorkspace .gameFelt.polygonTable{min-height:340px}.polygonTable .tableSeat{width:clamp(67px,22%,85px);padding:3px 2px;font-size:9px}.polygonTable .tableSeatHead .playerAvatar{width:34px;height:34px;font-size:20px}.polygonTable .tableSeat>small{font-size:9px}.polygonTable .tableSeatMarker{font-size:7px}.polygonTable .tableCenter{inset:30% 21%;gap:2px}.polygonTable .tableDirection{font-size:8px;letter-spacing:.04em}.polygonTable .tableDirection span{font-size:20px}.polygonTable .tableTrump{gap:4px;padding:3px 6px;border-width:1px}.polygonTable .tableTrump .card-art-svg{width:22px;height:22px}.polygonTable .tableTrump small{font-size:6px}.polygonTable .tableTrump strong{font-size:14px}.polygonTable .feltTitle{font-size:15px}.polygonTable .playedCard .playing-card.small{width:30px;height:44px}.polygonTable .playedCard span{font-size:7px}.polygonTable .opponentVisibleCards{max-width:46vw}.polygonTable .opponentVisibleCards .playing-card.small{width:27px;height:39px}}
+@media(max-width:900px){.gameWorkspace .gameFelt.polygonTable{min-height:380px}.polygonTable .tableSeat{width:clamp(77px,20%,108px)}.polygonTable .tableCenter{inset:29% 21%}.polygonTable .tableTrumpSymbol{width:clamp(84px,17vw,118px)}}
+@media(max-width:580px){.gameWorkspace .gameFelt.polygonTable{min-height:340px}.polygonTable .tableSeat{width:clamp(67px,22%,85px);padding:3px 2px;font-size:9px}.polygonTable .tableSeatHead .playerAvatar{width:34px;height:34px;font-size:20px}.polygonTable .tableSeat>small{font-size:9px}.polygonTable .tableSeatMarker{font-size:7px}.polygonTable .tableCenter{inset:30% 21%}.polygonTable .tableTrumpSymbol{width:clamp(68px,20vw,100px)}.polygonTable .feltTitle{font-size:15px}.polygonTable .tablePlay .playing-card.small{width:32px;height:47px}.polygonTable .opponentVisibleCards{max-width:46vw}.polygonTable .opponentVisibleCards .playing-card.small{width:27px;height:39px}}
 @media(max-width:580px){.gameWorkspace .gameFelt.polygonTable:is(.players-6,.players-7,.players-8){min-height:410px}}
-@media(prefers-reduced-motion:reduce){.polygonTable .tableSeat.isTurn{animation:none}}
+@media(prefers-reduced-motion:reduce){.polygonTable .tableSeat.isTurn,.polygonTable .tablePlay{animation:none}}

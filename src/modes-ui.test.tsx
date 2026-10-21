@@ -19,8 +19,8 @@ it('ofrece los modos en la creación y muestra el intercambio antes de predecir'
   const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
   expect(html).toContain('Intercambio de cartas');
   expect(html).toContain(`Triunfo de la ronda: ${game.trumpSuit}`);
-  expect(html).toContain('GANA ESTE PALO');
-  expect(html).toContain('SENTIDO ANTIHORARIO');
+  expect(html).toContain('tableTrumpSymbol');
+  expect(html).toContain('Sentido antihorario');
   expect(html).toContain('INICIO');
   expect(html).toContain('FINAL');
   expect(html).not.toContain('feltTrump');

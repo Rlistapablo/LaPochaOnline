@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import type {CSSProperties} from 'react';
 import type { Card, Value } from '../shared/game';
 import {FigureArt} from './FigureArt';
 
@@ -38,6 +39,19 @@ function JokerArt() { return <svg viewBox="0 0 100 100" aria-hidden="true" class
   <circle cx="50" cy="50" r="6" fill="#fff0bc"/>
 </svg> }
 
+const pipPositions:Record<number,Array<[number,number]>>={
+  1:[[50,50]],2:[[50,27],[50,73]],3:[[50,23],[50,50],[50,77]],
+  4:[[28,26],[72,26],[28,74],[72,74]],
+  5:[[28,24],[72,24],[50,50],[28,76],[72,76]],
+  6:[[28,22],[72,22],[28,50],[72,50],[28,78],[72,78]],
+  7:[[28,20],[72,20],[28,47],[50,50],[72,47],[28,80],[72,80]],
+};
+
+function PipField({suit,value}:{suit:Suit;value:Value}){
+  const count=value==='As'?1:Number(value);
+  return <span className={`pipField pips-${count}`} aria-hidden="true">{(pipPositions[count]||[]).map(([x,y],index)=><span className="pip" style={{'--pip-x':`${x}%`,'--pip-y':`${y}%`} as CSSProperties} key={index}><SuitArt suit={suit}/></span>)}</span>;
+}
+
 export function CardView({card,onClick,small=false,hidden=false,declaredValue}:{card:Card|null;onClick?:()=>void;small?:boolean;hidden?:boolean;declaredValue?:Value}) {
   const back=hidden||!card;
   const joker=!!card?.id.startsWith('joker');
@@ -46,9 +60,10 @@ export function CardView({card,onClick,small=false,hidden=false,declaredValue}:{
   const label=back?'Carta boca abajo':joker?`Comodín${declaredValue?`, valor ${declaredValue}`:''}`:`${card?.value} de ${suit}`;
   return <motion.button type="button" aria-label={label} whileHover={onClick?{y:-9,rotate:-1}:undefined} whileTap={onClick?{scale:.97}:undefined} onClick={onClick} disabled={!onClick} className={`playing-card ${small?'small':''} ${back?'is-back':''} ${joker?'is-joker':''} ${figure?'is-figure':''} ${suit?`suit-${suit.toLowerCase()}`:''} ${onClick?'can-play':''}`}>
     {back?<><span className="card-back-frame"><span className="card-back-core">✦<small>LA POCHA</small>✦</span></span></>:<>
+      <span className="card-pintas card-pintas-top"/><span className="card-pintas card-pintas-bottom"/>
       <span className="card-filigree top-left">❧</span><span className="card-filigree bottom-right">❧</span>
       <span className="card-index"><strong>{joker?'★':figure?figure==='Sota'?10:figure==='Caballo'?11:12:card!.value}</strong><i>{joker?'✦':suit?.slice(0,1)}</i></span>
-      <span className="card-illustration">{joker?<JokerArt/>:figure?<FigureArt value={figure} suit={suit!}/>:<SuitArt suit={suit!}/>}</span>
+      {joker||figure?<span className="card-illustration">{joker?<JokerArt/>:<FigureArt value={figure!} suit={suit!}/>}</span>:<PipField suit={suit!} value={card!.value!}/>}
       <span className="card-caption">{joker?'COMODÍN':suit?.toUpperCase()}</span>
       {declaredValue&&<span className="declared-value">{declaredValue}</span>}
     </>}

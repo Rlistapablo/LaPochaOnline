@@ -5,7 +5,7 @@ import './trick-history.css';
 
 const playerName=(game:View,id:string)=>game.players.find(p=>p.id===id)?.name||'Jugador';
 
-export function TableCards({game}:{game:View}){
+export function useVisibleTrick(game:View){
   const [now,setNow]=useState(Date.now());
   useEffect(()=>{
     setNow(Date.now());
@@ -17,7 +17,7 @@ export function TableCards({game}:{game:View}){
   },[game.revealUntil]);
   const revealing=!game.table.length&&!!game.lastTrick&&!!game.revealUntil&&now<game.revealUntil;
   const plays:Play[]=revealing?game.lastTrick!.plays:game.table;
-  return <><div className={`played ${revealing?'revealing':''}`} aria-live="polite">{plays.map((play,i)=><div className={`playedCard ${revealing&&play.playerId===game.lastTrick?.winnerId?'winningCard':''}`} key={`${play.card.id}-${i}`}><span className="playOrder">{i+1}.º</span><CardView card={play.card} small declaredValue={play.declaredValue}/><span>{playerName(game,play.playerId)}</span></div>)}</div>{revealing&&<div className="trickWinner">Baza {game.tricks.length} · {game.lastTrick?.reason||`gana ${playerName(game,game.lastTrick!.winnerId)}`}</div>}{!revealing&&!game.table.length&&game.lastTrick&&<div className="lastTrick">Última baza: {playerName(game,game.lastTrick.winnerId)}</div>}</>;
+  return {plays,revealing};
 }
 
 export function TrickHistory({game}:{game:View}){
