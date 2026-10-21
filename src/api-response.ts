@@ -5,6 +5,9 @@ export class ApiResponseError extends Error {
 export async function readApiResponse<T=any>(response:Response):Promise<T>{
   const contentType=response.headers.get('content-type')||'';
   if(!contentType.toLowerCase().includes('application/json')){
+    if(response.status===400&&/Request Header Or Cookie Too Large/i.test(await response.text())){
+      throw new ApiResponseError('La sesión guardada supera el límite del servidor. Recarga la página e inicia sesión de nuevo.',400);
+    }
     throw new ApiResponseError('El servidor ha respondido con una página en vez de datos. Comprueba la conexión y vuelve a intentarlo.',response.status);
   }
   let data:unknown;

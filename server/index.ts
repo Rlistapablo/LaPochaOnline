@@ -4,7 +4,7 @@ import cors from 'cors';
 import http from 'node:http';
 import { randomUUID, randomBytes, createHash } from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import {issueToken,readToken,type Identity} from './session.js';
 import { Server } from 'socket.io';
 import { pool, migrate, saveRoom, loadRooms, deleteRoom, purgeRoomCycle } from './db.js';
 import { resolve } from 'node:path';
@@ -16,10 +16,9 @@ if(!process.env.JWT_SECRET||process.env.JWT_SECRET.length<32)throw Error('JWT_SE
 const origin=process.env.CLIENT_ORIGIN||new URL(process.env.PUBLIC_APP_URL||'http://localhost:5173').origin;
 const app=express();app.use(cors({origin}));app.use(express.json({limit:'200kb'}));
 const server=http.createServer(app);const io=new Server(server,{cors:{origin}});
-type Identity={id:string;guest:boolean;name:string;avatar:string};
 const secret=process.env.JWT_SECRET;
-const token=(u:Identity)=>jwt.sign(u,secret,{expiresIn:'30d'});
-function auth(raw?:string):Identity{if(!raw)throw Error('Sesión requerida');const u=jwt.verify(raw.replace(/^Bearer /,''),secret) as Identity;return{id:u.id,guest:u.guest,name:u.name,avatar:u.avatar};}
+const token=(u:Identity)=>issueToken(u,secret);
+const auth=(raw?:string)=>readToken(raw,secret);
 function error(res:express.Response,e:unknown){res.status(400).json({error:e instanceof Error?e.message:'Error'});}
 function validAvatar(avatar:string){const raster=(s:string)=>/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(s)&&s.length<=180000;if(avatar.length<=8)return true;if(raster(avatar))return true;if(!avatar.startsWith('{')||avatar.length>180500)return false;try{const a=JSON.parse(avatar);return typeof a.icon==='string'&&a.icon.length<=8&&/^#[0-9a-fA-F]{6}$/.test(a.color)&&['gold','silver','glow'].includes(a.frame)&&(!a.image||raster(a.image));}catch{return false;}}
 app.post('/api/guest',(req,res)=>{const u={id:randomUUID(),guest:true,name:String(req.body.name||'Invitado').slice(0,24),avatar:'🃏'};res.json({token:token(u),user:u});});
