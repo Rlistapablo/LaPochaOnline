@@ -175,7 +175,7 @@
   .liveGamePage .gameMain .hand .handChoice .playing-card{width:auto;height:min(10dvh,calc((24dvh - 34px)/var(--hand-rows)));max-width:100%;aspect-ratio:2/3}
   .liveGamePage .gameMain .playConfirm{margin-top:1px;padding:2px 0}
   .liveGamePage .gameMain .playConfirm button{min-height:34px;padding:5px 9px;font-size:11px}
-  .liveGamePage .gameMain .bidOpenButton{position:absolute;bottom:calc(var(--hand-dock-height) + 7px);left:8px;z-index:6;transform:none;min-height:35px;margin:0;padding:7px 11px;font-size:11px;white-space:nowrap}
+  .liveGamePage .gameMain .bidOpenButton{position:relative;bottom:auto;left:auto;z-index:21;align-self:flex-start;transform:none;flex:none;min-height:35px;margin:2px 0 2px 8px;padding:7px 11px;font-size:11px;white-space:nowrap}
   .liveGamePage .gameMain .modeAction{flex:none;max-height:25dvh;overflow-y:auto;margin:1px 0;padding:6px 10px;border-radius:10px;text-align:left}
   .liveGamePage .gameMain .modeAction h2{font-size:15px;margin:0}
   .liveGamePage .gameMain .modeAction p{font-size:10px;line-height:1.2;margin:1px 0 3px}
