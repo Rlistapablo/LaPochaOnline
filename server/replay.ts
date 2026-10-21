@@ -43,6 +43,13 @@ export async function getReplay(gameId:string,playerId:string,isAdmin=false){
   return {game,players,events};
 }
 
+export async function getReplayByRoom(code:string,cycle:number,playerId:string,isAdmin=false){
+  if(!/^[A-Z0-9]{4,12}$/.test(code)||!Number.isSafeInteger(cycle)||cycle<0)throw Error('Partida inválida');
+  const found=await pool.query<{id:string}>('SELECT g.id FROM games g LEFT JOIN game_replays gr ON gr.game_id=g.id WHERE g.room_code=$1 AND g.cycle=$2 AND g.finished_at IS NOT NULL AND gr.available IS DISTINCT FROM false',[code,cycle]);
+  if(!found.rows[0])throw Error('Repetición no disponible');
+  return getReplay(found.rows[0].id,playerId,isAdmin);
+}
+
 export async function deleteReplay(gameId:string,playerId:string,isAdmin=false){
   const client=await pool.connect();
   try{

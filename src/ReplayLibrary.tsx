@@ -116,15 +116,18 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
   </div>;
 }
 
-export function ReplayLibrary(){
+export function ReplayLibrary({initialRoom}:{initialRoom?:{code:string;cycle:number}|null}){
   const [list,setList]=useState<ReplayEntry[]>([]),[page,setPage]=useState(0),[replay,setReplay]=useState<ReplayData|null>(null),[index,setIndex]=useState(0),[playing,setPlaying]=useState(false),[focusId,setFocusId]=useState(''),[showHands,setShowHands]=useState(false),[deletingId,setDeletingId]=useState(''),[error,setError]=useState('');
+  const [openingRoom,setOpeningRoom]=useState(!!initialRoom);
   const scenes=useMemo(()=>replay?buildReplayTimeline(replay):[],[replay]);
   useEffect(()=>{request('?page='+page).then(setList).catch(cause=>setError(String(cause)));},[page]);
+  useEffect(()=>{if(!initialRoom)return;let cancelled=false;setOpeningRoom(true);request('/by-room/'+encodeURIComponent(initialRoom.code)+'/'+initialRoom.cycle).then((data:ReplayData)=>{if(cancelled)return;setReplay(data);setFocusId(data.players.find(player=>!player.is_bot)?.player_id||data.players[0]?.player_id||'');setIndex(0);setPlaying(false);setShowHands(false);setError('');}).catch(cause=>{if(!cancelled)setError(String(cause));}).finally(()=>{if(!cancelled)setOpeningRoom(false);});return()=>{cancelled=true;};},[initialRoom?.code,initialRoom?.cycle]);
   useEffect(()=>{if(!playing)return;if(index>=scenes.length-1){setPlaying(false);return;}const timer=setTimeout(()=>setIndex(index+1),1800);return()=>clearTimeout(timer);},[playing,index,scenes.length]);
   const open=async(id:string)=>{try{const data=await request('/'+id) as ReplayData;setReplay(data);setFocusId(data.players.find(player=>!player.is_bot)?.player_id||data.players[0]?.player_id||'');setIndex(0);setPlaying(false);setShowHands(false);setError('');}catch(cause){setError(String(cause));}};
   const remove=async(item:ReplayEntry)=>{
     setDeletingId(item.id);setError('');
     try{await request('/'+item.id,'DELETE');const next=await request('?page='+page) as ReplayEntry[];setList(next);if(!next.length&&page>0)setPage(page-1);if(replay?.game.id===item.id){setReplay(null);setPlaying(false);}}catch(cause){setError(String(cause));}finally{setDeletingId('');}
   };
+  if(openingRoom&&!replay)return <section className="shell replayPage"><h1>Abriendo repetición…</h1></section>;
   return <section className="shell replayPage"><span className="eyebrow">ARCHIVO DE PARTIDAS</span><h1>Repetición de partida</h1>{error&&<p className="replayError">{error}</p>}{!replay?<><p>Elige una partida para volver a verla como si estuvieras en la mesa.</p><div className="replayList">{list.map(item=><article className="panel replayItem" key={item.id}><button className="replayItemOpen" onClick={()=>open(item.id)}><span className="replayArchiveIcon">🃏</span><strong>{item.room_name||'Sala '+item.room_code}</strong><span>{new Date(item.finished_at).toLocaleString('es-ES')} · {item.won?'Victoria':'Partida terminada'}</span><b>Entrar en la repetición →</b></button><button className="replayDelete" disabled={!!deletingId} onClick={()=>remove(item)} aria-label={'Borrar repetición de '+(item.room_name||'Sala '+item.room_code)}>{deletingId===item.id?'Borrando…':'Borrar repetición'}</button></article>)}{!list.length&&<p>No hay partidas terminadas en esta página.</p>}</div><div className="replayPager"><button className="secondary" disabled={page===0} onClick={()=>setPage(page-1)}>Anterior</button><span>Página {page+1}</span><button className="secondary" disabled={list.length<20} onClick={()=>setPage(page+1)}>Siguiente</button></div></>:<><button className="secondary replayBack" onClick={()=>{setReplay(null);setPlaying(false);}}>← Volver al archivo</button><ReplayBoard replay={replay} scenes={scenes} index={index} setIndex={setIndex} playing={playing} setPlaying={setPlaying} focusId={focusId} setFocusId={setFocusId} showHands={showHands} setShowHands={setShowHands}/></>}</section>;
 }

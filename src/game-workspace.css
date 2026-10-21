@@ -212,6 +212,21 @@
 .resultPopupBackdrop .result h2{padding-right:35px;padding-left:35px}
 .resultPopupBackdrop .result .results{margin-top:12px}
 .resultPopupBackdrop .result .primary{margin-top:15px}
+.resultPopupBackdrop .finalResult{display:flex;flex-direction:column;width:min(610px,100%);max-height:min(720px,calc(100dvh - 32px));overflow:hidden;padding:24px}
+.finalResult .resultPopupContent{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 4px 4px}
+.finalResult .resultPopupContent h2{margin:5px 0 0}
+.finalResult .winner{margin:10px 0;font-size:clamp(22px,5vw,29px);line-height:1.2}
+.finalResult .resultPopupContent>p:not(.winner){margin:8px 0;font-size:12px}
+.finalStandings{display:grid;gap:7px;margin-top:15px;text-align:left}
+.finalStandings>div{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:9px 11px;border:1px solid #ffffff20;border-radius:11px;background:#0b211a}
+.finalStandings>div.winnerRow{border-color:#d9ba72;background:#284732}
+.finalStandings .playerAvatar{width:32px;height:32px;font-size:19px}
+.finalStandings b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.finalStandings span:not(.playerAvatar){color:#d9ccab;font-size:11px}
+.finalStandings strong{color:#f4dc9e;white-space:nowrap;font-size:12px}
+.resultPopupActions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;flex:none;padding-top:15px;margin-top:12px;border-top:1px solid #ffffff28}
+.resultPopupBackdrop .resultPopupActions .primary{margin:0}
+@media(max-width:620px){.resultPopupBackdrop{padding:10px 9px max(10px,env(safe-area-inset-bottom))}.resultPopupBackdrop .finalResult{max-height:calc(100dvh - 20px - env(safe-area-inset-bottom));padding:16px 11px}.finalStandings>div{grid-template-columns:30px minmax(0,1fr) auto;gap:6px;padding:7px 6px}.finalStandings .playerAvatar{width:29px;height:29px;font-size:17px}.finalStandings span:not(.playerAvatar){display:none}.resultPopupActions{display:grid;grid-template-columns:1fr 1fr}.resultPopupActions button{min-width:0;padding:10px 6px;font-size:12px}}
 .powerNoticeBackdrop{z-index:55}
 .powerNotice{width:min(380px,100%);padding:24px;text-align:center}
 .powerNoticeSymbol{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 12px;border:2px solid #e9c87e;border-radius:50%;background:#31563d;color:#ffe6a6;font-size:38px}

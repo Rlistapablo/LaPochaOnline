@@ -26,6 +26,20 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
 });
 
+it('muestra el cierre de partida en un modal con revancha y repetición',()=>{
+  const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:1,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
+  const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
+  addPlayer(game,{id:'b',name:'Berta',avatar:'🃏',connected:true});
+  start(game);
+  game.phase='finished';game.winners=['a'];game.players[1].lives=0;game.players[1].eliminated=true;
+  const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}} onReplay={()=>{}}/>);
+  expect(html).toContain('aria-label="Resultado final"');
+  expect(html).toContain('Clasificación final');
+  expect(html).toContain('Jugar revancha');
+  expect(html).toContain('Ver repetición');
+  expect(html).toContain('Ganador');
+});
+
 it('muestra las predicciones ajenas dentro del modal de apuesta',()=>{
   const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
   const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);

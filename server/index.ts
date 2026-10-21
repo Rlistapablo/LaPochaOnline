@@ -10,7 +10,7 @@ import { pool, migrate, saveRoom, loadRooms, deleteRoom } from './db.js';
 import { resolve } from 'node:path';
 import { Game, Settings, createGame, addPlayer, start, bid, play, advance, rematch, finishGame, cancelGame, view, recordEvent, normalizeModes, validateModes, offerExchange, declineExchange, selectExchange, selectReveal, stealCard, reshuffleHands, preparationActor } from '../shared/game.js';
 import { runBotTurn } from './bot.js';
-import {finalizeReplay,listReplays,getReplay,deleteReplay} from './replay.js';
+import {finalizeReplay,listReplays,getReplay,getReplayByRoom,deleteReplay} from './replay.js';
 
 if(!process.env.JWT_SECRET||process.env.JWT_SECRET.length<32)throw Error('JWT_SECRET debe tener al menos 32 caracteres');
 const origin=process.env.CLIENT_ORIGIN||new URL(process.env.PUBLIC_APP_URL||'http://localhost:5173').origin;
@@ -31,6 +31,7 @@ app.get('/api/leaderboard',async(_req,res)=>{try{res.json((await pool.query(`SEL
 const adminIds=new Set((process.env.ADMIN_USER_IDS||'').split(',').map(id=>id.trim()).filter(Boolean));
 app.get('/api/admin/status',(req,res)=>{try{const u=auth(req.header('authorization'));res.json({admin:adminIds.has(u.id)});}catch(e){error(res,e);}});
 app.get('/api/replays',async(req,res)=>{try{const u=auth(req.header('authorization'));res.json(await listReplays(u.id,Number(req.query.page)||0));}catch(e){error(res,e);}});
+app.get('/api/replays/by-room/:code/:cycle',async(req,res)=>{try{const u=auth(req.header('authorization'));res.json(await getReplayByRoom(String(req.params.code).toUpperCase(),Number(req.params.cycle),u.id,adminIds.has(u.id)));}catch(e){error(res,e);}});
 app.get('/api/replays/:id',async(req,res)=>{try{const u=auth(req.header('authorization'));res.json(await getReplay(String(req.params.id),u.id,adminIds.has(u.id)));}catch(e){error(res,e);}});
 app.delete('/api/replays/:id',async(req,res)=>{try{const u=auth(req.header('authorization'));await deleteReplay(String(req.params.id),u.id,adminIds.has(u.id));res.json({ok:true});}catch(e){error(res,e);}});
 app.get('/api/admin/rooms',(req,res)=>{try{const u=auth(req.header('authorization'));if(!adminIds.has(u.id))throw Error('Solo administradores');res.json(publicRooms());}catch(e){error(res,e);}});
