@@ -74,6 +74,7 @@
 .gameMain .hand.handVeryDense .card-index{top:5px;left:5px}
 .gameMain .hand.handVeryDense .card-index strong{font-size:12px}
 .gameMain .hand.handVeryDense .card-illustration{inset:15px 4px 11px}
+.gameMain .hand.handVeryDense .playing-card.is-figure .card-illustration{inset:21px 3px 11px}
 .gameMain .hand.handVeryDense .card-caption{bottom:4px;font-size:6px}
 .handArea{overflow:visible}
 .historyPlays,.trickPlays{flex-wrap:wrap;overflow-x:visible}
