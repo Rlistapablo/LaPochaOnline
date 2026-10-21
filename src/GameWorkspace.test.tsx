@@ -35,9 +35,12 @@ it('muestra el cierre de partida en un modal con revancha y repetición',()=>{
   const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}} onReplay={()=>{}}/>);
   expect(html).toContain('aria-label="Resultado final"');
   expect(html).toContain('Clasificación final');
-  expect(html).toContain('Jugar revancha');
   expect(html).toContain('Ver repetición');
+  expect(html).toContain('Nueva partida');
   expect(html).toContain('Ganador');
+  const guest=renderToStaticMarkup(<GameWorkspace game={view(game,'b')} userId="b" action={()=>{}} onReplay={()=>{}}/>);
+  expect(guest).toContain('Esperando a que el creador de la sala');
+  expect(guest).not.toContain('Nueva partida</button>');
 });
 
 it('muestra las predicciones ajenas dentro del modal de apuesta',()=>{

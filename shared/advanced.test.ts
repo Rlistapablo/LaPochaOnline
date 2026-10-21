@@ -22,7 +22,7 @@ describe('partidas continuas',()=>{
     expect(g.phase).toBe('finished');expect(first.eliminated).toBe(true);expect(active(g)).toHaveLength(2);
     const mostLives=Math.max(...g.players.map(p=>p.lives));
     expect(g.winners).toEqual(g.players.filter(p=>p.lives===mostLives).map(p=>p.id));
-    expect(g.autoRestart).toBe(true);
+    expect(g.autoRestart).toBe(false);
     expect(()=>advance(g,g.version)).toThrow();
     assertIntegrity(g);
   });

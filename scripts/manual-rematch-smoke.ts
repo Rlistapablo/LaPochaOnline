@@ -36,11 +36,14 @@ try{
     if(index===1)throw Error('La partida siguió pese a las vidas agotadas');
     await action(a,code,'advance');
   }
-  if(va.phase!=='finished'||!va.autoRestartAt||!va.players.some((p:any)=>p.eliminated)||va.history.length>=calendar.length)throw Error('No se terminó y programó el reinicio al agotar las vidas');
+  if(va.phase!=='finished'||va.autoRestartAt||!va.players.some((p:any)=>p.eliminated)||va.history.length>=calendar.length)throw Error('La partida debe quedar terminada y esperar al creador');
   const saved=await pool.query('SELECT id FROM games WHERE room_code=$1 AND cycle=0',[code]);
   if(saved.rowCount!==1)throw Error('El ciclo terminado no se guardó antes del reinicio');
-  for(let i=0;i<120&&va.cycle===0;i++)await new Promise(resolve=>setTimeout(resolve,100));
-  if(va.cycle!==1||va.phase!=='bid'||!va.players.every((p:any)=>p.lives===3&&!p.eliminated))throw Error('La partida no se reinició con las vidas restauradas');
-  console.log('Dos navegadores: fin inmediato al agotar las vidas y reinicio automático con vidas restauradas.');
+  await new Promise(resolve=>setTimeout(resolve,9000));
+  if(va.cycle!==0||va.phase!=='finished')throw Error('La partida se reinició sin permiso del creador');
+  await emit(b,'action',{code,type:'rematch',version:vb.version}).then(()=>{throw Error('Otro jugador inició la partida');},error=>{if(!String(error).includes('Solo el creador'))throw error;});
+  await action(a,code,'rematch');
+  if(va.cycle!==1||va.phase!=='bid'||!va.players.every((p:any)=>p.lives===3&&!p.eliminated))throw Error('La nueva partida no comenzó con las vidas restauradas');
+  console.log('Dos navegadores: la partida espera al creador y solo él inicia la siguiente.');
   a.emit('leave',code);b.emit('leave',code);
 }finally{a.disconnect();b.disconnect();await pool.end();}

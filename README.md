@@ -49,7 +49,7 @@ npm run smoke:rooms # concurrencia, salas privadas y expulsión
 npm run smoke:restart # recupera una partida tras reiniciar Node
 npm run smoke:production # frontend compilado y API en un solo proceso
 npm run smoke:pacing # ritmo de los bots, revelado e historial de cartas
-npm run smoke:auto-restart # eliminación, guardado y reinicio automático
+npm run smoke:manual-rematch # eliminación, guardado y nueva partida iniciada por el creador
 npm run smoke:manual-finish # cierre del anfitrión, guardado y revancha
 npm run smoke:advanced # permisos de mesas, bots, comodines, idempotencia y repetición
 ```

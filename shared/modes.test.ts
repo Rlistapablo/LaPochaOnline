@@ -73,7 +73,7 @@ it('da cambios a cada jugador, los gasta solo si se aceptan y los renueva cada X
   expect(g.phase).toBe('exchange');
   expect(g.players.map(p=>p.exchanges)).toEqual([2,2]);
   assertIntegrity(g);
-  finishGame(g,'a',g.version);rematch(g);
+  finishGame(g,'a',g.version);rematch(g,'a');
   expect(g.players.map(p=>p.exchanges)).toEqual([0,0]);
   start(g);
   expect(g.players.map(p=>p.exchanges)).toEqual([2,2]);
@@ -136,7 +136,7 @@ it('entrega poderes solo tras rachas de predicciones exactas y los limpia en la 
   advance(g,g.version);round(false);
   expect(target.cleanRounds).toBe(0);
   expect(target.steals).toBe(1);expect(target.reshuffles).toBe(1);
-  finishGame(g,'a',g.version);rematch(g);
+  finishGame(g,'a',g.version);rematch(g,'a');
   expect(g.players.every(p=>!p.steals&&!p.reshuffles&&!p.cleanRounds)).toBe(true);
   expect(normalizeModes({stealWinStreak:2,reshuffleWinStreak:2})).toMatchObject({stealWinStreak:2,reshuffleWinStreak:2});
 });

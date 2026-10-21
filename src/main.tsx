@@ -55,7 +55,6 @@ function App(){const [user,setUser]=useState<User|null>(null),[isAdmin,setIsAdmi
 
  </main><footer>LA POCHA ONLINE <span>♠ ♥ ♣ ♦</span></footer><AnimatePresence>{joker&&<motion.div className="modalBackdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}><motion.div className="modal" initial={{scale:.9,y:20}} animate={{scale:1,y:0}}><span className="eyebrow">COMODÍN</span><h2>Elige su valor</h2><p>Se mostrará a todos al jugar la carta.</p><div className="jokerValues">{VALUES.map(v=><button key={v} onClick={()=>{action('play',{cardId:joker.id,declaredValue:v});setJoker(null);}}>{v}</button>)}</div><button className="subtle" onClick={()=>setJoker(null)}>Cancelar</button></motion.div></motion.div>}</AnimatePresence>{error&&<div className="toast" onClick={()=>setError('')}>{error} <b>×</b></div>}</div>;
 }
-function AutoRestartNotice({until}:{until:number}){const [seconds,setSeconds]=useState(Math.max(0,Math.ceil((until-Date.now())/1000)));useEffect(()=>{const timer=setInterval(()=>setSeconds(Math.max(0,Math.ceil((until-Date.now())/1000))),200);return()=>clearInterval(timer);},[until]);return <p className="autoRestartNotice">Nueva partida en <strong>{seconds}</strong> s · se restaurarán las vidas de todos los jugadores.</p>;}
 function Avatar({avatar}:{avatar:string}){const a=avatarParts(avatar);return <span className={`avatar frame-${a.frame}`} style={{backgroundColor:a.color}}>{a.image?<img src={a.image} alt="Avatar"/>:a.icon}</span>}
 createRoot(document.getElementById('root')!).render(<App/>);
 

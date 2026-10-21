@@ -34,7 +34,7 @@ describe('motor físico',()=>{
  });
  it('aumenta la penalización progresiva y reinicia la racha al acertar',()=>{expect(penaltyForRound(2,0,'progressive')).toEqual({streak:1,multiplier:1,lost:2});expect(penaltyForRound(2,1,'progressive')).toEqual({streak:2,multiplier:2,lost:4});expect(penaltyForRound(1,2,'normal')).toEqual({streak:3,multiplier:1,lost:1});expect(penaltyForRound(0,3,'progressive')).toEqual({streak:0,multiplier:1,lost:0});});
  it('permite todos los valores de comodín',()=>{for(const v of VALUES)expect(trickWinner([{playerId:'a',card:{id:'joker_1'},declaredValue:v}])).toBe('a');});
- it('descuenta vidas sin bajarlas de cero y termina al agotar las vidas',()=>{const g=game();g.settings.maxCards=1;start(g);g.players.forEach(p=>p.lives=1);while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,1,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}expect(g.phase).toBe('finished');expect(g.players.filter(p=>p.eliminated)).toHaveLength(1);expect(g.players.some(p=>p.lives<0)).toBe(false);expect(g.autoRestart).toBe(true);expect(g.winners).toHaveLength(1);expect(()=>advance(g,g.version)).toThrow();assertIntegrity(g);});
+ it('descuenta vidas sin bajarlas de cero y termina al agotar las vidas',()=>{const g=game();g.settings.maxCards=1;start(g);g.players.forEach(p=>p.lives=1);while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,1,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}expect(g.phase).toBe('finished');expect(g.players.filter(p=>p.eliminated)).toHaveLength(1);expect(g.players.some(p=>p.lives<0)).toBe(false);expect(g.autoRestart).toBe(false);expect(g.winners).toHaveLength(1);expect(()=>advance(g,g.version)).toThrow();assertIntegrity(g);});
  it('termina la partida antes de la última ronda si alguien pierde todas las vidas',()=>{
   const g=game();g.settings.maxCards=3;start(g);g.players.forEach(p=>p.lives=1);
   const dealt:number[]=[];
@@ -50,13 +50,16 @@ describe('motor físico',()=>{
   expect(dealt).toEqual([3]);
   expect(g.history.map(r=>r.round)).toEqual(dealt);
   expect(g.players.some(p=>p.eliminated)).toBe(true);
-  expect(g.autoRestart).toBe(true);
+  expect(g.autoRestart).toBe(false);
   expect(g.endReason).toBe('elimination');
-  rematch(g);start(g);
+  expect(g.autoRestartAt).toBeUndefined();
+  expect(()=>rematch(g,'b')).toThrow('Solo el creador');
+  expect(g.phase).toBe('finished');
+  rematch(g,'a');start(g);
   expect(g.cycle).toBe(1);
   expect(g.players.every(p=>p.lives===3&&!p.eliminated)).toBe(true);
  });
- it('alterna el modo de una carta en la revancha',()=>{const g=game();g.settings.maxCards=1;g.settings.oneCard='alternate';start(g);expect(oneCardMode(g)).toBe('hidden');while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,0,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}finishGame(g,'a',g.version);rematch(g);start(g);expect(oneCardMode(g)).toBe('visible');});
- it('solo el anfitrión puede terminar una partida y la ronda incompleta no puntúa',()=>{const g=game();start(g);const version=g.version;expect(()=>finishGame(g,'b',version)).toThrow('Solo el anfitrión');expect(g.phase).toBe('bid');finishGame(g,'a',version);expect(g.phase).toBe('finished');expect(g.endReason).toBe('manual');expect(g.autoRestart).toBe(false);expect(g.history).toHaveLength(0);expect(g.players.every(p=>p.lives===3)).toBe(true);expect(()=>finishGame(g,'a',version)).toThrow();rematch(g);expect(g.phase).toBe('lobby');});
+ it('alterna el modo de una carta en la revancha',()=>{const g=game();g.settings.maxCards=1;g.settings.oneCard='alternate';start(g);expect(oneCardMode(g)).toBe('hidden');while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,0,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}finishGame(g,'a',g.version);rematch(g,'a');start(g);expect(oneCardMode(g)).toBe('visible');});
+ it('solo el anfitrión puede terminar una partida y la ronda incompleta no puntúa',()=>{const g=game();start(g);const version=g.version;expect(()=>finishGame(g,'b',version)).toThrow('Solo el anfitrión');expect(g.phase).toBe('bid');finishGame(g,'a',version);expect(g.phase).toBe('finished');expect(g.endReason).toBe('manual');expect(g.autoRestart).toBe(false);expect(g.history).toHaveLength(0);expect(g.players.every(p=>p.lives===3)).toBe(true);expect(()=>finishGame(g,'a',version)).toThrow();rematch(g,'a');expect(g.phase).toBe('lobby');});
  it('permite a un administrador terminar una partida sin ser anfitrión',()=>{const g=game();start(g);finishGame(g,'admin',g.version,true);expect(g.phase).toBe('finished');expect(g.endReason).toBe('manual');expect(g.autoRestart).toBe(false);expect(g.pendingEvents?.at(-1)).toMatchObject({type:'game_finished',playerId:'admin'});});
 });
