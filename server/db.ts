@@ -40,4 +40,16 @@ export async function saveRoom(g:Game){
   }catch(e){await client.query('ROLLBACK');throw e;}finally{client.release();}
 }
 export async function deleteRoom(code:string){await pool.query('DELETE FROM rooms WHERE code=$1',[code]);}
+export async function purgeRoomCycle(code:string,cycle:number,actorId:string){
+  const client=await pool.connect();
+  try{
+    await client.query('BEGIN');
+    await client.query('DELETE FROM game_events WHERE room_code=$1 AND match_cycle=$2',[code,cycle]);
+    await client.query('DELETE FROM game_snapshots WHERE room_code=$1 AND match_cycle=$2',[code,cycle]);
+    const removed=await client.query('DELETE FROM rooms WHERE code=$1 RETURNING code',[code]);
+    if(!removed.rowCount)throw Error('Sala no encontrada');
+    await client.query('INSERT INTO room_audit_log(room_code,actor_id,action,data) VALUES($1,$2,$3,$4)',[code,actorId,'deleted_active',JSON.stringify({cycle})]);
+    await client.query('COMMIT');
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
+}
 export async function loadRooms():Promise<Game[]>{await pool.query("DELETE FROM rooms WHERE updated_at < now()-interval '24 hours'");return (await pool.query('SELECT state FROM rooms')).rows.map(r=>r.state as Game);}
