@@ -44,6 +44,40 @@ it('permite al oferente omitir el intercambio y empezar la predicción sin cambi
   expect(g.phase).toBe('bid');
 });
 
+it('da cambios a cada jugador, los gasta solo si se aceptan y los renueva cada X rondas',()=>{
+  const g=game({exchangeUses:2,exchangeRefreshRounds:3,infiniteLives:true});
+  expect(g.phase).toBe('exchange');
+  const first=g.exchangePairs![0].a,second=g.exchangeQueue![0];
+  expect(g.players.map(p=>p.exchanges)).toEqual([2,2]);
+  offerExchange(g,first,second);
+  selectExchange(g,first,[g.players.find(p=>p.id===first)!.hand[0].id]);
+  selectExchange(g,second,[g.players.find(p=>p.id===second)!.hand[0].id]);
+  expect(g.exchangePairs?.[0].a).toBe(second);
+  expect(g.players.find(p=>p.id===first)?.exchanges).toBe(1);
+  expect(g.players.find(p=>p.id===second)?.exchanges).toBe(2);
+  expect(view(g,first).players.find(p=>p.id===first)?.exchanges).toBe(1);
+  declineExchange(g,second);
+  expect(g.phase).toBe('bid');
+  completeOneCardRound(g);advance(g,g.version);
+  expect(g.phase).toBe('exchange');
+  offerExchange(g,g.exchangePairs![0].a,g.exchangeQueue![0]);
+  declineExchange(g,g.exchangePairs![0].b);
+  expect(g.players.find(p=>p.id===first)?.exchanges).toBe(1);
+  expect(g.players.find(p=>p.id===second)?.exchanges).toBe(2);
+  declineExchange(g,g.exchangePairs![0].a);
+  completeOneCardRound(g);advance(g,g.version);
+  while(g.phase==='exchange')declineExchange(g,g.exchangePairs![0].a);
+  expect(g.players.find(p=>p.id===first)?.exchanges).toBe(1);
+  completeOneCardRound(g);advance(g,g.version);
+  expect(g.phase).toBe('exchange');
+  expect(g.players.map(p=>p.exchanges)).toEqual([2,2]);
+  assertIntegrity(g);
+  finishGame(g,'a',g.version);rematch(g);
+  expect(g.players.map(p=>p.exchanges)).toEqual([0,0]);
+  start(g);
+  expect(g.players.map(p=>p.exchanges)).toEqual([2,2]);
+});
+
 it('muestra solo las cartas elegidas y aplica las tres visiones al predecir',()=>{
   const g=game({revealPercent:50});expect(g.phase).toBe('reveal');
   for(const p of g.players)selectReveal(g,p.id,[p.hand[0].id]);
@@ -109,6 +143,10 @@ it('crea barajas especiales, reconoce triunfo y rechaza combinaciones imposibles
   expect(()=>validateModes(settings({deck:'jokers',trump:true}))).toThrow();
   expect(()=>validateModes(settings({infiniteLives:true,lastStanding:true}))).toThrow();
   expect(()=>validateModes(settings({vision:'blind',revealPercent:20}))).toThrow();
+  expect(()=>validateModes(settings({vision:'blind',exchangeUses:2}))).toThrow();
+  expect(()=>validateModes(settings({vision:'rivals',exchangeUses:2}))).toThrow();
+  expect(()=>validateModes(settings({exchangeEveryWaves:1,exchangeUses:2}))).toThrow();
+  expect(normalizeModes({exchangeUses:2,exchangeRefreshRounds:0})).toMatchObject({exchangeUses:2,exchangeRefreshRounds:1});
   expect(()=>validateModes(settings({vision:'neighbor',revealPercent:20}))).toThrow();
 });
 

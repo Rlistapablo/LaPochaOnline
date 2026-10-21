@@ -7,6 +7,9 @@ import {addPlayer,createGame,offerExchange,start,view,type Settings} from '../sh
 it('ofrece los modos en la creación y muestra el intercambio antes de predecir',()=>{
   const form=renderToStaticMarkup(<ModeSettings modes={{}} onChange={()=>{}}/>);
   expect(form).toContain('Ofrecer intercambio cada X ciclos');
+  expect(form).toContain('Cambios disponibles por jugador');
+  const fixedForm=renderToStaticMarkup(<ModeSettings modes={{exchangeUses:2,exchangeRefreshRounds:3}} onChange={()=>{}}/>);
+  expect(fixedForm).toContain('Renovar cambios cada X rondas');
   expect(form).toContain('Recompensas por racha');
   expect(form).not.toContain('Un robo cada X rondas');
   expect(form).toContain('Vidas infinitas');

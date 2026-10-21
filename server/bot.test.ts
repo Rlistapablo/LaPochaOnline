@@ -34,6 +34,18 @@ it('los bots resuelven intercambio y revelación antes de jugar con triunfo',()=
  const g=createGame('MODBOT',{id:'a',name:'A',avatar:'🤖',connected:true,bot:'normal'},settings);addPlayer(g,{id:'b',name:'B',avatar:'🤖',connected:true,bot:'hard'});start(g);
  expect(g.phase).toBe('exchange');runBots(g);expect(['roundEnd','finished']).toContain(g.phase);expect(g.pendingEvents?.some(event=>['cards_exchanged','exchange_declined','exchange_skipped'].includes(event.type))).toBe(true);expect(g.pendingEvents?.some(event=>event.type==='cards_revealed')).toBe(true);assertIntegrity(g);
 });
+it('los bots usan o conservan sus cambios fijos sin bloquear la preparación',()=>{
+ const settings:Settings={name:'cambios',private:true,maxPlayers:3,maxCards:2,lives:3,penalty:'normal',oneCard:'visible',bots:3,difficulty:'normal',turnSeconds:30,sounds:false,modes:{exchangeUses:2,exchangeRefreshRounds:2}};
+ const g=createGame('BOTCUPOS',{id:'a',name:'A',avatar:'B',connected:true,bot:'normal'},settings);
+ addPlayer(g,{id:'b',name:'B',avatar:'B',connected:true,bot:'hard'});
+ addPlayer(g,{id:'c',name:'C',avatar:'B',connected:true,bot:'easy'});
+ start(g);
+ expect(g.exchangeQueue).toHaveLength(2);
+ runBots(g);
+ expect(['roundEnd','finished']).toContain(g.phase);
+ expect(g.players.every(p=>(p.exchanges||0)>=1)).toBe(true);
+ assertIntegrity(g);
+});
 it('un bot a ciegas espera a la jugada para usar un robo',()=>{
  const settings:Settings={name:'ciego',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:2,difficulty:'normal',turnSeconds:30,sounds:false,modes:{vision:'blind',stealWinStreak:1}};
  const g=createGame('BLIND',{id:'a',name:'A',avatar:'🤖',connected:true,bot:'normal'},settings);addPlayer(g,{id:'b',name:'B',avatar:'🤖',connected:true,bot:'normal'});start(g);
