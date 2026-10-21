@@ -57,7 +57,7 @@ export function GameWorkspace({game,userId,action}:{game:View;userId:string;acti
   const predictionsPending=game.players.filter(p=>!p.eliminated&&p.bid===undefined).length;
   const powerCount=(me?.steals||0)+(me?.reshuffles||0);
   const handCount=me?.hand?.length||0,handColumns=handCount<=5?Math.max(1,handCount):Math.min(7,Math.ceil(handCount/2));
-  const mobileStyle={'--hand-dock-height':`${dockHeight}px`,'--hand-cols':handColumns} as CSSProperties;
+  const mobileStyle={'--hand-dock-height':`${dockHeight}px`,'--hand-cols':handColumns,'--hand-rows':Math.max(1,Math.ceil(handCount/handColumns))} as CSSProperties;
   const panel=<><div className="gameTabs" role="tablist" aria-label="Información de partida">{([['players','Jugadores'],['history','Historial'],['round','Ronda']] as const).map(([id,label])=><button type="button" role="tab" aria-selected={tab===id} className={tab===id?'selected':''} onClick={()=>setTab(id)} key={id}>{label}</button>)}</div><div className="gameTabContent">{tab==='players'?<div className="playerList">{game.players.map(p=><PlayerCard key={p.id} game={game} player={p} position={currentOrder.find(x=>x.id===p.id)?.position||0}/>)}</div>:tab==='history'?<HistoryTab game={game}/>:<RoundTab game={game}/>}</div></>;
   const specialActions=['bid','play'].includes(game.phase)&&me&&!me.eliminated&&powerCount>0?<section className="panel specialActions" aria-label="Habilidades especiales">
     <h2>Habilidades especiales</h2>

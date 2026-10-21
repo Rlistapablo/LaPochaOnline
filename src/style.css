@@ -22,3 +22,25 @@
   .siteHeader .siteNav .navProfile span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
 @media(max-width:360px){.siteHeader .brand b{display:none}}
+
+/* A live room uses the phone viewport as one continuous game surface. */
+@media(max-width:900px){
+  body:has(.liveGamePage){height:100dvh;overflow:hidden}
+  body:has(.liveGamePage) .siteHeader{height:52px;min-height:52px;padding:0 12px}
+  body:has(.liveGamePage) .siteHeader .brandIcon{font-size:19px}
+  body:has(.liveGamePage) .mobileNavToggle{min-height:36px;padding:4px 9px}
+  body:has(.liveGamePage) main{height:calc(100dvh - 52px);min-height:0;display:flex;overflow:hidden}
+  body:has(.liveGamePage) footer{display:none}
+  .liveGamePage{width:100%;max-width:900px;height:100%;min-height:0;display:flex;flex-direction:column;padding:4px 8px calc(4px + env(safe-area-inset-bottom));overflow:hidden}
+  .liveGamePage .roomTop{flex:none;min-height:48px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:7px;margin:0 0 3px;padding:2px 0 4px;border-bottom:1px solid #ffffff26}
+  .liveGamePage .roomTop>div:first-child{min-width:0;flex:1}
+  .liveGamePage .roomTop .eyebrow{display:block;font-size:9px;letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .liveGamePage .roomTop h1{font-size:clamp(16px,4.5vw,21px);line-height:1.1;margin:2px 0 0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+  .liveGamePage .roomTopActions{flex:none;gap:4px}
+  .liveGamePage .roomTopActions button{display:grid;place-items:center;width:34px;height:34px;min-width:34px;padding:0;border-radius:9px;font-size:0;line-height:1}
+  .liveGamePage .roomInvite::before{content:'↗';font-size:20px}
+  .liveGamePage .roomFinish::before{content:'■';font-size:15px}
+  .liveGamePage .roomDelete::before{content:'✕';font-size:18px}
+  .liveGamePage .roomLeave::before{content:'⇥';font-size:20px}
+  .liveGamePage .roomLeave{border:1px solid #85664a;background:#291d18;color:#ffdeb5}
+}

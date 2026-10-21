@@ -147,3 +147,40 @@
 @keyframes bidPopupIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:900px){.bidPopupBackdrop{padding-top:96px;padding-bottom:calc(var(--hand-dock-height,0px) + 16px);background:#020d0a8f}.bidPopup{max-height:calc(100dvh - var(--hand-dock-height,0px) - 110px);padding:18px 14px}.bidPopup .bidOptions button{min-width:45px;min-height:45px}}
 @media(prefers-reduced-motion:reduce){.bidPopup{animation:none}}
+
+@media(max-width:900px){
+  .liveGamePage .gameWorkspace{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;padding:0;overflow:hidden}
+  .liveGamePage .mobileGameTop{position:static;flex:none;min-height:30px;gap:3px;padding:4px 8px;border-radius:7px;font-size:11px;line-height:1.2}
+  .liveGamePage .gameStatus{flex:none;min-height:32px;display:flex;flex-direction:row;align-items:center;gap:4px;margin:2px 0;padding:0 164px 0 3px;border:0;background:transparent}
+  .liveGamePage .gameStatus>div:first-child{display:none}
+  .liveGamePage .gameTurnMessage{min-width:0;margin:0;padding:0;border:0;background:none;font-size:11px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .liveGamePage .modeBadges{position:absolute;top:65px;left:50%;z-index:5;transform:translateX(-50%);display:flex;flex-wrap:nowrap;max-width:90%;margin:0;gap:3px;pointer-events:none}
+  .liveGamePage .modeBadges span{padding:2px 5px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .liveGamePage .mobileGameTools{position:absolute;top:32px;right:2px;bottom:auto;z-index:20;gap:4px;filter:none}
+  .liveGamePage .mobileGameTools button{min-height:30px;padding:4px 7px;border-radius:9px;font-size:10px;box-shadow:0 2px 8px #0007}
+  .liveGamePage .mobileGameTools button b{min-width:16px;height:16px;font-size:9px}
+  .liveGamePage .gameLayout{flex:1;min-height:0;display:block;margin:0}
+  .liveGamePage .gameMain{height:100%;min-height:0;display:flex;flex-direction:column;position:relative}
+  .liveGamePage .gameMain>.gameFelt{flex:1 1 auto;height:0;min-height:0;margin:0}
+  .liveGamePage .gameMain .handArea{position:relative;left:auto;right:auto;bottom:auto;transform:none;flex:none;width:100%;height:auto;max-height:none;min-height:0;overflow:hidden;margin:2px 0 0;padding:4px 6px calc(4px + env(safe-area-inset-bottom));border-radius:12px 12px 0 0}
+  .liveGamePage .gameMain .handArea p{margin:0;font-size:10px;line-height:1.15}
+  .liveGamePage .gameMain .hand{gap:2px;padding:3px 0 1px}
+  .liveGamePage .gameMain .hand .handChoice .playing-card{width:auto;height:min(10dvh,calc((24dvh - 34px)/var(--hand-rows)));max-width:100%;aspect-ratio:2/3}
+  .liveGamePage .gameMain .playConfirm{margin-top:1px;padding:2px 0}
+  .liveGamePage .gameMain .playConfirm button{min-height:34px;padding:5px 9px;font-size:11px}
+  .liveGamePage .gameMain .bidOpenButton{position:absolute;bottom:calc(var(--hand-dock-height) + 7px);left:50%;z-index:6;transform:translateX(-50%);min-height:35px;margin:0;padding:7px 11px;font-size:11px;white-space:nowrap}
+  .liveGamePage .gameMain .modeAction{flex:none;max-height:25dvh;overflow-y:auto;margin:1px 0;padding:6px 10px;border-radius:10px;text-align:left}
+  .liveGamePage .gameMain .modeAction h2{font-size:15px;margin:0}
+  .liveGamePage .gameMain .modeAction p{font-size:10px;line-height:1.2;margin:1px 0 3px}
+  .liveGamePage .gameMain .modeAction select{min-height:32px;padding:4px 8px;font-size:11px}
+  .liveGamePage .gameMain .modeAction button{min-height:32px;padding:5px 8px;font-size:11px}
+  .liveGamePage .gameMain>.result{flex:none;max-height:45dvh;overflow-y:auto;margin:2px 0;padding:10px}
+  .liveGamePage .bidPopupBackdrop{padding:60px 8px calc(var(--hand-dock-height) + 8px)}
+  .liveGamePage .bidPopup{max-height:calc(100dvh - var(--hand-dock-height) - 72px)}
+}
+@media(max-width:900px) and (max-height:660px){
+  .liveGamePage .gameMain .hand .handChoice .playing-card{height:min(9dvh,calc((22dvh - 30px)/var(--hand-rows)))}
+  .liveGamePage .mobileGameTop{min-height:26px}
+  .liveGamePage .gameStatus{min-height:29px}
+  .liveGamePage .mobileGameTools{top:29px}
+}

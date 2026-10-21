@@ -29,3 +29,20 @@
 @media(max-width:580px){.gameWorkspace .gameFelt.polygonTable{min-height:340px}.polygonTable .tableSeat{width:clamp(67px,22%,85px);padding:3px 2px;font-size:9px}.polygonTable .tableSeatHead .playerAvatar{width:34px;height:34px;font-size:20px}.polygonTable .tableSeat>small{font-size:9px}.polygonTable .tableSeatMarker{font-size:7px}.polygonTable .tableCenter{inset:30% 21%}.polygonTable .tableTrumpSymbol{width:clamp(68px,20vw,100px)}.polygonTable .feltTitle{font-size:15px}.polygonTable .tablePlay .playing-card.small{width:32px;height:47px}.polygonTable .opponentVisibleCards{max-width:46vw}.polygonTable .opponentVisibleCards .playing-card.small{width:27px;height:39px}}
 @media(max-width:580px){.gameWorkspace .gameFelt.polygonTable:is(.players-6,.players-7,.players-8){min-height:410px}}
 @media(prefers-reduced-motion:reduce){.polygonTable .tableSeat.isTurn,.polygonTable .tablePlay{animation:none}}
+
+/* The table takes all space left between the compact room header and the hand. */
+@media(max-width:900px){
+  .liveGamePage .gameWorkspace .gameFelt.polygonTable{height:100%;min-height:0;max-height:none;overflow:visible}
+  .liveGamePage .polygonTable .tablePlay .playing-card.small{width:clamp(43px,12vw,58px);height:auto;aspect-ratio:2/3}
+  .liveGamePage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(35px,9vw,46px)}
+  .liveGamePage .polygonTable .tableSeat{width:clamp(70px,21vw,98px)}
+  .liveGamePage .polygonTable .tableSeatHead .playerAvatar{width:clamp(35px,10vw,47px);height:clamp(35px,10vw,47px);font-size:24px}
+  .liveGamePage .polygonTable .tableTrumpSymbol{width:clamp(75px,22vw,124px)}
+  .liveGamePage .polygonTable .tableCenter{inset:27% 19%}
+}
+@media(max-width:900px) and (max-height:660px){
+  .liveGamePage .polygonTable .tableSeatHead .playerAvatar{width:32px;height:32px;font-size:19px}
+  .liveGamePage .polygonTable .tableSeatMarker{min-height:8px;font-size:6px}
+  .liveGamePage .polygonTable .tableSeat>small{font-size:8px}
+  .liveGamePage .polygonTable .tablePlay .playing-card.small{width:clamp(38px,10vw,49px)}
+}
