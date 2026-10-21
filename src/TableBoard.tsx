@@ -8,9 +8,10 @@ const avatarOf=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<
 
 export function TableBoard({game,userId}:{game:View;userId:string}){
   const {plays,revealing}=useVisibleTrick(game);
-  const order=game.order.filter(id=>game.players.some(player=>player.id===id));
-  const count=order.length;
-  const vertices=order.map((id,index)=>{
+  const seats=game.players.map(player=>player.id);
+  const count=seats.length;
+  const startId=game.order[0],endId=game.order.at(-1);
+  const vertices=seats.map((id,index)=>{
     const angle=Math.PI/2-index*2*Math.PI/count;
     const playRadiusX=count===2?0:28,playRadiusY=count===2?14:18;
     return {id,x:50+46*Math.cos(angle),y:50+44*Math.sin(angle),seatX:50+38*Math.cos(angle),seatY:50+35*Math.sin(angle),playX:50+playRadiusX*Math.cos(angle),playY:50+playRadiusY*Math.sin(angle)};
@@ -30,14 +31,14 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
       <defs><marker id="pocha-turn-arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
     </svg>
     <div className="tableCenter">{game.trumpSuit?<div className="tableTrumpSymbol" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
-    {vertices.map((vertex,index)=>{
+    {vertices.map(vertex=>{
       const player=game.players.find(item=>item.id===vertex.id)!;
       const active=game.turnId===player.id&&['bid','play'].includes(game.phase);
       const style={'--seat-x':`${vertex.seatX}%`,'--seat-y':`${vertex.seatY}%`} as CSSProperties;
       const play=plays.find(item=>item.playerId===player.id);
       const playStyle={'--play-x':`${vertex.playX}%`,'--play-y':`${vertex.playY}%`} as CSSProperties;
-      return <Fragment key={player.id}><div className={`tableSeat ${active?'isTurn':''} ${player.id===userId?'isMe':''} ${player.eliminated?'isOut':''}`} style={style} aria-label={`${player.name}. ${index===0?'Comienza':index===count-1?'Termina':'Jugador'} la secuencia. ${player.lives} vidas, ${player.wins} bazas ganadas, ${player.bid??'sin'} predichas.${active?' Su turno.':''}`}>
-        <span className="tableSeatMarker">{index===0?'INICIO':index===count-1?'FINAL':null}</span><div className="tableSeatHead"><span className="playerAvatar">{avatarOf(player.avatar)}</span><b>{player.name}{player.id===userId?' · Tú':''}</b></div><small>❤️ {game.settings.modes?.infiniteLives?'∞':player.lives} <span>🏆 {player.wins}/{player.bid??'—'}</span></small>{active&&<strong className="tableTurnIndicator">{game.phase==='bid'?'PREDICE':'JUEGA'}</strong>}
+      return <Fragment key={player.id}><div className={`tableSeat ${active?'isTurn':''} ${player.id===userId?'isMe':''} ${player.eliminated?'isOut':''}`} style={style} aria-label={`${player.name}. ${player.id===startId?'Comienza':player.id===endId?'Termina':player.eliminated?'Fuera de':'Continúa'} la secuencia. ${player.lives} vidas, ${player.wins} bazas ganadas, ${player.bid??'sin'} predichas.${active?' Su turno.':''}`}>
+        <span className="tableSeatMarker">{player.id===startId&&<span className="tableSequenceBadge start" aria-label="Inicio de la secuencia"><span aria-hidden="true">▶</span> INICIO</span>}{player.id===endId&&<span className="tableSequenceBadge end" aria-label="Final de la secuencia"><span aria-hidden="true">■</span> FINAL</span>}</span><div className="tableSeatHead"><span className="playerAvatar">{avatarOf(player.avatar)}</span><b>{player.name}{player.id===userId?' · Tú':''}</b></div><small>❤️ {game.settings.modes?.infiniteLives?'∞':player.lives} <span>🏆 {player.wins}/{player.bid??'—'}</span></small>{active&&<strong className="tableTurnIndicator">{game.phase==='bid'?'PREDICE':'JUEGA'}</strong>}
         {player.id!==userId&&player.hand?.some(Boolean)&&<div className="opponentVisibleCards">{player.hand.map((card,cardIndex)=>card?<CardView key={card.id} card={card} small/>:<CardView key={cardIndex} card={null} hidden small/>)}</div>}
       </div>{play&&<div className={`tablePlay ${revealing&&game.lastTrick?.winnerId===player.id?'isWinningPlay':''}`} style={playStyle} aria-label={`${player.name} jugó en posición ${plays.indexOf(play)+1}`}><CardView card={play.card} small declaredValue={play.declaredValue}/></div>}</Fragment>;
     })}

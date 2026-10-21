@@ -4,6 +4,25 @@ import {addPlayer,bid,createGame,start,view,type Settings} from '../shared/game'
 import {GameWorkspace} from './GameWorkspace';
 import {TrickHistory} from './TrickHistory';
 import {CardView} from './CardView';
+import {TableBoard} from './TableBoard';
+
+it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
+  const settings:Settings={name:'Mesa',private:true,maxPlayers:3,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
+  const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
+  addPlayer(game,{id:'b',name:'Berta',avatar:'🃏',connected:true});
+  addPlayer(game,{id:'c',name:'Cora',avatar:'🃏',connected:true});
+  start(game);
+  game.phase='bid';
+  game.firstIndex=0;
+  const first=renderToStaticMarkup(<TableBoard game={view(game,'a')} userId="a"/>);
+  game.firstIndex=1;
+  const second=renderToStaticMarkup(<TableBoard game={view(game,'a')} userId="a"/>);
+  const seat=(markup:string,name:string)=>markup.match(new RegExp(`<div class="tableSeat[^"]*" style="([^"]+)" aria-label="${name}\\.`))?.[1];
+  for(const name of ['Ana','Berta','Cora'])expect(seat(second,name)).toBe(seat(first,name));
+  expect(first).toMatch(/aria-label="Ana\. Comienza[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge start"/);
+  expect(second).toMatch(/aria-label="Berta\. Comienza[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge start"/);
+  expect(second).toMatch(/aria-label="Ana\. Termina[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge end"/);
+});
 
 it('muestra orden, turno y progreso de bazas con datos del servidor',()=>{
   const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:2,jokerCount:2,lives:5,penalty:'progressive',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};

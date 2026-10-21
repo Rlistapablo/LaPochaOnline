@@ -53,3 +53,17 @@
   .gamePage .polygonTable .tableSeatHead .playerAvatar{width:48px;height:48px;font-size:28px}
   .gamePage .polygonTable .tableTrumpSymbol{width:clamp(120px,12vw,170px)}
 }
+.polygonTable .tableSeatMarker{height:23px;min-height:23px;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap}
+.polygonTable .tableSequenceBadge{display:inline-flex;align-items:center;gap:3px;padding:4px 6px;border:1px solid currentColor;border-radius:999px;background:#102a22e8;box-shadow:0 2px 9px #0009;text-shadow:none;font:900 9px/1 'DM Sans',sans-serif;letter-spacing:.06em}
+.polygonTable .tableSequenceBadge.start{color:#bff1a8}
+.polygonTable .tableSequenceBadge.end{color:#ffd0a1}
+.polygonTable .tableSequenceBadge.start span{font-size:11px}
+.polygonTable .tableSequenceBadge.end span{font-size:9px}
+.polygonTable .tableTurnIndicator{position:absolute;top:calc(100% + 2px);left:50%;transform:translateX(-50%);white-space:nowrap}
+.polygonTable .tableSeat.isTurn .opponentVisibleCards{top:calc(100% + 18px)}
+@media(max-width:580px){
+  .polygonTable .tableSeatMarker{height:18px;min-height:18px}
+  .polygonTable .tableSequenceBadge{padding:3px 4px;font-size:7px}
+  .polygonTable .tableSequenceBadge.start span{font-size:9px}
+  .polygonTable .tableSequenceBadge.end span{font-size:7px}
+}
