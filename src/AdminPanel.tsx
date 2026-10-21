@@ -1,5 +1,6 @@
 import {useEffect,useState} from 'react';
 import {apiPath} from './paths';
+import {readApiResponse} from './api-response';
 import './admin.css';
 
 type Room={code:string;name:string;host:string;players:number;status:string};
@@ -8,9 +9,7 @@ type ActiveUser={id:string;name:string;guest:boolean;connections:number};
 const headers=()=>({Authorization:`Bearer ${localStorage.getItem('pocha_token')||''}`});
 async function request(path:string,method='GET'){
   const response=await fetch(apiPath(path),{method,headers:headers()});
-  const data=await response.json();
-  if(!response.ok)throw Error(data.error||'Error al cargar moderación');
-  return data;
+  return readApiResponse(response);
 }
 
 export function AdminPanel(){
