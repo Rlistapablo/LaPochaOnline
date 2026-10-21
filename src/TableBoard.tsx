@@ -25,9 +25,9 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
     <svg className="tableOutline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       {lens?<path className="tableRim" d="M50 6 Q100 50 50 94 Q0 50 50 6 Z"/>:<polygon className="tableRim" points={points}/>}
       {lens?<><path className="rotationArrow" d="M60 76 Q85 50 60 24" markerEnd="url(#pocha-turn-arrow)"/><path className="rotationArrow" d="M40 24 Q15 50 40 76" markerEnd="url(#pocha-turn-arrow)"/></>:arrows.map((arrow,index)=><line className="rotationArrow" key={index} {...arrow} markerEnd="url(#pocha-turn-arrow)"/>)}
-      <defs><marker id="pocha-turn-arrow" markerWidth="4" markerHeight="4" refX="3" refY="2" orient="auto"><path d="M0 0 L4 2 L0 4 Z" fill="currentColor"/></marker></defs>
+      <defs><marker id="pocha-turn-arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
     </svg>
-    <div className="tableCenter"><span className="tableDirection">↶ SENTIDO ANTIHORARIO</span>{game.trumpSuit&&<div className="tableTrump" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/><span><small>TRIUNFO · GANA ESTE PALO</small><strong>{game.trumpSuit}</strong></span></div>}<div className="feltInner"><span className="feltTitle">LA POCHA</span><TableCards game={game}/></div></div>
+    <div className="tableCenter"><span className="tableDirection"><span aria-hidden="true">↶</span> SENTIDO ANTIHORARIO</span>{game.trumpSuit&&<div className="tableTrump" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/><span><small>TRIUNFO · GANA ESTE PALO</small><strong>{game.trumpSuit}</strong></span></div>}<div className="feltInner"><span className="feltTitle">LA POCHA</span><TableCards game={game}/></div></div>
     {vertices.map((vertex,index)=>{
       const player=game.players.find(item=>item.id===vertex.id)!;
       const active=game.turnId===player.id&&['bid','play'].includes(game.phase);
