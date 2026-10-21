@@ -46,3 +46,10 @@
   .liveGamePage .polygonTable .tableSeat>small{font-size:8px}
   .liveGamePage .polygonTable .tablePlay .playing-card.small{width:clamp(38px,10vw,49px)}
 }
+@media(min-width:901px){
+  .gamePage .gameWorkspace .gameFelt.polygonTable{height:clamp(440px,calc(100dvh - 320px),680px);min-height:0}
+  .gamePage .polygonTable .tablePlay .playing-card.small{width:clamp(61px,5vw,76px);height:auto;aspect-ratio:2/3}
+  .gamePage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(49px,4vw,60px)}
+  .gamePage .polygonTable .tableSeatHead .playerAvatar{width:48px;height:48px;font-size:28px}
+  .gamePage .polygonTable .tableTrumpSymbol{width:clamp(120px,12vw,170px)}
+}

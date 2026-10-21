@@ -182,5 +182,40 @@
   .liveGamePage .gameMain .hand .handChoice .playing-card{height:min(9dvh,calc((22dvh - 30px)/var(--hand-rows)))}
   .liveGamePage .mobileGameTop{min-height:26px}
   .liveGamePage .gameStatus{min-height:29px}
-  .liveGamePage .mobileGameTools{top:29px}
 }
+
+@media(min-width:901px){
+  .gamePage{max-width:1400px}
+  .gamePage .gameLayout{grid-template-columns:minmax(0,1fr) minmax(260px,26%)}
+}
+
+.exchangePopupBackdrop,.resultPopupBackdrop,.powerNoticeBackdrop{position:fixed;inset:0;z-index:42;display:grid;place-items:center;padding:16px;background:#020d0ac9;backdrop-filter:blur(4px)}
+.exchangePopup,.resultPopupBackdrop .result,.powerNotice{position:relative;width:min(570px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;border:2px solid #e5c27a;box-shadow:0 24px 70px #000d,0 0 30px #e1bd6840;animation:bidPopupIn .2s ease-out}
+.exchangePopupClose,.resultPopupClose{position:absolute;top:9px;right:9px;z-index:2;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:9px;background:#294033;color:#ffe7b3;font-size:25px}
+.exchangePopup .modeAction{margin:0;padding:0;border:0;background:none;box-shadow:none;text-align:left}
+.exchangePopup .modeAction h2{padding-right:40px}
+.exchangePopup .modeAction p{margin:8px 0 13px}
+.exchangePopup .modeAction .exchangeDecisions{justify-content:flex-start}
+.exchangePopupHand{margin-top:16px;padding-top:12px;border-top:1px solid #ffffff35;text-align:center;color:#f3dfad;font-size:12px;font-weight:700}
+.exchangePopupHand .hand{display:grid;grid-template-columns:repeat(var(--hand-cols),minmax(0,1fr));justify-items:center;gap:5px;max-width:620px;margin:auto;padding:12px 0 5px;overflow:visible}
+.exchangePopupHand .handChoice{min-width:0;padding:0}
+.exchangePopupHand .playing-card{width:min(100%,68px);height:auto;aspect-ratio:2/3}
+.exchangeOpenButton,.resultOpenButton{display:block;align-self:center;margin:10px auto}
+.resultPopupBackdrop .result{margin:0;text-align:center}
+.resultPopupBackdrop .result h2{padding-right:35px;padding-left:35px}
+.resultPopupBackdrop .result .results{margin-top:12px}
+.resultPopupBackdrop .result .primary{margin-top:15px}
+.powerNoticeBackdrop{z-index:55}
+.powerNotice{width:min(380px,100%);padding:24px;text-align:center}
+.powerNoticeSymbol{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 12px;border:2px solid #e9c87e;border-radius:50%;background:#31563d;color:#ffe6a6;font-size:38px}
+.powerNotice h2{font-size:24px}.powerNotice p{font-size:13px}.powerNotice .secondary{margin-top:5px}
+@media(max-width:900px){
+  .liveGamePage .gameStatus{padding-right:3px}
+  .liveGamePage .mobileGameTools{top:auto;right:8px;bottom:calc(var(--hand-dock-height) + 7px)}
+  .liveGamePage .gameMain>.resultOpenButton{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;margin:0;white-space:nowrap}
+  .exchangePopup,.resultPopupBackdrop .result{width:min(100%,520px);padding:16px 12px}
+  .exchangePopupHand .hand{gap:3px;padding:8px 0 4px}
+  .exchangePopupHand .playing-card{width:min(100%,54px,8dvh)}
+  .resultPopupBackdrop .result .results>div{grid-template-columns:minmax(60px,1.3fr) repeat(3,minmax(40px,1fr));gap:3px;padding:8px 2px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.exchangePopup,.resultPopupBackdrop .result,.powerNotice{animation:none}}
