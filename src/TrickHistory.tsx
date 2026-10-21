@@ -21,6 +21,7 @@ export function TableCards({game}:{game:View}){
 }
 
 export function TrickHistory({game}:{game:View}){
+  if(game.phase!=='finished')return null;
   const rounds=[...game.history];
   if(game.tricks.length&&!rounds.some(r=>r.roundIndex===game.round-1))rounds.push({round:game.cardsPerPlayer,roundIndex:game.round-1,result:[],tricks:game.tricks,hands:undefined});
   if(!rounds.length)return null;

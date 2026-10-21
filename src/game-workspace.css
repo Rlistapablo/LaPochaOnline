@@ -140,3 +140,10 @@
 @keyframes drawerEnter{from{transform:translateX(22px);opacity:.6}to{transform:translateX(0);opacity:1}}
 @media(max-width:420px){.mobileGameTools{right:8px;gap:5px}.mobileGameTools button{padding:7px 9px;font-size:11px}.gameFelt .seat:has(.opponentVisibleCards){max-width:100%}.gameFelt .opponents:has(>.seat:nth-child(2)) .seat:has(.opponentVisibleCards){max-width:calc(50% - 3px)}}
 @media(prefers-reduced-motion:reduce){.gameDrawer{animation:none}}
+.bidOpenButton{display:block;margin:10px auto 0;min-height:44px}
+.bidPopupBackdrop{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:clamp(95px,17dvh,165px) 16px 25px;background:#020d0ab0;backdrop-filter:blur(2px)}
+.bidPopup{position:relative;width:min(440px,100%);max-height:calc(100dvh - 120px);overflow-y:auto;text-align:center;border:2px solid #edca7b;box-shadow:0 24px 70px #000c,0 0 30px #e1bd6859;animation:bidPopupIn .2s ease-out}
+.bidPopup h2{margin:8px 0;font-size:clamp(23px,5vw,31px)}.bidPopup p{margin:0 0 15px;font-size:13px}.bidPopup small{display:block;margin-top:13px;color:#d8c69f;font-size:11px}.bidPopup .bidOptions{max-height:36dvh;overflow-y:auto;gap:8px}.bidPopup .bidOptions button{min-width:50px;min-height:48px}.bidPopupClose{position:absolute;top:8px;right:8px;display:grid;place-items:center;width:36px;height:36px;border:0;background:transparent;color:#f5e5b8;font-size:28px}
+@keyframes bidPopupIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:900px){.bidPopupBackdrop{padding-top:96px;padding-bottom:calc(var(--hand-dock-height,0px) + 16px);background:#020d0a8f}.bidPopup{max-height:calc(100dvh - var(--hand-dock-height,0px) - 110px);padding:18px 14px}.bidPopup .bidOptions button{min-width:45px;min-height:45px}}
+@media(prefers-reduced-motion:reduce){.bidPopup{animation:none}}
