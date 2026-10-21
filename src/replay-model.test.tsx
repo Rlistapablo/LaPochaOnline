@@ -44,10 +44,26 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect(html).toContain('Momentos de la ronda');
   expect(html).toContain('Ana gana la baza');
   expect(html).toContain('As de Oros');
-  expect((html.match(/replaySeatPlay/g)||[])).toHaveLength(2);
+  expect((html.match(/class="tablePlay/g)||[])).toHaveLength(2);
+  expect(html).toContain('polygonTable replayFelt players-2');
+  expect(html).toContain('rotationArrow');
+  expect(html).toContain('INICIO');
+  expect(html).toContain('FINAL');
   expect(html).not.toContain('replayPlayed');
   expect(html).toContain('role="progressbar"');
   expect(html).toContain('Mostrar todas las manos');
+});
+it('mantiene las posiciones al rotar el inicio de la ronda',()=>{
+  const rotated:ReplayData={...replay,events:[
+    event(1,'round_started',{roundIndex:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3}}),
+    event(2,'round_started',{roundIndex:1,cards:1,order:['b','a'],hands:{a:[ace],b:[two]},lives:{a:3,b:3}}),
+  ]};
+  const scenes=buildReplayTimeline(rotated);
+  const render=(index:number)=>renderToStaticMarkup(<ReplayBoard replay={rotated} scenes={scenes} index={index} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="a" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
+  const first=render(0),second=render(1);
+  expect(first).toContain('style="--seat-x:50%;--seat-y:85%" aria-label="Ana. Comienza');
+  expect(second).toContain('style="--seat-x:50%;--seat-y:85%" aria-label="Ana. Termina');
+  expect(second).toContain('style="--seat-x:50%;--seat-y:15%" aria-label="Bot Pepe. Comienza');
 });
 it('reconstruye intercambios, cartas mostradas y robos en la repetición',()=>{
   const altered:ReplayData={...replay,events:[

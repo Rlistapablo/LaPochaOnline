@@ -1,8 +1,9 @@
-import {useEffect,useMemo,useState} from 'react';
+import {Fragment,useEffect,useMemo,useState,type CSSProperties} from 'react';
 import {CardView,SuitArt} from './CardView';
 import {SUITS} from '../shared/game';
 import {apiPath} from './paths';
 import {buildReplayTimeline,type ReplayData,type ReplayPlayer,type ReplayScene} from './replay-model';
+import './table-board.css';
 import './replay.css';
 
 type ReplayEntry={id:string;room_name:string;room_code:string;finished_at:string;won:boolean};
@@ -38,6 +39,49 @@ function ReplayPlayerCard({player,scene,focused}:{player:ReplayPlayer;scene:Repl
   </article>;
 }
 
+function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:ReplayScene;focusId:string;showHands:boolean}){
+  const count=replay.players.length;
+  const vertices=replay.players.map((player,index)=>{
+    const angle=Math.PI/2-index*2*Math.PI/count;
+    const playRadiusX=count===2?0:28,playRadiusY=count===2?14:18;
+    return {player,x:50+46*Math.cos(angle),y:50+44*Math.sin(angle),seatX:50+38*Math.cos(angle),seatY:50+35*Math.sin(angle),playX:50+playRadiusX*Math.cos(angle),playY:50+playRadiusY*Math.sin(angle)};
+  });
+  const points=vertices.map(vertex=>`${vertex.x},${vertex.y}`).join(' ');
+  const arrows=vertices.map((vertex,index)=>{
+    const next=vertices[(index+1)%count];
+    const startX=50+(vertex.x-50)*.88,startY=50+(vertex.y-50)*.88;
+    const endX=50+(next.x-50)*.88,endY=50+(next.y-50)*.88;
+    return {x1:startX+(endX-startX)*.24,y1:startY+(endY-startY)*.24,x2:startX+(endX-startX)*.72,y2:startY+(endY-startY)*.72};
+  });
+  const startId=scene.order[0],endId=scene.order.at(-1);
+  const trumpSuit=SUITS.find(suit=>suit===scene.trumpSuit);
+  return <div className={`table gameFelt polygonTable replayFelt players-${count} ${trumpSuit?`trump-${trumpSuit.toLowerCase()}`:''}`} aria-label={`Mesa de repetición de ${count} jugadores. Sentido antihorario.${trumpSuit?` Triunfo: ${trumpSuit}.`:''}`}>
+    <svg className="tableOutline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+      {count===2?<path className="tableRim" d="M50 6 Q100 50 50 94 Q0 50 50 6 Z"/>:<polygon className="tableRim" points={points}/>}
+      {count===2?<><path className="rotationArrow" d="M60 76 Q85 50 60 24" markerEnd="url(#pocha-replay-turn-arrow)"/><path className="rotationArrow" d="M40 24 Q15 50 40 76" markerEnd="url(#pocha-replay-turn-arrow)"/></>:arrows.map((arrow,index)=><line className="rotationArrow" key={index} {...arrow} markerEnd="url(#pocha-replay-turn-arrow)"/>)}
+      <defs><marker id="pocha-replay-turn-arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
+    </svg>
+    <div className="tableCenter">{trumpSuit?<div className="tableTrumpSymbol replayTrumpSymbol" aria-label={`Triunfo de la ronda: ${trumpSuit}`}><SuitArt suit={trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
+    {vertices.map(vertex=>{
+      const player=vertex.player,id=player.player_id,hand=scene.hands[id]||[];
+      const play=scene.table.find(item=>item.playerId===id);
+      const visibleCards=showHands?hand:hand.filter(card=>scene.revealed[id]?.includes(card.id));
+      const hiddenCount=showHands?0:Math.min(3,hand.length-visibleCards.length);
+      const seatStyle={'--seat-x':`${vertex.seatX}%`,'--seat-y':`${vertex.seatY}%`} as CSSProperties;
+      const playStyle={'--play-x':`${vertex.playX}%`,'--play-y':`${vertex.playY}%`} as CSSProperties;
+      const active=scene.nextPlayerId===id;
+      return <Fragment key={id}><div className={`tableSeat ${active?'isTurn':''} ${id===focusId?'isMe':''} ${(scene.lives[id]??player.lives_start)===0?'isOut':''}`} style={seatStyle} aria-label={`${player.name}. ${id===startId?'Comienza':id===endId?'Termina':'Continúa'} la secuencia. ${scene.lives[id]??player.lives_start} vidas, ${scene.wins[id]||0} bazas ganadas, ${scene.bids[id]??'sin'} predichas.${active?' Su turno.':''}`}>
+        <span className="tableSeatMarker">{id===startId&&<span className="tableSequenceBadge start" aria-label="Inicio de la secuencia"><span aria-hidden="true">▶</span> INICIO</span>}{id===endId&&<span className="tableSequenceBadge end" aria-label="Final de la secuencia"><span aria-hidden="true">■</span> FINAL</span>}</span>
+        <div className="tableSeatHead"><span className="playerAvatar">{avatar(player.avatar)}</span><b>{player.name}{id===focusId?' · Tú':''}</b></div>
+        <small>❤️ {scene.lives[id]??player.lives_start} <span>🏆 {scene.wins[id]||0}/{scene.bids[id]??'—'}</span></small>
+        <ReplayPowers scene={scene} id={id} compact/>
+        {active&&<strong className="tableTurnIndicator">{scene.type==='bid'?'PREDICE':'JUEGA'}</strong>}
+        {id!==focusId&&hand.length>0&&<div className="opponentVisibleCards replaySeatCards">{visibleCards.map(card=><CardView key={card.id} card={card} small/>)}{Array.from({length:hiddenCount},(_,index)=><CardView key={index} card={null} hidden small/>)}</div>}
+      </div>{play&&<div className={`tablePlay ${scene.winnerId===id?'isWinningPlay':''}`} style={playStyle} aria-label={`${player.name} jugó en posición ${scene.table.indexOf(play)+1}`}><CardView card={play.card} small declaredValue={play.declaredValue}/></div>}</Fragment>;
+    })}
+  </div>;
+}
+
 export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,focusId,setFocusId,showHands,setShowHands}:{replay:ReplayData;scenes:ReplayScene[];index:number;setIndex:(n:number)=>void;playing:boolean;setPlaying:(value:boolean)=>void;focusId:string;setFocusId:(id:string)=>void;showHands:boolean;setShowHands:(value:boolean)=>void}){
   const scene=scenes[index];
   if(!scene)return <div className="panel replayEmpty">Esta partida se guardó antes de activar el registro detallado de eventos.</div>;
@@ -47,9 +91,7 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
   const tricks=[...new Set(currentRoundScenes.filter(entry=>['card_played','trick_won'].includes(entry.item.type)).map(entry=>entry.item.trickIndex))];
   const selectedTrick=['round_started','bid'].includes(scene.type)?-1:scene.trickIndex;
   const focus=replay.players.find(player=>player.player_id===focusId)||replay.players[0];
-  const trumpSuit=SUITS.find(suit=>suit===scene.trumpSuit);
   const focusHand=scene.hands[focus?.player_id]||[];
-  const focusPlay=scene.table.find(play=>play.playerId===focus?.player_id);
   const jump=(position:number)=>{setPlaying(false);setIndex(position);};
   const jumpTrick=(value:number)=>{
     if(value<0){jump(roundStarts.find(entry=>entry.item.roundIndex===scene.roundIndex)?.position??index);return;}
@@ -60,15 +102,7 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
     <div className="replayLayout">
       <div className="replayMain">
         <div className="replayStageFacts"><span>Baza {Math.min(scene.trickIndex+1,scene.cards)} de {scene.cards}{scene.trumpSuit?' · 👑 '+scene.trumpSuit:''}</span><span>{scene.nextPlayerId?'Le toca a '+name(scene.nextPlayerId):scene.winnerId?'Ganó '+name(scene.winnerId):'Situación '+(index+1)+' de '+scenes.length}</span></div>
-        <div className={`table gameFelt replayFelt ${trumpSuit?`trump-${trumpSuit.toLowerCase()}`:''}`} aria-label={`Mesa de repetición${trumpSuit?`. Triunfo: ${trumpSuit}`:''}`}>
-          <div className="opponents">{replay.players.filter(player=>player.player_id!==focus?.player_id).map(player=>{
-            const hand=scene.hands[player.player_id]||[];
-            const play=scene.table.find(item=>item.playerId===player.player_id);
-            return <div className={'seat '+(scene.nextPlayerId===player.player_id?'turn ':'')+((scene.lives[player.player_id]??player.lives_start)===0?'out':'')} key={player.player_id}><span className="seatOrder">{scene.order.indexOf(player.player_id)+1}.º</span><span className="playerAvatar">{avatar(player.avatar)}</span><b>{player.name}</b><small>❤️ {scene.lives[player.player_id]??player.lives_start} · 🏆 {scene.wins[player.player_id]||0}/{scene.bids[player.player_id]??'—'}</small><ReplayPowers scene={scene} id={player.player_id} compact/>{play&&<div className={`replaySeatPlay ${scene.winnerId===player.player_id?'winner':''}`} aria-label={`${player.name} jugó esta carta`}><CardView card={play.card} small declaredValue={play.declaredValue}/></div>}<div className="replaySeatHand">{showHands?hand.map(card=><CardView key={card.id} card={card} small/>):<div className="replayBacks">{hand.filter(card=>scene.revealed[player.player_id]?.includes(card.id)).map(card=><CardView key={card.id} card={card} small/>)}{Array.from({length:Math.min(3,hand.filter(card=>!scene.revealed[player.player_id]?.includes(card.id)).length)},(_,n)=><CardView key={n} card={null} hidden small/>)}</div>}<span>{hand.length} {hand.length===1?'carta':'cartas'}</span></div></div>;
-          })}</div>
-          <div className="felt"><div className="feltInner">{trumpSuit?<div className="replayTrumpSymbol" aria-label={`Triunfo de la ronda: ${trumpSuit}`}><SuitArt suit={trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div></div>
-          {focus&&<div className={'mySeat '+(scene.nextPlayerId===focus.player_id?'turn':'')}><span className="seatOrder">{scene.order.indexOf(focus.player_id)+1}.º</span><span className="playerAvatar">{avatar(focus.avatar)}</span><div><b>{focus.name}</b><small>❤️ {scene.lives[focus.player_id]??focus.lives_start} · 🏆 {scene.wins[focus.player_id]||0}/{scene.bids[focus.player_id]??'—'}</small><ReplayPowers scene={scene} id={focus.player_id} compact/></div>{focusPlay&&<div className={`replaySeatPlay replayOwnPlay ${scene.winnerId===focus.player_id?'winner':''}`} aria-label={`${focus.name} jugó esta carta`}><CardView card={focusPlay.card} small declaredValue={focusPlay.declaredValue}/></div>}</div>}
-        </div>
+        <ReplayTable replay={replay} scene={scene} focusId={focus?.player_id||''} showHands={showHands}/>
         {scene.reason&&<div className="replayResultBanner">🏆 {scene.reason}</div>}
         {scene.results&&<div className="replayResultGrid">{scene.results.map(result=><div key={result.id}><b>{name(result.id)}</b><span>{result.wins}/{result.bid} bazas</span><span>❤️ {result.livesBefore??'—'} → {result.lives}</span><span>−{result.lost} vidas</span></div>)}</div>}
         {scene.type==='game_finished'&&<div className="replayResultBanner">{replay.game.winners.length?'Resultado final: '+replay.game.winners.map(name).join(' y '):'Partida cancelada'}</div>}
@@ -89,7 +123,6 @@ export function ReplayLibrary(){
   useEffect(()=>{if(!playing)return;if(index>=scenes.length-1){setPlaying(false);return;}const timer=setTimeout(()=>setIndex(index+1),1800);return()=>clearTimeout(timer);},[playing,index,scenes.length]);
   const open=async(id:string)=>{try{const data=await request('/'+id) as ReplayData;setReplay(data);setFocusId(data.players.find(player=>!player.is_bot)?.player_id||data.players[0]?.player_id||'');setIndex(0);setPlaying(false);setShowHands(false);setError('');}catch(cause){setError(String(cause));}};
   const remove=async(item:ReplayEntry)=>{
-    if(!window.confirm('¿Borrar definitivamente la repetición de '+(item.room_name||'Sala '+item.room_code)+'? Desaparecerá también para los demás participantes. Esta acción no se puede deshacer.'))return;
     setDeletingId(item.id);setError('');
     try{await request('/'+item.id,'DELETE');const next=await request('?page='+page) as ReplayEntry[];setList(next);if(!next.length&&page>0)setPage(page-1);if(replay?.game.id===item.id){setReplay(null);setPlaying(false);}}catch(cause){setError(String(cause));}finally{setDeletingId('');}
   };

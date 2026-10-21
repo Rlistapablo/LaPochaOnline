@@ -24,3 +24,18 @@
 .replaySeatPlay.winner .playing-card{box-shadow:0 0 0 3px #ffe083,0 0 22px #ffe083}
 .replaySeatPlay.replayOwnPlay{top:auto;bottom:calc(100% + 5px)}
 @media(max-width:620px){.replayTrumpSymbol{width:90px}.replaySeatPlay .playing-card{width:35px;height:51px}}
+
+/* The archive uses the same table geometry and seats as a live game. */
+.replayStage .gameFelt.polygonTable{height:clamp(460px,calc(100dvh - 340px),680px);min-height:460px}
+.replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(53px,5vw,72px);height:auto;aspect-ratio:2/3}
+.replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(43px,4vw,58px)}
+.replayStage .polygonTable .tableSeatHead .playerAvatar{width:48px;height:48px;font-size:28px}
+.replayStage .polygonTable .tableTrumpSymbol{width:clamp(120px,12vw,170px)}
+.replayStage .polygonTable .replayPowerList.compact{margin:0;max-width:100%;justify-content:center}
+.replayStage .polygonTable .replayPowerList.compact span{padding:1px 3px;background:#102a22dd}
+.replayStage .polygonTable .replaySeatCards{display:flex;align-items:center;gap:0;overflow:hidden;max-width:min(32vw,280px);padding:2px 5px}
+.replayStage .polygonTable .replaySeatCards .playing-card.small{flex:none;margin-left:-7px}
+.replayStage .polygonTable .replaySeatCards .playing-card.small:first-child{margin-left:0}
+.replayStage .polygonTable .tableSeat.isTurn .replaySeatCards{top:calc(100% + 18px)}
+@media(max-width:1000px){.replayStage .gameFelt.polygonTable{height:clamp(390px,55vh,600px);min-height:390px}}
+@media(max-width:620px){.replayStage .gameFelt.polygonTable{height:clamp(360px,55svh,510px);min-height:360px}.replayStage .polygonTable .tableSeatHead .playerAvatar{width:38px;height:38px;font-size:22px}.replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(39px,11vw,54px)}.replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(32px,8vw,43px)}.replayStage .polygonTable .tableTrumpSymbol{width:clamp(82px,22vw,118px)}.replayStage .polygonTable .replaySeatCards{max-width:38vw}.replayStage .polygonTable .replaySeatCards .playing-card.small{width:26px;height:38px}.replayStage .polygonTable .replayPowerList.compact{font-size:8px}}
