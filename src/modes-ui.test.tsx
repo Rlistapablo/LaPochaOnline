@@ -18,7 +18,10 @@ it('ofrece los modos en la creación y muestra el intercambio antes de predecir'
   const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);addPlayer(game,{id:'b',name:'Beto',avatar:'🃏',connected:true});start(game);
   const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
   expect(html).toContain('Intercambio de cartas');
-  expect(html).toContain('Triunfo:');
+  expect(html).toContain(`Tapete. Triunfo: ${game.trumpSuit}`);
+  expect(html).toContain('trumpWatermark');
+  expect(html).not.toContain('feltTrump');
+  expect(html).not.toContain('trumpBadge');
   expect(html).toContain('Información');
   const owner=game.exchangePairs![0].a,guest=game.players.find(player=>player.id!==owner)!.id;
   expect(renderToStaticMarkup(<GameWorkspace game={view(game,owner)} userId={owner} action={()=>{}}/>)).toContain('No intercambiar');
