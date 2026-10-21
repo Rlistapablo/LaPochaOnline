@@ -47,6 +47,7 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect((html.match(/class="tablePlay/g)||[])).toHaveLength(2);
   expect(html).toContain('polygonTable replayFelt players-2');
   expect(html).toContain('rotationArrow');
+  expect((html.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
   expect(html).toContain('INICIO');
   expect(html).toContain('FINAL');
   expect(html).not.toContain('replayPlayed');
@@ -64,6 +65,8 @@ it('mantiene las posiciones al rotar el inicio de la ronda',()=>{
   expect(first).toContain('style="--seat-x:50%;--seat-y:85%" aria-label="Ana. Comienza');
   expect(second).toContain('style="--seat-x:50%;--seat-y:85%" aria-label="Ana. Termina');
   expect(second).toContain('style="--seat-x:50%;--seat-y:15%" aria-label="Bot Pepe. Comienza');
+  expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
+  expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
 });
 it('reconstruye intercambios, cartas mostradas y robos en la repetición',()=>{
   const altered:ReplayData={...replay,events:[

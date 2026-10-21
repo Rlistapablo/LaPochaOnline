@@ -22,6 +22,8 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect(first).toMatch(/aria-label="Ana\. Comienza[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge start"/);
   expect(second).toMatch(/aria-label="Berta\. Comienza[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge start"/);
   expect(second).toMatch(/aria-label="Ana\. Termina[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge end"/);
+  expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
+  expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
 });
 
 it('muestra las predicciones ajenas dentro del modal de apuesta',()=>{
@@ -33,6 +35,7 @@ it('muestra las predicciones ajenas dentro del modal de apuesta',()=>{
   bid(game,first,0,game.version);
   const next=game.players[game.turnIndex].id;
   const html=renderToStaticMarkup(<GameWorkspace game={view(game,next)} userId={next} action={()=>{}}/>);
+  expect((html.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
   expect(html).toContain('bidPopupPredictions');
   expect(html).toContain('0 bazas');
   expect(html).toContain('Pendiente');
