@@ -1,5 +1,6 @@
 import {useEffect,useMemo,useState} from 'react';
-import {CardView} from './CardView';
+import {CardView,SuitArt} from './CardView';
+import {SUITS} from '../shared/game';
 import {apiPath} from './paths';
 import {buildReplayTimeline,type ReplayData,type ReplayPlayer,type ReplayScene} from './replay-model';
 import './replay.css';
@@ -14,6 +15,16 @@ const request=async(path:string,method='GET')=>{
 const avatar=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:data.icon||'🃏';}catch{return raw||'🃏';}};
 const time=(raw:string)=>raw?new Date(raw).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
 
+function ReplayPowers({scene,id,compact=false}:{scene:ReplayScene;id:string;compact?:boolean}){
+  const uses=scene.powers[id];
+  if(!uses||scene.lives[id]===0||!uses.steals&&!uses.reshuffles&&!uses.exchanges)return null;
+  return <div className={`replayPowerList ${compact?'compact':''}`} aria-label="Poderes disponibles">
+    {uses.steals>0&&<span title="Robos disponibles" aria-label={`${uses.steals} robos disponibles`}>✋ {uses.steals}{!compact&&` ${uses.steals===1?'robo':'robos'}`}</span>}
+    {uses.reshuffles>0&&<span title="Redistribuciones disponibles" aria-label={`${uses.reshuffles} redistribuciones disponibles`}>✦ {uses.reshuffles}{!compact&&` ${uses.reshuffles===1?'mezcla':'mezclas'}`}</span>}
+    {uses.exchanges>0&&<span title="Cambios disponibles" aria-label={`${uses.exchanges} cambios disponibles`}>⇄ {uses.exchanges}{!compact&&` ${uses.exchanges===1?'cambio':'cambios'}`}</span>}
+  </div>;
+}
+
 function ReplayPlayerCard({player,scene,focused}:{player:ReplayPlayer;scene:ReplayScene;focused:boolean}){
   const id=player.player_id,bid=scene.bids[id],won=scene.wins[id]||0,lives=scene.lives[id]??player.lives_start;
   const position=scene.order.indexOf(id)+1,progress=bid?Math.min(100,won/bid*100):won?100:0;
@@ -21,6 +32,7 @@ function ReplayPlayerCard({player,scene,focused}:{player:ReplayPlayer;scene:Repl
   return <article className={'replayPlayerCard '+(scene.nextPlayerId===id?'active ':'')+(scene.winnerId===id?'winner ':'')+(lives===0?'out':'')}>
     <div className="replayPlayerHead"><span className="playerOrder">{position?position+'.º':'—'}</span><span className="playerAvatar">{avatar(player.avatar)}</span><div><strong>{player.name}</strong><small>{player.is_bot?'Bot':'Humano'}{focused?' · perspectiva':''}</small></div>{scene.nextPlayerId===id&&<b className="replayTurnPill">TURNO</b>}</div>
     <div className="replayPlayerFacts"><span>❤️ {lives}</span><span>🎯 {bid??'—'}</span><span>🏆 {won}</span><span>🃏 {scene.hands[id]?.length??0}</span></div>
+    <ReplayPowers scene={scene} id={id}/>
     <div className={'trickProgress '+progressClass} role="progressbar" aria-label={'Bazas de '+player.name+': '+won+' de '+(bid??0)} aria-valuenow={won} aria-valuemin={0} aria-valuemax={Math.max(bid??0,won,1)}><span style={{width:progress+'%'}}/></div>
     <small className="replayPlayerFoot">{bid===undefined?'Predicción pendiente':won>bid?'Predicción superada':won===bid&&won>0?'Predicción alcanzada':won+' / '+bid+' bazas'}</small>
   </article>;
@@ -35,6 +47,7 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
   const tricks=[...new Set(currentRoundScenes.filter(entry=>['card_played','trick_won'].includes(entry.item.type)).map(entry=>entry.item.trickIndex))];
   const selectedTrick=['round_started','bid'].includes(scene.type)?-1:scene.trickIndex;
   const focus=replay.players.find(player=>player.player_id===focusId)||replay.players[0];
+  const trumpSuit=SUITS.find(suit=>suit===scene.trumpSuit);
   const focusHand=scene.hands[focus?.player_id]||[];
   const jump=(position:number)=>{setPlaying(false);setIndex(position);};
   const jumpTrick=(value:number)=>{
@@ -46,13 +59,13 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
     <div className="replayLayout">
       <div className="replayMain">
         <div className="replayStageFacts"><span>Baza {Math.min(scene.trickIndex+1,scene.cards)} de {scene.cards}{scene.trumpSuit?' · 👑 '+scene.trumpSuit:''}</span><span>{scene.nextPlayerId?'Le toca a '+name(scene.nextPlayerId):scene.winnerId?'Ganó '+name(scene.winnerId):'Situación '+(index+1)+' de '+scenes.length}</span></div>
-        <div className="table replayFelt" aria-label="Mesa de repetición">
+        <div className={`table gameFelt replayFelt ${trumpSuit?`trump-${trumpSuit.toLowerCase()}`:''}`} aria-label={`Mesa de repetición${trumpSuit?`. Triunfo: ${trumpSuit}`:''}`}>
           <div className="opponents">{replay.players.filter(player=>player.player_id!==focus?.player_id).map(player=>{
             const hand=scene.hands[player.player_id]||[];
-            return <div className={'seat '+(scene.nextPlayerId===player.player_id?'turn ':'')+((scene.lives[player.player_id]??player.lives_start)===0?'out':'')} key={player.player_id}><span className="seatOrder">{scene.order.indexOf(player.player_id)+1}.º</span><span className="playerAvatar">{avatar(player.avatar)}</span><b>{player.name}</b><small>❤️ {scene.lives[player.player_id]??player.lives_start} · 🏆 {scene.wins[player.player_id]||0}/{scene.bids[player.player_id]??'—'}</small><div className="replaySeatHand">{showHands?hand.map(card=><CardView key={card.id} card={card} small/>):<div className="replayBacks">{hand.filter(card=>scene.revealed[player.player_id]?.includes(card.id)).map(card=><CardView key={card.id} card={card} small/>)}{Array.from({length:Math.min(3,hand.filter(card=>!scene.revealed[player.player_id]?.includes(card.id)).length)},(_,n)=><CardView key={n} card={null} hidden small/>)}</div>}<span>{hand.length} {hand.length===1?'carta':'cartas'}</span></div></div>;
+            return <div className={'seat '+(scene.nextPlayerId===player.player_id?'turn ':'')+((scene.lives[player.player_id]??player.lives_start)===0?'out':'')} key={player.player_id}><span className="seatOrder">{scene.order.indexOf(player.player_id)+1}.º</span><span className="playerAvatar">{avatar(player.avatar)}</span><b>{player.name}</b><small>❤️ {scene.lives[player.player_id]??player.lives_start} · 🏆 {scene.wins[player.player_id]||0}/{scene.bids[player.player_id]??'—'}</small><ReplayPowers scene={scene} id={player.player_id} compact/><div className="replaySeatHand">{showHands?hand.map(card=><CardView key={card.id} card={card} small/>):<div className="replayBacks">{hand.filter(card=>scene.revealed[player.player_id]?.includes(card.id)).map(card=><CardView key={card.id} card={card} small/>)}{Array.from({length:Math.min(3,hand.filter(card=>!scene.revealed[player.player_id]?.includes(card.id)).length)},(_,n)=><CardView key={n} card={null} hidden small/>)}</div>}<span>{hand.length} {hand.length===1?'carta':'cartas'}</span></div></div>;
           })}</div>
-          <div className="felt"><div className="feltInner"><span className="feltTitle">LA POCHA</span><div className="played replayPlayed">{scene.table.map((play,position)=><div className={'playedCard '+(scene.winnerId===play.playerId?'replayWinningCard':'')} key={play.sequence}><span className="playOrder">{position+1}.º</span><CardView card={play.card} small declaredValue={play.declaredValue}/><span>{name(play.playerId)}</span></div>)}{!scene.table.length&&<span className="replayTableHint">{scene.type==='round_ended'?'Ronda completada':'Las cartas jugadas aparecerán aquí'}</span>}</div></div></div>
-          {focus&&<div className={'mySeat '+(scene.nextPlayerId===focus.player_id?'turn':'')}><span className="seatOrder">{scene.order.indexOf(focus.player_id)+1}.º</span><span className="playerAvatar">{avatar(focus.avatar)}</span><div><b>{focus.name}</b><small>❤️ {scene.lives[focus.player_id]??focus.lives_start} · 🏆 {scene.wins[focus.player_id]||0}/{scene.bids[focus.player_id]??'—'}</small></div></div>}
+          <div className="felt">{trumpSuit&&<div className="trumpWatermark" aria-hidden="true"><SuitArt suit={trumpSuit}/></div>}<div className="feltInner"><span className="feltTitle">LA POCHA</span><div className="played replayPlayed">{scene.table.map((play,position)=><div className={'playedCard '+(scene.winnerId===play.playerId?'replayWinningCard':'')} key={play.sequence}><span className="playOrder">{position+1}.º</span><CardView card={play.card} small declaredValue={play.declaredValue}/><span>{name(play.playerId)}</span></div>)}{!scene.table.length&&<span className="replayTableHint">{scene.type==='round_ended'?'Ronda completada':'Las cartas jugadas aparecerán aquí'}</span>}</div></div></div>
+          {focus&&<div className={'mySeat '+(scene.nextPlayerId===focus.player_id?'turn':'')}><span className="seatOrder">{scene.order.indexOf(focus.player_id)+1}.º</span><span className="playerAvatar">{avatar(focus.avatar)}</span><div><b>{focus.name}</b><small>❤️ {scene.lives[focus.player_id]??focus.lives_start} · 🏆 {scene.wins[focus.player_id]||0}/{scene.bids[focus.player_id]??'—'}</small><ReplayPowers scene={scene} id={focus.player_id} compact/></div></div>}
         </div>
         {scene.reason&&<div className="replayResultBanner">🏆 {scene.reason}</div>}
         {scene.results&&<div className="replayResultGrid">{scene.results.map(result=><div key={result.id}><b>{name(result.id)}</b><span>{result.wins}/{result.bid} bazas</span><span>❤️ {result.livesBefore??'—'} → {result.lives}</span><span>−{result.lost} vidas</span></div>)}</div>}

@@ -21,6 +21,7 @@ export function shuffle<T>(cards: T[]): T[] { const a = [...cards]; for(let i=a.
 export function schedule(max: number): number[] { return [...Array.from({length:max},(_,i)=>max-i), ...Array.from({length:max-1},(_,i)=>i+2)]; }
 function randomIndex(max:number){const limit=Math.floor(0x100000000/max)*max,b=new Uint32Array(1);do{crypto.getRandomValues(b);}while(b[0]>=limit);return b[0]%max;}
 export function recordEvent(g:Game,type:string,data:Record<string,unknown>,playerId?:string){g.pendingEvents??=[];g.eventSeq??=0;g.pendingEvents.push({sequence:++g.eventSeq,type,playerId,data,at:new Date().toISOString()});}
+function powerSnapshot(g:Game){return Object.fromEntries(g.players.map(p=>[p.id,{steals:p.steals||0,reshuffles:p.reshuffles||0,exchanges:p.exchanges||0}]));}
 export function active(g: Game): Player[] { return g.players.filter(p=>!p.eliminated); }
 export function isJoker(c: Card) { return /^joker_[1-9]\d*(?:#\d+)?$/.test(c.id); }
 export function rank(p: Play): number { const v = p.declaredValue ?? p.card.value; if(!v) throw Error('Valor de comodín ausente'); return VALUES.indexOf(v); }
@@ -63,7 +64,7 @@ function deal(g: Game) {
     const owner=active(g)[randomIndex(n)];g.exchangePairs=[{a:owner.id,b:''}];g.phase='exchange';
   }
   if(g.phase==='bid'&&m.revealPercent)g.phase='reveal';
-  g.version++;recordEvent(g,'round_started',{roundIndex:g.roundIndex,wave:g.wave,cards:g.cardsPerPlayer,order:turnOrder(g),hands:g.roundHands,lives:Object.fromEntries(active(g).map(p=>[p.id,p.lives])),trumpSuit:g.trumpSuit});assertIntegrity(g);
+  g.version++;recordEvent(g,'round_started',{roundIndex:g.roundIndex,wave:g.wave,cards:g.cardsPerPlayer,order:turnOrder(g),hands:g.roundHands,lives:Object.fromEntries(active(g).map(p=>[p.id,p.lives])),trumpSuit:g.trumpSuit,powers:powerSnapshot(g)});assertIntegrity(g);
 }
 function finishPreparation(g:Game){g.roundHands=Object.fromEntries(active(g).map(p=>[p.id,[...p.hand]]));g.phase=g.settings.modes?.revealPercent?'reveal':'bid';g.turnIndex=g.firstIndex;g.version++;}
 function finishExchange(g:Game){
@@ -126,7 +127,7 @@ function finishRound(g: Game) {
   const eliminated=entrants.filter(p=>p.lives===0);
   for(const p of eliminated)p.eliminated=true;
   g.history.push({round:g.cardsPerPlayer,roundIndex:g.roundIndex,wave:g.wave,result:g.roundResult,tricks:[...g.tricks],order,hands:g.roundHands,startedAt:g.roundStartedAt,finishedAt:new Date().toISOString()});
-  recordEvent(g,'round_ended',{roundIndex:g.roundIndex,result:g.roundResult,eliminated:eliminated.map(p=>p.id)});
+  recordEvent(g,'round_ended',{roundIndex:g.roundIndex,result:g.roundResult,eliminated:eliminated.map(p=>p.id),powers:powerSnapshot(g)});
   if(eliminated.length&&(!g.settings.modes?.lastStanding||active(g).length<=1)){const mostLives=Math.max(...entrants.map(p=>p.lives));g.winners=g.settings.modes?.lastStanding&&active(g).length===1?active(g).map(p=>p.id):entrants.filter(p=>p.lives===mostLives).map(p=>p.id);g.phase='finished';g.autoRestart=true;g.endReason='elimination';g.finishedAt=new Date().toISOString();recordEvent(g,'game_finished',{winners:g.winners,reason:g.endReason});}
   else g.phase='roundEnd';
 }

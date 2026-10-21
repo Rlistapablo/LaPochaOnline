@@ -6,3 +6,10 @@
 @media(max-width:1000px){.replayLayout{grid-template-columns:1fr}.replayAside{position:static;max-height:none}.replayAsidePlayers{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}.replaySceneList{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-height:350px}.replayFelt .opponents{overflow-x:auto;justify-content:flex-start}}
 @media(max-width:620px){.replayStageHead{align-items:stretch;flex-direction:column}.replayNow{max-width:none}.replayFelt{border-width:8px;border-radius:35px;min-height:380px;padding:14px 7px}.replayFelt .seat{min-width:82px}.replayFelt .playedCard{font-size:9px}.replayPlayed{justify-content:flex-start}.replayPlayed .playing-card{width:43px;height:63px}.replayHand{justify-content:flex-start}.replayHand .playing-card{width:69px;height:100px}.replayTransport button{flex:1 1 90px;min-width:0;padding:11px 7px}.replayResultGrid>div{grid-template-columns:1fr 1fr}.replaySceneList{grid-template-columns:1fr}}
 .replayBacks{max-width:100%;overflow-x:auto;justify-content:flex-start;padding:2px}.replayBacks .playing-card{flex:none}
+.replayPowerList{display:flex;flex-wrap:wrap;gap:4px;margin:7px 0;font-size:10px;color:#f5dfaa}
+.replayPowerList span{display:inline-flex;align-items:center;gap:2px;border:1px solid #bda26480;border-radius:7px;background:#35503ca8;padding:3px 5px;white-space:nowrap}
+.replayPowerList.compact{justify-content:center;margin:4px 0 3px;font-size:9px}
+.replayPowerList.compact span{padding:2px 4px}
+.replayFelt .mySeat .replayPowerList{justify-content:flex-start}
+.replayFelt .felt{position:relative;isolation:isolate}
+.replayFelt .feltInner{position:relative;z-index:1}

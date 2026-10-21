@@ -60,6 +60,54 @@ it('reconstruye intercambios, cartas mostradas y robos en la repetición',()=>{
   expect(scenes[2].revealed.a).toEqual([two.id]);
   expect(scenes[3].hands.a[0]).toEqual(ace);
   expect(scenes[0].hands.a[0]).toEqual(ace);
+  const html=renderToStaticMarkup(<ReplayBoard replay={altered} scenes={scenes} index={0} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="a" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
+  expect(html).toContain('trump-copas');
+  expect(html).toContain('trumpWatermark');
+});
+it('muestra los poderes disponibles en cada situación, también en repeticiones antiguas',()=>{
+  const powered:ReplayData={...replay,game:{...replay.game,settings:{modes:{stealWinStreak:1,reshuffleWinStreak:2,exchangeUses:2,exchangeRefreshRounds:2}}},events:[
+    event(1,'round_started',{roundIndex:0,wave:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3},trumpSuit:'Copas'}),
+    event(2,'cards_exchanged',{a:'a',b:'b',aCards:[ace],bCards:[two]}),
+    event(3,'round_ended',{result:[{id:'a',bid:0,wins:0,lives:3},{id:'b',bid:0,wins:1,lives:3}]}),
+    event(4,'round_started',{roundIndex:1,wave:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3}}),
+    event(5,'card_stolen',{from:'b',gave:ace,took:two},'a'),
+    event(6,'round_ended',{result:[{id:'a',bid:0,wins:0,lives:3},{id:'b',bid:0,wins:1,lives:3}]}),
+    event(7,'round_started',{roundIndex:2,wave:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3}}),
+    event(8,'hands_reshuffled',{hands:{a:[ace],b:[two]}},'a'),
+  ]};
+  const scenes=buildReplayTimeline(powered);
+  expect(scenes[0].powers.a).toEqual({steals:0,reshuffles:0,exchanges:2});
+  expect(scenes[1].powers.a.exchanges).toBe(1);
+  expect(scenes[2].powers.a.steals).toBe(1);
+  expect(scenes[4].powers.a.steals).toBe(0);
+  expect(scenes[5].powers.a).toEqual({steals:1,reshuffles:1,exchanges:1});
+  expect(scenes[6].powers.a.exchanges).toBe(2);
+  expect(scenes[7].powers.a.reshuffles).toBe(0);
+  expect(scenes[2].powers.a.steals).toBe(1);
+  const html=renderToStaticMarkup(<ReplayBoard replay={powered} scenes={scenes} index={5} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="a" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
+  expect(html).toContain('1 robo');
+  expect(html).toContain('1 mezcla');
+  expect(html).toContain('1 cambio');
+});
+it('usa los contadores guardados en los eventos nuevos',()=>{
+  const withSnapshots:ReplayData={...replay,events:[
+    event(1,'round_started',{roundIndex:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},powers:{a:{steals:2,reshuffles:1,exchanges:0},b:{steals:0,reshuffles:0,exchanges:0}}}),
+    event(2,'round_ended',{result:[{id:'a',bid:0,wins:0,lives:3}],powers:{a:{steals:4,reshuffles:2,exchanges:0}}}),
+  ]};
+  const scenes=buildReplayTimeline(withSnapshots);
+  expect(scenes[0].powers.a).toEqual({steals:2,reshuffles:1,exchanges:0});
+  expect(scenes[1].powers.a).toEqual({steals:4,reshuffles:2,exchanges:0});
+});
+it('mantiene eliminados sin poderes disponibles al pasar de ronda',()=>{
+  const nextRound:ReplayData={...replay,events:[
+    event(1,'round_started',{roundIndex:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:1,b:3},powers:{a:{steals:1,reshuffles:0,exchanges:0}}}),
+    event(2,'round_ended',{result:[{id:'a',bid:0,wins:1,lives:0},{id:'b',bid:0,wins:0,lives:3}]}),
+    event(3,'round_started',{roundIndex:1,cards:1,order:['b'],hands:{b:[two]},lives:{b:3}}),
+  ]};
+  const scenes=buildReplayTimeline(nextRound);
+  expect(scenes[2].lives.a).toBe(0);
+  const html=renderToStaticMarkup(<ReplayBoard replay={nextRound} scenes={scenes} index={2} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="b" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
+  expect(html).not.toContain('1 robo');
 });
 it('muestra una oferta rechazada sin cambiar las manos',()=>{
   const declined:ReplayData={...replay,events:[

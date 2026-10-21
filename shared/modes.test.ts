@@ -49,6 +49,7 @@ it('da cambios a cada jugador, los gasta solo si se aceptan y los renueva cada X
   expect(g.phase).toBe('exchange');
   const first=g.exchangePairs![0].a,second=g.exchangeQueue![0];
   expect(g.players.map(p=>p.exchanges)).toEqual([2,2]);
+  expect(g.pendingEvents?.findLast(event=>event.type==='round_started')?.data.powers).toMatchObject({[first]:{exchanges:2},[second]:{exchanges:2}});
   offerExchange(g,first,second);
   selectExchange(g,first,[g.players.find(p=>p.id===first)!.hand[0].id]);
   selectExchange(g,second,[g.players.find(p=>p.id===second)!.hand[0].id]);
@@ -124,9 +125,11 @@ it('entrega poderes solo tras rachas de predicciones exactas y los limpia en la 
   round(true);
   expect(target.cleanRounds).toBe(1);
   expect(target.steals).toBeFalsy();expect(target.reshuffles).toBeFalsy();
+  expect(g.pendingEvents?.findLast(event=>event.type==='round_ended')?.data.powers).toMatchObject({[target.id]:{steals:0,reshuffles:0}});
   advance(g,g.version);round(true);
   expect(target.cleanRounds).toBe(2);
   expect(target.steals).toBe(1);expect(target.reshuffles).toBe(1);
+  expect(g.pendingEvents?.findLast(event=>event.type==='round_ended')?.data.powers).toMatchObject({[target.id]:{steals:1,reshuffles:1}});
   advance(g,g.version);round(false);
   expect(target.cleanRounds).toBe(0);
   expect(target.steals).toBe(1);expect(target.reshuffles).toBe(1);

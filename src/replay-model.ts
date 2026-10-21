@@ -4,13 +4,21 @@ export type ReplayEvent={sequence:number;type:string;player_id?:string|null;data
 export type ReplayPlayer={player_id:string;name:string;avatar:string;is_bot:boolean;bot_difficulty?:string|null;lives_start:number;lives_end:number};
 export type ReplayData={game:{id:string;room_name:string;room_code:string;started_at:string;finished_at:string;winners:string[];settings:Record<string,any>};players:ReplayPlayer[];events:ReplayEvent[]};
 export type ReplayPlay={playerId:string;card:Card;declaredValue?:Value;sequence:number};
-export type ReplayScene={sequence:number;type:string;title:string;detail:string;at:string;roundIndex:number;wave:number;cards:number;trickIndex:number;order:string[];trumpSuit?:string;revealed:Record<string,string[]>;nextPlayerId?:string;table:ReplayPlay[];hands:Record<string,Card[]>;bids:Record<string,number>;wins:Record<string,number>;lives:Record<string,number>;winnerId?:string;reason?:string;results?:Array<{id:string;bid:number;wins:number;lives:number;livesBefore?:number;lost:number}>};
+export type ReplayPowers={steals:number;reshuffles:number;exchanges:number};
+export type ReplayScene={sequence:number;type:string;title:string;detail:string;at:string;roundIndex:number;wave:number;cards:number;trickIndex:number;order:string[];trumpSuit?:string;revealed:Record<string,string[]>;nextPlayerId?:string;table:ReplayPlay[];hands:Record<string,Card[]>;bids:Record<string,number>;wins:Record<string,number>;lives:Record<string,number>;powers:Record<string,ReplayPowers>;winnerId?:string;reason?:string;results?:Array<{id:string;bid:number;wins:number;lives:number;livesBefore?:number;lost:number}>};
 
 export function buildReplayTimeline(replay:ReplayData):ReplayScene[]{
   const scenes:ReplayScene[]=[];
   const name=(id?:string|null)=>replay.players.find(player=>player.player_id===id)?.name||'Jugador';
+  const modes=replay.game.settings?.modes||{};
+  const count=(value:unknown)=>Math.max(0,Number(value)||0);
   let roundIndex=-1,wave=0,cards=0,trickIndex=0,trumpSuit:string|undefined;
   let order:string[]=[],table:ReplayPlay[]=[],hands:Record<string,Card[]>={},bids:Record<string,number>={},wins:Record<string,number>={},lives:Record<string,number>={},revealed:Record<string,string[]>={};
+  let powers:Record<string,ReplayPowers>=Object.fromEntries(replay.players.map(player=>[player.player_id,{steals:0,reshuffles:0,exchanges:0}]));
+  const cleanRounds:Record<string,number>={};
+  const useSnapshot=(snapshot:Record<string,Partial<ReplayPowers>>)=>{
+    for(const player of replay.players){const source=snapshot[player.player_id];if(source)powers[player.player_id]={steals:count(source.steals),reshuffles:count(source.reshuffles),exchanges:count(source.exchanges)};}
+  };
   for(const event of [...replay.events].sort((a,b)=>a.sequence-b.sequence)){
     const data=event.data||{};
     if(event.type==='round_started'){
@@ -24,20 +32,25 @@ export function buildReplayTimeline(replay:ReplayData):ReplayScene[]{
       revealed={};
       hands=Object.fromEntries(replay.players.map(player=>[player.player_id,[...(data.hands?.[player.player_id]||[])]]));
       bids={};wins={};
-      lives=Object.fromEntries(replay.players.map(player=>[player.player_id,Number(data.lives?.[player.player_id]??player.lives_start)]));
+      lives=Object.fromEntries(replay.players.map(player=>[player.player_id,Number(data.lives?.[player.player_id]??lives[player.player_id]??player.lives_start)]));
+      if(data.powers)useSnapshot(data.powers);
+      else if(modes.exchangeUses&&roundIndex%(Number(modes.exchangeRefreshRounds)||1)===0)for(const id of order)powers[id].exchanges=count(modes.exchangeUses);
     }else if(roundIndex<0)continue;
     else if(event.type==='cards_exchanged'){
       const a=data.a as string,b=data.b as string,aCards=data.aCards as Card[],bCards=data.bCards as Card[];
       hands[a]=(hands[a]||[]).filter(card=>!aCards.some(c=>c.id===card.id)).concat(bCards);
       hands[b]=(hands[b]||[]).filter(card=>!bCards.some(c=>c.id===card.id)).concat(aCards);
+      if(modes.exchangeUses&&powers[a])powers[a].exchanges=Math.max(0,powers[a].exchanges-1);
     }else if(event.type==='cards_revealed'&&event.player_id){
       revealed[event.player_id]=(data.cards as Card[]).map(card=>card.id);
     }else if(event.type==='card_stolen'&&event.player_id){
       const a=event.player_id,b=data.from as string,gave=data.gave as Card,took=data.took as Card;
       hands[a]=(hands[a]||[]).map(card=>card.id===gave.id?took:card);
       hands[b]=(hands[b]||[]).map(card=>card.id===took.id?gave:card);
+      if(powers[a])powers[a].steals=Math.max(0,powers[a].steals-1);
     }else if(event.type==='hands_reshuffled'){
       for(const [id,hand] of Object.entries(data.hands||{}))hands[id]=hand as Card[];
+      if(event.player_id&&powers[event.player_id])powers[event.player_id].reshuffles=Math.max(0,powers[event.player_id].reshuffles-1);
     }
     else if(event.type==='bid'&&event.player_id)bids[event.player_id]=Number(data.bid);
     else if(event.type==='card_played'&&event.player_id){
@@ -50,7 +63,16 @@ export function buildReplayTimeline(replay:ReplayData):ReplayScene[]{
       trickIndex=Number(data.trickIndex)||0;
       if(data.winnerId)wins[data.winnerId]=(wins[data.winnerId]||0)+1;
     }else if(event.type==='round_ended'){
-      for(const result of data.result||[])lives[result.id]=Number(result.lives);
+      for(const result of data.result||[]){
+        lives[result.id]=Number(result.lives);
+        const difference=Number(result.difference??Math.abs(Number(result.wins)-Number(result.bid)));
+        cleanRounds[result.id]=difference===0?(cleanRounds[result.id]||0)+1:0;
+        if(!data.powers&&powers[result.id]){
+          if(cleanRounds[result.id]&&modes.stealWinStreak&&cleanRounds[result.id]%Number(modes.stealWinStreak)===0)powers[result.id].steals++;
+          if(cleanRounds[result.id]&&modes.reshuffleWinStreak&&cleanRounds[result.id]%Number(modes.reshuffleWinStreak)===0)powers[result.id].reshuffles++;
+        }
+      }
+      if(data.powers)useSnapshot(data.powers);
       table=[];
     }else if(!['game_finished','exchange_offered','exchange_declined','exchange_skipped','exchange_selected','cards_revealed','cards_exchanged','card_stolen','hands_reshuffled'].includes(event.type))continue;
     const title=event.type==='round_started'?'Ronda '+(roundIndex+1)+': reparto'
@@ -72,7 +94,7 @@ export function buildReplayTimeline(replay:ReplayData):ReplayScene[]{
       :event.type==='card_stolen'?'Carta robada a '+name(data.from)
       :event.type==='hands_reshuffled'?'Cartas restantes mezcladas de nuevo'
       :data.reason==='cancelled'?'Partida cancelada':'Partida terminada';
-    scenes.push({sequence:event.sequence,type:event.type,title,detail,at:event.occurred_at,roundIndex,wave,cards,trickIndex,trumpSuit,revealed:Object.fromEntries(Object.entries(revealed).map(([id,cards])=>[id,[...cards]])),order:[...order],table:[...table],hands:Object.fromEntries(Object.entries(hands).map(([id,hand])=>[id,[...hand]])),bids:{...bids},wins:{...wins},lives:{...lives},winnerId:event.type==='trick_won'?data.winnerId:undefined,reason:event.type==='trick_won'?data.reason:undefined,results:event.type==='round_ended'?data.result:undefined});
+    scenes.push({sequence:event.sequence,type:event.type,title,detail,at:event.occurred_at,roundIndex,wave,cards,trickIndex,trumpSuit,revealed:Object.fromEntries(Object.entries(revealed).map(([id,cards])=>[id,[...cards]])),order:[...order],table:[...table],hands:Object.fromEntries(Object.entries(hands).map(([id,hand])=>[id,[...hand]])),bids:{...bids},wins:{...wins},lives:{...lives},powers:Object.fromEntries(Object.entries(powers).map(([id,uses])=>[id,{...uses}])),winnerId:event.type==='trick_won'?data.winnerId:undefined,reason:event.type==='trick_won'?data.reason:undefined,results:event.type==='round_ended'?data.result:undefined});
   }
   const actorBySequence=new Map(replay.events.map(event=>[event.sequence,event.player_id]));
   for(let index=0;index<scenes.length;index++){
