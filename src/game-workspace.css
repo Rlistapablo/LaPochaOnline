@@ -88,3 +88,61 @@
 .historyPlays,.trickPlays{flex-wrap:wrap;overflow-x:visible}
 @media(min-width:760px){.gamePage .gameFelt{height:auto;min-height:clamp(290px,calc(100dvh - 470px),390px)}.gamePage .phase-bid .gameFelt,.gamePage .phase-exchange .gameFelt,.gamePage .phase-reveal .gameFelt{height:auto;min-height:clamp(245px,calc(100dvh - 530px),320px)}}
 @media(min-width:760px) and (max-height:820px){.gamePage .phase-bid .gameFelt,.gamePage .phase-exchange .gameFelt,.gamePage .phase-reveal .gameFelt{min-height:clamp(230px,calc(100dvh - 525px),280px)}}
+
+/* The suit changes the whole felt, while the emblem remains readable above played cards. */
+.gameFelt.trump-oros{--felt-center:#69692d;--felt-edge:#3b4826;--felt-ring:#bba25c;--trump-panel:#334423}
+.gameFelt.trump-copas{--felt-center:#743e47;--felt-edge:#482d38;--felt-ring:#ce8c82;--trump-panel:#4d2930}
+.gameFelt.trump-espadas{--felt-center:#3d6880;--felt-edge:#244756;--felt-ring:#9db9c0;--trump-panel:#28495b}
+.gameFelt.trump-bastos{--felt-center:#24734d;--felt-edge:#145035;--felt-ring:#9bb26e;--trump-panel:#214c35}
+.gameFelt[class*="trump-"]{background:radial-gradient(ellipse at 50% 38%,var(--felt-center),var(--felt-edge) 80%);box-shadow:inset 0 0 0 5px var(--felt-ring),inset 0 0 0 11px #172b23,0 25px 70px #0008;transition:background .45s ease,box-shadow .45s ease}
+.gameFelt[class*="trump-"] .seat,.gameFelt[class*="trump-"] .mySeat{background:#0a241ecb}
+.gameFelt .felt{position:relative;isolation:isolate}
+.gameFelt .trumpWatermark{position:absolute;left:50%;top:50%;width:clamp(150px,38%,250px);aspect-ratio:1;transform:translate(-50%,-50%) rotate(-13deg);opacity:.17;pointer-events:none;z-index:0;filter:grayscale(1) brightness(2.3)}
+.gameFelt .trumpWatermark .card-art-svg{display:block;width:100%;height:100%;max-width:none;max-height:none}
+.gameFelt .feltTrump{background:linear-gradient(130deg,#132c26,var(--trump-panel) 56%,#132c26)}
+.gameFelt .feltInner{z-index:1}
+.gameFelt[class*="trump-"] .feltTitle{color:#fff4cb5a}
+@media(min-width:901px){.phase-bid .gameFelt .feltInner,.phase-exchange .gameFelt .feltInner,.phase-reveal .gameFelt .feltInner{min-height:55px}.phase-bid .gameFelt .felt,.phase-exchange .gameFelt .felt,.phase-reveal .gameFelt .felt{gap:2px}}
+
+/* The hand stays in reach and the two menus remain available at any scroll position. */
+.mobileGameTools{display:none}
+@media(max-width:900px){
+  .gameWorkspace{padding-bottom:calc(var(--hand-dock-height,0px) + 24px)}
+  .gameLayout{display:block}
+  .gameRail,.gameSidebar{display:none}
+  .mobileGameTop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;position:sticky;top:78px;z-index:9;background:#10241cf2;border:1px solid #48654f;border-radius:11px;padding:9px 11px;color:#f2deb1;font-size:12px}
+  .mobileGameTools{display:flex;position:fixed;right:12px;bottom:calc(var(--hand-dock-height,0px) + 12px);z-index:20;gap:7px;filter:drop-shadow(0 6px 13px #0008)}
+  .mobileGameTools button{display:flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:8px 12px;border:1px solid #e4c276;border-radius:22px;background:#163a2b;color:#fff0c7;font-size:12px;font-weight:800;white-space:nowrap}
+  .mobileGameTools button b{display:grid;place-items:center;min-width:20px;height:20px;border-radius:50%;background:#e0ba6d;color:#183126;font-size:11px}
+  .mobileGameTools button[aria-expanded="true"]{background:#d9b56b;color:#173324}
+  .gameMain .handArea{position:fixed;left:50%;right:auto;bottom:0;transform:translateX(-50%);z-index:16;width:min(100%,900px);max-height:60dvh;overflow-y:auto;overscroll-behavior:contain;margin:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));border:1px solid #c9a565;border-radius:18px 18px 0 0;background:#0f291feF;box-shadow:0 -9px 32px #0009;backdrop-filter:blur(12px)}
+  .gameMain .handArea p{margin:0 0 5px;font-size:11px;color:#f0dba6}
+  .gameMain .hand{display:grid;grid-template-columns:repeat(var(--hand-cols),minmax(0,1fr));justify-content:center;gap:3px;max-height:none;overflow:visible;padding:3px 1px 6px}
+  .gameMain .handChoice{min-width:0;display:flex;justify-content:center;padding:0}
+  .gameMain .hand .handChoice .playing-card{width:min(100%,68px,10dvh);height:auto;aspect-ratio:2/3}
+  .gameMain .handChoice.selected{transform:translateY(-4px)}
+  .gameMain .playConfirm{position:static;margin-top:3px;padding:5px 0;background:transparent}
+  .gameMain .playConfirm button{min-height:40px;padding:8px 12px}
+  .gameFelt{height:auto;min-height:300px;padding:15px 10px;border-radius:45px}
+  .gameFelt .opponents{overflow:visible;flex-wrap:wrap;justify-content:center}
+  .gameFelt .played{position:relative;inset:auto;min-height:105px;flex-wrap:wrap;overflow:visible}
+  .gameFelt .feltInner{min-height:105px}
+  .gameFelt .feltTitle{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+  .gameFelt .feltTrump{min-height:56px;gap:8px;padding:4px 12px 4px 5px}
+  .gameFelt .feltTrumpArt{width:45px;height:45px}
+  .gameFelt .feltTrumpArt .card-art-svg{width:39px;height:39px}
+  .gameFelt .feltTrumpText small{font-size:8px}
+  .gameFelt .feltTrumpText strong{font-size:23px}
+  .drawerBackdrop{display:block;position:fixed;inset:0;z-index:30;background:#000c}
+  .gameDrawer{position:absolute;right:0;top:0;bottom:0;width:min(420px,96vw);max-height:100dvh;overflow-y:auto;border-radius:18px 0 0 18px;padding:18px;animation:drawerEnter .2s ease-out}
+  .drawerHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .drawerHeading button{border:0;background:none;color:#f4e3bc;font-size:29px;min-width:44px;min-height:44px}
+  .gameDrawer .specialActions{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+  .gameDrawer .specialActions h2{display:none}
+  .gameDrawer .specialActions select{width:100%;max-width:none;margin:5px 0}
+  .gameDrawer .specialActions .secondary{width:100%;margin-top:8px}
+  .gameDrawer .shuffleChoices{max-height:none}
+}
+@keyframes drawerEnter{from{transform:translateX(22px);opacity:.6}to{transform:translateX(0);opacity:1}}
+@media(max-width:420px){.mobileGameTools{right:8px;gap:5px}.mobileGameTools button{padding:7px 9px;font-size:11px}.gameFelt .seat:has(.opponentVisibleCards){max-width:100%}.gameFelt .opponents:has(>.seat:nth-child(2)) .seat:has(.opponentVisibleCards){max-width:calc(50% - 3px)}}
+@media(prefers-reduced-motion:reduce){.gameDrawer{animation:none}}
