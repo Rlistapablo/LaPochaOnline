@@ -9,6 +9,20 @@ describe('motor físico',()=>{
  it('oculta la carta propia sin enviarla durante la predicción',()=>{const g=game();g.settings.maxCards=1;start(g);const a=view(g,'a'),b=view(g,'b'),spectator=view(g);expect(a.players[0].hand).toEqual([null]);expect(a.players[1].hand?.[0]).toEqual(g.players[1].hand[0]);expect(b.players[1].hand).toEqual([null]);expect(spectator.players.every(p=>p.hand===undefined)).toBe(true);});
  it('entrega la mano antes de predecir en las rondas normales y en una carta visible',()=>{const g=game();start(g);expect(g.phase).toBe('bid');expect(view(g,'a').players[0].hand).toEqual(g.players[0].hand);expect(view(g,'a').players[1].hand).toBeUndefined();const h=game();h.settings.maxCards=1;h.settings.oneCard='visible';start(h);expect(view(h,'a').players[0].hand).toEqual(h.players[0].hand);expect(view(h,'a').players[1].hand).toBeUndefined();});
  it('genera un solo valle de una carta',()=>expect(schedule(5)).toEqual([5,4,3,2,1,2,3,4,5]));
+ it('incluye copas y los otros palos en cada bloque de cuatro rondas de triunfo',()=>{
+  const g=game();g.settings.maxCards=2;g.settings.modes={trump:true};start(g);
+  g.players.forEach(p=>p.lives=100);
+  const suits:string[]=[];
+  for(let round=0;round<8;round++){
+   suits.push(g.trumpSuit!);
+   while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,0,g.version);
+   while(g.phase==='play'){const p=g.players[g.turnIndex],c=p.hand[0];play(g,p.id,c.id,c.id.startsWith('joker')?'2':undefined,g.version);}
+   advance(g,g.version);
+  }
+  expect(suits.slice(0,4).toSorted()).toEqual(['Bastos','Copas','Espadas','Oros']);
+  expect(suits.slice(4,8).toSorted()).toEqual(['Bastos','Copas','Espadas','Oros']);
+  expect(suits.every((suit,index)=>index===0||suit!==suits[index-1])).toBe(true);
+ });
  it('reparte menos cartas cada ronda y vuelve a subir después de una carta',()=>{
   const g=game();g.settings.maxCards=3;start(g);
   g.players.forEach(p=>p.lives=100); // Evita que una eliminación reinicie el ciclo durante esta prueba.
