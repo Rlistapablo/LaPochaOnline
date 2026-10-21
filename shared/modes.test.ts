@@ -108,10 +108,10 @@ it('mantiene las cartas rivales visibles hasta la ultima prediccion, aunque el e
 it('roba sin ver la carta rival y redistribuye solo las manos restantes',()=>{
   const g=game({stealWinStreak:2,reshuffleWinStreak:2});const [a,b]=g.players,fromA=a.hand[0],fromB=b.hand[0];
   a.steals=1;expect(a.steals).toBe(1);stealCard(g,a.id,b.id,fromA.id);expect(a.hand[0]).toEqual(fromB);expect(b.hand[0]).toEqual(fromA);expect(a.steals).toBe(0);
-  expect(view(g,b.id).publicNotice).toEqual({sequence:g.eventSeq,type:'steal'});
+  expect(view(g,b.id).publicNotice).toEqual({sequence:g.eventSeq,type:'steal',actorName:a.name,targetNames:[b.name]});
   a.reshuffles=1;reshuffleHands(g,a.id,[a.id,b.id]);expect(a.reshuffles).toBe(0);assertIntegrity(g);
-  expect(view(g,b.id).publicNotice).toEqual({sequence:g.eventSeq,type:'reshuffle'});
-  expect(Object.keys(view(g,b.id).publicNotice!)).toEqual(['sequence','type']);
+  expect(view(g,b.id).publicNotice).toEqual({sequence:g.eventSeq,type:'reshuffle',actorName:a.name,targetNames:[a.name,b.name]});
+  expect(Object.keys(view(g,b.id).publicNotice!)).toEqual(['sequence','type','actorName','targetNames']);
 });
 
 it('entrega poderes solo tras rachas de predicciones exactas y los limpia en la revancha',()=>{

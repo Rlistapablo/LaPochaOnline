@@ -147,6 +147,13 @@
 @keyframes bidPopupIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(max-width:900px){.bidPopupBackdrop{padding-top:96px;padding-bottom:calc(var(--hand-dock-height,0px) + 16px);background:#020d0a8f}.bidPopup{max-height:calc(100dvh - var(--hand-dock-height,0px) - 110px);padding:18px 14px}.bidPopup .bidOptions button{min-width:45px;min-height:45px}}
 @media(prefers-reduced-motion:reduce){.bidPopup{animation:none}}
+.bidPopupPredictions{margin:0 0 13px;padding:9px;border:1px solid #6c8d70;border-radius:11px;background:#0a2119;text-align:left}
+.bidPopupPredictions>strong{display:block;margin-bottom:7px;color:#e8cb89;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.bidPopupPredictions>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.bidPopupPredictions span{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;padding:5px 7px;border-radius:7px;background:#244331;color:#f3ead4;font-size:11px}
+.bidPopupPredictions span.isMe{outline:1px solid #d8b76e}
+.bidPopupPredictions b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bidPopupPredictions em{flex:none;color:#e8cb89;font-style:normal;font-weight:700;white-space:nowrap}
 
 @media(max-width:900px){
   .liveGamePage .gameWorkspace{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;padding:0;overflow:hidden}
@@ -222,14 +229,16 @@
 
 /* Keep the table and the other players' bids visible while choosing on a phone. */
 @media(max-width:900px){
-  .liveGamePage .bidPopupBackdrop{align-items:flex-end;justify-content:flex-start;overflow:visible;padding:0 8px calc(var(--hand-dock-height) + 8px);background:transparent;backdrop-filter:none;pointer-events:none}
-  .liveGamePage .bidPopup{pointer-events:auto;width:min(210px,calc(100vw - 90px));max-height:min(38dvh,calc(100dvh - var(--hand-dock-height) - 170px));overflow-y:auto;padding:9px 9px 8px;border-radius:13px;background:#142d22f5;box-shadow:0 9px 24px #000a}
-  .liveGamePage .bidPopup .eyebrow{font-size:9px;letter-spacing:.1em}
-  .liveGamePage .bidPopup h2{margin:2px 24px 6px;font-size:16px;line-height:1.15}
+  .liveGamePage .bidPopupBackdrop{align-items:center;justify-content:center;overflow:hidden;padding:clamp(105px,18dvh,155px) 10px calc(var(--hand-dock-height) + 8px);background:transparent;backdrop-filter:none;pointer-events:none}
+  .liveGamePage .bidPopup{pointer-events:auto;width:min(380px,100%);max-height:100%;overflow-y:auto;padding:16px 13px;border-radius:17px;background:#142d22fa;box-shadow:0 13px 30px #000b}
+  .liveGamePage .bidPopup .eyebrow{font-size:10px;letter-spacing:.1em}
+  .liveGamePage .bidPopup h2{margin:5px 24px 12px;font-size:clamp(20px,5.2vw,25px);line-height:1.15}
   .liveGamePage .bidPopup p,.liveGamePage .bidPopup small{display:none}
-  .liveGamePage .bidPopup .bidOptions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;max-height:none;overflow:visible;margin:0}
-  .liveGamePage .bidPopup .bidOptions button{min-width:0;min-height:36px;height:36px;padding:0;border-radius:7px;font-size:12px}
-  .liveGamePage .bidPopupClose{top:3px;right:3px;width:27px;height:27px;font-size:20px}
+  .liveGamePage .bidPopup .bidOptions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;max-height:none;overflow:visible;margin:0}
+  .liveGamePage .bidPopup .bidOptions button{min-width:0;min-height:42px;height:42px;padding:0;border-radius:8px;font-size:14px}
+  .liveGamePage .bidPopupClose{top:5px;right:5px;width:32px;height:32px;font-size:23px}
+  .liveGamePage .bidPopupPredictions{margin-bottom:11px;padding:7px}
+  .liveGamePage .bidPopupPredictions span{font-size:10px;padding:4px 6px}
 }
 @media(max-width:360px){
   .liveGamePage .phase-bid .mobileGameTools button span{display:none}
