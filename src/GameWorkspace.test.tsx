@@ -9,6 +9,8 @@ it('muestra orden, turno y progreso de bazas con datos del servidor',()=>{
   addPlayer(game,{id:'b',name:'Berta',avatar:'🤖',connected:true,bot:'hard'});
   start(game);
   while(game.phase==='bid')bid(game,game.players[game.turnIndex].id,0,game.version);
+  game.players[0].steals=2;
+  game.players[0].reshuffles=1;
   const markup=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
   expect(markup).toContain('Baza 1 de 2');
   expect(markup).toContain('role="progressbar"');
@@ -16,4 +18,6 @@ it('muestra orden, turno y progreso de bazas con datos del servidor',()=>{
   expect(markup).toContain('2.º');
   expect(markup).toContain('Bot · difícil');
   expect(markup).toContain('Información');
+  expect(markup).toContain('Abrir habilidades especiales, 3 disponibles');
+  expect(markup).not.toContain('class="panel specialActions"');
 });
