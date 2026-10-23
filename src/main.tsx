@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { io, Socket } from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -33,6 +33,14 @@ function App(){const [user,setUser]=useState<User|null>(null),[isAdmin,setIsAdmi
  const [navOpen,setNavOpen]=useState(false);
  const [replayRoom,setReplayRoom]=useState<{code:string;cycle:number}|null>(null);
  const [privateRooms,setPrivateRooms]=useState<PrivateRoomPreview[]>([]);
+ useLayoutEffect(()=>{
+  if(page!=='room'||!game||game.phase==='lobby')return;
+  const resetScroll=()=>{window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;};
+  resetScroll();
+  const frame=requestAnimationFrame(resetScroll);
+  window.addEventListener('pageshow',resetScroll);
+  return()=>{cancelAnimationFrame(frame);window.removeEventListener('pageshow',resetScroll);};
+ },[page,game?.code,game?.phase==='lobby']);
  const refreshPrivateRooms=(connection:Socket|null=socket)=>{if(user&&connection)connection.emit('private_rooms',privateRoomCodes(user.id),(list:PrivateRoomPreview[])=>syncPrivateRooms(user.id,list,setPrivateRooms));};
  useEffect(()=>{if(user&&game?.settings.private&&game.phase!=='finished'){rememberPrivateRoom(user.id,game.code);refreshPrivateRooms();}},[user?.id,game?.code,game?.settings.private,game?.phase]);
  useEffect(()=>{if(!navOpen)return;const close=(event:KeyboardEvent)=>{if(event.key==='Escape')setNavOpen(false);};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close);},[navOpen]);

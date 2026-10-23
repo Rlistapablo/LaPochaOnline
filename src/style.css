@@ -30,7 +30,8 @@
 
 /* A live room uses the phone viewport as one continuous game surface. */
 @media(max-width:900px){
-  body:has(.liveGamePage){height:100dvh;overflow:hidden}
+  html:has(.liveGamePage){overflow:hidden}
+  body:has(.liveGamePage){position:fixed;inset:0;width:100%;height:100dvh;overflow:hidden}
   body:has(.liveGamePage) .siteHeader{height:52px;min-height:52px;padding:0 12px}
   body:has(.liveGamePage) .siteHeader .brandIcon{font-size:19px}
   body:has(.liveGamePage) .mobileNavToggle{min-height:36px;padding:4px 9px}
