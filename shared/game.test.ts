@@ -1,8 +1,18 @@
 import {describe,it,expect} from 'vitest';
-import {makeDeck,createGame,addPlayer,start,bid,play,advance,rematch,finishGame,oneCardMode,allowedBids,assertIntegrity,view,trickWinner,schedule,penaltyForRound,VALUES,type Settings} from './game';
+import {makeDeck,createGame,addPlayer,takeOverBot,start,bid,play,advance,rematch,finishGame,oneCardMode,allowedBids,assertIntegrity,view,trickWinner,schedule,penaltyForRound,VALUES,type Settings} from './game';
 const settings:Settings={name:'test',private:true,maxPlayers:4,maxCards:5,lives:3,penalty:'normal',oneCard:'hidden',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
 function game(){const g=createGame('TEST',{id:'a',name:'A',avatar:'🃏',connected:true},{...settings});addPlayer(g,{id:'b',name:'B',avatar:'🃏',connected:true});return g;}
 describe('motor físico',()=>{
+ it('sustituye un bot público sin mover su asiento ni revelar cartas a espectadores',()=>{
+  const g=createGame('PUBLIC',{id:'a',name:'A',avatar:'🃏',connected:true},{...settings,private:false});
+  addPlayer(g,{id:'bot-id',name:'Bot',avatar:'🤖',bot:'normal',connected:true});start(g);
+  const hand=[...g.players[1].hand],seat=g.players[1].id;
+  const replacement=takeOverBot(g,{id:'human-id',name:'Humano',avatar:'🃏'});
+  expect(replacement.id).toBe(seat);expect(replacement.hand).toEqual(hand);expect(replacement.bot).toBeUndefined();
+  expect(view(g,seat).viewerId).toBe(seat);expect(view(g,seat).players[1].hand).toEqual(hand);
+  expect(view(g).players.every(player=>player.hand===undefined)).toBe(true);
+  expect(()=>takeOverBot(g,{id:'another',name:'Otro',avatar:'🃏'})).toThrow('No hay bots');
+ });
  it('contiene 40 cartas y dos comodines únicos',()=>{const d=makeDeck();expect(d).toHaveLength(42);expect(new Set(d.map(c=>c.id)).size).toBe(42);expect(d.filter(c=>c.id.startsWith('joker'))).toHaveLength(2);});
  it('el empate de valor favorece la última carta, incluidos comodines',()=>{const d=makeDeck();expect(trickWinner([{playerId:'a',card:d.find(c=>c.id==='Oros_As')!},{playerId:'b',card:d.find(c=>c.id==='joker_1')!,declaredValue:'As'}])).toBe('b');expect(trickWinner([{playerId:'a',card:d.find(c=>c.id==='joker_1')!,declaredValue:'As'},{playerId:'b',card:d.find(c=>c.id==='Copas_As')!}])).toBe('b');});
  it('rechaza predicción prohibida, versión antigua y carta repetida',()=>{const g=game();start(g);bid(g,g.players[g.turnIndex].id,2,g.version);expect(allowedBids(g)).not.toContain(3);expect(()=>bid(g,g.players[g.turnIndex].id,3,g.version)).toThrow();bid(g,g.players[g.turnIndex].id,0,g.version);const p=g.players[g.turnIndex],c=p.hand[0],old=g.version;play(g,p.id,c.id,c.id.startsWith('joker')?'As':undefined,g.version);expect(()=>play(g,p.id,c.id,undefined,old)).toThrow();assertIntegrity(g);});

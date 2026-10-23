@@ -6,6 +6,16 @@ import {TrickHistory} from './TrickHistory';
 import {CardView} from './CardView';
 import {TableBoard} from './TableBoard';
 
+it('muestra una partida pública al espectador sin controles de juego ni manos privadas',()=>{
+  const settings:Settings={name:'Pública',private:false,maxPlayers:2,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
+  const game=createGame('WATCH',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
+  addPlayer(game,{id:'b',name:'Berta',avatar:'🃏',connected:true});start(game);
+  const html=renderToStaticMarkup(<GameWorkspace game={view(game)} userId="spectator" action={()=>{}}/>);
+  expect(html).toContain('gameWorkspace');
+  expect(html).not.toContain('Escoger predicción');
+  expect(view(game).players.every(player=>player.hand===undefined)).toBe(true);
+});
+
 it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   const settings:Settings={name:'Mesa',private:true,maxPlayers:3,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
   const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
