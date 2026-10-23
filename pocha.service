@@ -1,0 +1,20 @@
+[Unit]
+Description=La Pocha Online
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pocha
+Group=pocha
+WorkingDirectory=/opt/pocha
+EnvironmentFile=/opt/pocha/.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

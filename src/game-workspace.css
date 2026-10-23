@@ -1,0 +1,259 @@
+.gameWorkspace{min-width:0}.gameStatus{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:8px 0 22px}.gameStatus h2{font-size:29px;margin-top:5px}.gameTurnMessage{padding:10px 14px;border:1px solid #c9aa67;border-radius:11px;background:#263e2f;color:#f6e1ab;font-size:13px;font-weight:700;text-align:right}.gameLayout{display:grid;grid-template-columns:minmax(0,72fr) minmax(260px,28fr);gap:20px;align-items:start}.gameMain{min-width:0}.gameSidebar{position:sticky;top:94px;padding:14px;max-height:calc(100vh - 110px);overflow-y:auto;min-width:0}.gameTabs{display:flex;gap:4px;padding:4px;background:#0c1c16;border-radius:10px}.gameTabs button{flex:1;border:0;border-radius:8px;background:transparent;color:#b7c7b8;padding:9px 6px;font-size:12px}.gameTabs button.selected{background:#d8b76e;color:#10251b;font-weight:800}.gameTabContent{padding-top:15px}.playerList{display:grid;gap:10px}.playerInfo{padding:12px;background:#10241c;border:1px solid #45604b;border-radius:13px;transition:box-shadow .25s,border-color .25s}.playerInfo.active{border-color:#ecc576;box-shadow:0 0 0 2px #ecc57636,0 8px 24px #0005}.playerInfo.wonLast{animation:player-win 1.5s ease-out}.playerInfo.eliminated{opacity:.55;filter:grayscale(.6)}.playerInfoHead{display:flex;align-items:center;gap:8px}.playerOrder,.seatOrder{display:inline-grid;place-items:center;min-width:29px;height:27px;border-radius:8px;background:#ddba70;color:#1d2b20;font-size:11px;font-weight:800}.playerAvatar{display:inline-grid;place-items:center;width:37px;height:37px;flex:none;border:1px solid #d4b36b;border-radius:50%;background:#244130;font-size:20px;overflow:hidden}.playerAvatar img{width:100%;height:100%;object-fit:cover}.playerIdentity{min-width:0;display:flex;flex-direction:column;flex:1}.playerIdentity strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}.playerIdentity small{color:#9cad9d;font-size:10px}.activeTurn{font-size:9px;color:#f3d18b}.playerStats{display:flex;justify-content:space-between;gap:5px;flex-wrap:wrap;margin:12px 0 9px;font-size:11px;color:#e5dfcf}.playerStats b{color:#fff}.trickProgress{height:9px;border-radius:10px;background:#5e6c68;overflow:hidden}.trickProgress span{display:block;height:100%;border-radius:10px;transition:width .35s ease,background .35s ease}.trickProgress.pending span{background:#8b9693}.trickProgress.progress span{background:#4f9cdb}.trickProgress.exact span{background:#5fc37c}.trickProgress.over span{background:#e36e67}.trickProgress.over{background:#7c3936}.playerInfoFoot{display:flex;justify-content:space-between;gap:6px;color:#b7c4b3;font-size:10px;margin-top:7px}.playerInfoFoot span:last-child{text-align:right}.gameFelt{min-height:480px}.gameFelt .seat{min-width:85px;max-width:140px}.gameFelt .seat .playerAvatar{margin-top:4px}.gameFelt .mySeat{max-width:350px}.gameHistory{display:grid;gap:9px}.gameHistory details{border:1px solid #435b46;border-radius:9px;padding:9px;color:#eadab7;font-size:12px}.gameHistory summary{cursor:pointer}.historyTrick{padding:10px 0;border-top:1px solid #ffffff20}.historyTrick>b{font-size:12px}.historyTrick>small{display:block;color:#c7af78;margin-top:6px}.historyPlays{display:flex;gap:7px;overflow-x:auto;padding:7px 0}.historyPlays>div{display:grid;justify-items:center;gap:4px;min-width:55px;font-size:10px}.historyPlays .winningPlay{color:#e6c36c}.historyPlays .playing-card{pointer-events:none}.roundInfo{font-size:13px}.roundInfo p{margin:0 0 11px}.roundResults{display:grid;gap:6px;color:#d7c393}.mobileGameTop{display:none}.handChoice{flex:none;padding:3px;border-radius:12px;transition:transform .2s,background .2s}.handChoice.selected{transform:translateY(-12px);background:#ddbf78;box-shadow:0 6px 22px #d4af66a0}.playConfirm{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0 16px}.jokerInline{width:100%;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;color:#ead8ae}.jokerInline button{border:1px solid #b49b66;border-radius:8px;padding:9px;color:#f4e7c9;background:#294230}.jokerInline button.selected{background:#e0bd73;color:#17271e}.drawerBackdrop{display:none}@keyframes player-win{0%,100%{box-shadow:0 0 0 transparent}35%{box-shadow:0 0 0 4px #e9c472,0 0 25px #e9c472aa}}@media(max-width:759px){.gameLayout{grid-template-columns:1fr}.gameSidebar{display:none}.mobileGameTop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:78px;z-index:9;background:#10241cf2;border:1px solid #48654f;border-radius:11px;padding:10px;color:#f2deb1;font-size:12px}.mobileGameTop button{border:1px solid #d5b672;border-radius:8px;background:#284532;color:#f8e8be;padding:8px}.drawerBackdrop{display:block;position:fixed;inset:0;z-index:25;background:#000b}.gameDrawer{position:absolute;right:0;top:0;bottom:0;width:min(380px,95vw);max-height:100vh;overflow-y:auto;border-radius:18px 0 0 18px;padding:18px}.drawerHeading{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.drawerHeading button{border:0;background:none;color:#f4e3bc;font-size:27px}.gameStatus{align-items:start;margin-top:18px}.gameTurnMessage{max-width:50%}}@media(max-width:580px){body{overflow-x:hidden}.gameStatus{flex-direction:column;gap:8px}.gameStatus h2{font-size:23px}.gameTurnMessage{max-width:100%;text-align:left}.gameFelt{min-height:370px;border-radius:34px;padding:14px 8px}.gameFelt .opponents{justify-content:flex-start;overflow-x:auto}.gameFelt .seat{min-width:73px;font-size:10px}.gameFelt .playerAvatar{width:30px;height:30px}.gameFelt .mySeat{max-width:95%;padding:8px 10px}.handArea{overflow:hidden}.hand{justify-content:flex-start;gap:2px;padding:20px 4px 14px;overscroll-behavior-x:contain;touch-action:pan-x}.handChoice .playing-card{width:72px;height:106px}.playConfirm{position:sticky;bottom:0;background:#10241cf0;padding:12px max(12px,env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom))}.playConfirm button{min-height:44px}.mobileGameTop{top:78px}.jokerInline button{min-width:44px;min-height:44px}}
+.gameFelt .played{max-width:100%;overflow-x:auto;justify-content:safe center;scrollbar-width:thin}.gameFelt .playedCard{flex:none}.gameFelt .feltInner{min-width:0}.gameWorkspace,.gameMain{max-width:100%}
+@media(max-width:900px){header nav{max-width:65vw;overflow-x:auto;white-space:nowrap;scrollbar-width:none}header nav button{flex:none}}
+.modeBadges{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}.modeBadges span{border:1px solid #bfa366;border-radius:20px;background:#294935;color:#f4d893;padding:8px 13px;font-size:12px;font-weight:700;animation:modeAppear .35s ease-out}.opponentVisibleCards{display:flex;max-width:100%;overflow-x:auto;gap:2px;padding:5px 1px}.opponentVisibleCards .playing-card{width:34px;height:50px;flex:none}.opponentVisibleCards .card-caption{display:none}.opponentVisibleCards .card-art-svg{max-width:24px;max-height:24px}.modeAction,.specialActions{margin-top:20px;animation:modeAppear .35s ease-out}.modeAction h2,.specialActions h2{font-size:24px}.modeAction .primary{margin-top:8px}.modeAction small{color:#d9c484}.specialActions{display:grid;gap:16px}.specialActions>div{border-top:1px solid #ffffff20;padding-top:10px}.specialActions select{max-width:290px;margin-right:8px}.specialActions .secondary{margin-top:8px}.shuffleChoices{display:flex;flex-wrap:wrap;gap:9px}.shuffleChoices label{display:flex;align-items:center;gap:5px;border:1px solid #567155;border-radius:9px;padding:7px 10px;font-size:12px}.shuffleChoices input{width:17px;height:17px;min-width:17px;accent-color:#d6b46b}@keyframes modeAppear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}@media(max-width:650px){.specialActions select{width:100%;max-width:none}.opponentVisibleCards .playing-card{width:29px;height:42px}.modeBadges span{font-size:10px}}
+.offerChoice{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.offerChoice select{max-width:260px}.offerChoice .secondary{white-space:nowrap}@media(max-width:650px){.offerChoice select,.offerChoice .secondary{width:100%;max-width:none}}
+.handChoice,.opponentVisibleCards .playing-card{animation:dealCard .28s ease-out both}@keyframes dealCard{from{opacity:0;transform:translateY(12px) rotate(-3deg)}to{opacity:1;transform:translateY(0) rotate(0)}}@media(prefers-reduced-motion:reduce){.handChoice,.opponentVisibleCards .playing-card,.modeAction,.specialActions{animation:none}}
+
+.gameRail{min-width:0}
+@media(min-width:760px){
+  .gamePage{padding-top:16px}
+  .gamePage .roomTop{margin-bottom:12px}
+  .gamePage .roomTop h1{font-size:clamp(27px,2.6vw,36px);margin-top:3px}
+  .gamePage .roomTopActions{flex-wrap:wrap;justify-content:flex-end}
+  .gameStatus{margin:0 0 9px;align-items:center}
+  .gameStatus h2{font-size:24px;margin-top:2px}
+  .gameTurnMessage{padding:7px 11px}
+  .modeBadges{margin:0 0 9px}
+  .gameLayout{grid-template-columns:minmax(0,1fr) minmax(265px,29%);gap:14px}
+  .gameRail{position:sticky;top:90px;height:calc(100dvh - 105px);display:flex;flex-direction:column;gap:12px;min-height:0}
+  .gameSidebar{position:static;top:auto;max-height:none;min-height:90px;flex:1;overflow-y:auto}
+  .gameMain>.roundProgress{margin:0 0 9px;padding:7px 11px}
+  .gameMain>.roundProgress .roundProgressHeading{margin-bottom:5px}
+  .gameMain>.roundProgress .roundProgressTrack{gap:5px;padding-bottom:2px}
+  .gameMain>.roundProgress .roundProgressTrack li{flex-basis:44px;min-width:44px;padding:5px 6px}
+  .gameMain>.roundProgress .roundProgressTrack strong{font-size:15px}
+  .gameMain>.roundProgress .roundProgressUnit{display:none}
+  .gameFelt{height:clamp(290px,calc(100dvh - 470px),390px);min-height:0;padding:14px 20px 12px;border-width:9px}
+  .phase-bid .gameFelt,.phase-exchange .gameFelt,.phase-reveal .gameFelt{height:clamp(245px,calc(100dvh - 530px),320px)}
+  .gameFelt .feltInner{min-height:85px}
+  .gameFelt .seat{padding:3px;min-width:75px}
+  .gameFelt .seat .playerAvatar{width:29px;height:29px;font-size:15px;margin-top:0}
+  .gameFelt .mySeat{padding:5px 12px}
+  .gameMain .actionPanel,.gameMain .modeAction{margin-top:8px;padding:12px 15px}
+  .gameMain .actionPanel h2,.gameMain .modeAction h2{font-size:19px;margin-bottom:3px}
+  .gameMain .actionPanel p,.gameMain .modeAction p{font-size:12px;margin:0 0 7px}
+  .gameMain .bidOptions{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;gap:6px}
+  .gameMain .bidOptions button{flex:none;min-width:37px;height:36px}
+  .gameMain .handArea{margin-top:7px}
+  .gameMain .handArea p{margin:0;font-size:12px}
+  .gameMain .hand{max-height:140px;overflow-x:auto;justify-content:safe center;gap:4px;padding:7px 6px 17px}
+  .gameMain .handChoice .playing-card{width:clamp(59px,6vw,78px);height:clamp(89px,9vw,116px)}
+  .gameMain .playConfirm{padding:2px 0 6px}
+}
+@media(min-width:760px) and (max-height:820px){
+  .gameMain>.roundProgress{padding:6px 10px}
+  .gameMain>.roundProgress .roundProgressHeading{margin:0}
+  .gameMain>.roundProgress .roundProgressTrack{display:none}
+  .gameMain .handChoice .playing-card{width:68px;height:100px}
+  .gameMain .hand{max-height:126px}
+  .phase-bid .gameFelt,.phase-exchange .gameFelt,.phase-reveal .gameFelt{height:clamp(230px,calc(100dvh - 525px),280px)}
+}
+.exchangeDecisions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:9px}.exchangeDecisions .primary{margin-top:0}.declineExchange{border-color:#ad7667;color:#f1c5b7}@media(max-width:580px){.exchangeDecisions button{flex:1 1 100%}}
+
+/* Keep every visible card in the layout instead of clipping it inside a seat or hand rail. */
+.gameFelt .opponents{flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:6px;overflow:visible}
+.gameFelt .seat:has(.opponentVisibleCards){width:max-content;max-width:min(100%,760px);flex:0 1 auto}
+.gameFelt .opponents:has(>.seat:nth-child(2)) .seat:has(.opponentVisibleCards){max-width:calc(50% - 6px)}
+.opponentVisibleCards{width:max-content;max-width:100%;overflow:visible;flex-wrap:wrap;justify-content:center;gap:3px;padding:5px 0 0}
+.gameFelt .opponentVisibleCards .playing-card.small{width:46px;height:68px}
+.gameFelt .opponentVisibleCards:has(.playing-card:nth-child(6)) .playing-card.small{width:34px;height:50px}
+.gameFelt .opponentVisibleCards .card-art-svg{max-width:30px;max-height:30px}
+.gameFelt .played{overflow:visible;flex-wrap:wrap;align-content:center;justify-content:center;gap:4px}
+.gameFelt .feltInner:has(.playedCard:nth-child(5)){min-height:165px}
+.gameFelt .felt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-width:0}
+.gameMain .hand{display:flex;flex-wrap:wrap;justify-content:center;overflow:visible;max-height:none;gap:4px;padding:8px 2px 12px}
+.gameMain .hand.handDense .playing-card{width:56px;height:84px}
+.gameMain .hand.handVeryDense .playing-card{width:43px;height:64px}
+.gameMain .hand.handVeryDense .card-index{top:5px;left:5px}
+.gameMain .hand.handVeryDense .card-index strong{font-size:12px}
+.gameMain .hand.handVeryDense .card-illustration{inset:15px 4px 11px}
+.gameMain .hand.handVeryDense .playing-card.is-figure .card-illustration{inset:21px 3px 11px}
+.gameMain .hand.handVeryDense .card-caption{bottom:4px;font-size:6px}
+.handArea{overflow:visible}
+.historyPlays,.trickPlays{flex-wrap:wrap;overflow-x:visible}
+@media(min-width:760px){.gamePage .gameFelt{height:auto;min-height:clamp(290px,calc(100dvh - 470px),390px)}.gamePage .phase-bid .gameFelt,.gamePage .phase-exchange .gameFelt,.gamePage .phase-reveal .gameFelt{height:auto;min-height:clamp(245px,calc(100dvh - 530px),320px)}}
+@media(min-width:760px) and (max-height:820px){.gamePage .phase-bid .gameFelt,.gamePage .phase-exchange .gameFelt,.gamePage .phase-reveal .gameFelt{min-height:clamp(230px,calc(100dvh - 525px),280px)}}
+
+/* The suit changes the felt; its illustration is woven into the background. */
+.gameFelt.trump-oros{--felt-center:#69692d;--felt-edge:#3b4826;--felt-ring:#bba25c}
+.gameFelt.trump-copas{--felt-center:#743e47;--felt-edge:#482d38;--felt-ring:#ce8c82}
+.gameFelt.trump-espadas{--felt-center:#3d6880;--felt-edge:#244756;--felt-ring:#9db9c0}
+.gameFelt.trump-bastos{--felt-center:#24734d;--felt-edge:#145035;--felt-ring:#9bb26e}
+.gameFelt[class*="trump-"]{background:radial-gradient(ellipse at 50% 38%,var(--felt-center),var(--felt-edge) 80%);box-shadow:inset 0 0 0 5px var(--felt-ring),inset 0 0 0 11px #172b23,0 25px 70px #0008;transition:background .45s ease,box-shadow .45s ease}
+.gameFelt[class*="trump-"] .seat,.gameFelt[class*="trump-"] .mySeat{background:#0a241ecb}
+.gameFelt .felt{position:relative;isolation:isolate}
+.gameFelt .trumpWatermark{position:absolute;left:50%;top:50%;width:clamp(150px,38%,250px);aspect-ratio:1;transform:translate(-50%,-50%) rotate(-13deg);opacity:.17;pointer-events:none;z-index:0;filter:grayscale(1) brightness(2.3)}
+.gameFelt .trumpWatermark .card-art-svg{display:block;width:100%;height:100%;max-width:none;max-height:none}
+.gameFelt .feltInner{z-index:1}
+.gameFelt[class*="trump-"] .feltTitle{color:#fff4cb5a}
+@media(min-width:901px){.phase-bid .gameFelt .feltInner,.phase-exchange .gameFelt .feltInner,.phase-reveal .gameFelt .feltInner{min-height:55px}.phase-bid .gameFelt .felt,.phase-exchange .gameFelt .felt,.phase-reveal .gameFelt .felt{gap:2px}}
+
+/* The hand stays in reach and the two menus remain available at any scroll position. */
+.mobileGameTools{display:none}
+.desktopPowerTrigger{display:none}
+@media(min-width:901px){
+  .desktopPowerTrigger{position:fixed;right:20px;bottom:20px;z-index:24;display:grid;place-items:center;width:48px;height:48px;border:1px solid #e4c276;border-radius:50%;background:#163a2b;color:#fff0c7;box-shadow:0 7px 22px #0009;font-size:25px;cursor:pointer}
+  .desktopPowerTrigger:hover,.desktopPowerTrigger[aria-expanded="true"]{background:#d9b56b;color:#173324}
+  .desktopPowerTrigger b{position:absolute;top:-7px;right:-7px;display:grid;place-items:center;min-width:21px;height:21px;padding:0 3px;border-radius:50%;background:#e0ba6d;color:#183126;font-size:11px}
+  .drawerBackdrop{display:block;position:fixed;inset:0;z-index:30;background:#000c}
+  .gameDrawer{position:absolute;right:0;top:0;bottom:0;width:min(420px,96vw);max-height:100dvh;overflow-y:auto;border-radius:18px 0 0 18px;padding:18px;animation:drawerEnter .2s ease-out}
+  .drawerHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .drawerHeading button{border:0;background:none;color:#f4e3bc;font-size:29px;min-width:44px;min-height:44px;cursor:pointer}
+  .gameDrawer .specialActions{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+  .gameDrawer .specialActions h2{display:none}
+  .gameDrawer .specialActions select{width:100%;max-width:none;margin:5px 0}
+  .gameDrawer .specialActions .secondary{width:100%;margin-top:8px}
+}
+@media(max-width:900px){
+  .gameWorkspace{padding-bottom:calc(var(--hand-dock-height,0px) + 24px)}
+  .gameLayout{display:block}
+  .gameRail,.gameSidebar{display:none}
+  .mobileGameTop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;position:sticky;top:78px;z-index:9;background:#10241cf2;border:1px solid #48654f;border-radius:11px;padding:9px 11px;color:#f2deb1;font-size:12px}
+  .mobileGameTools{display:flex;position:fixed;right:12px;bottom:calc(var(--hand-dock-height,0px) + 12px);z-index:20;gap:7px;filter:drop-shadow(0 6px 13px #0008)}
+  .mobileGameTools button{display:flex;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:8px 12px;border:1px solid #e4c276;border-radius:22px;background:#163a2b;color:#fff0c7;font-size:12px;font-weight:800;white-space:nowrap}
+  .mobileGameTools button b{display:grid;place-items:center;min-width:20px;height:20px;border-radius:50%;background:#e0ba6d;color:#183126;font-size:11px}
+  .mobileGameTools button[aria-expanded="true"]{background:#d9b56b;color:#173324}
+  .gameMain .handArea{position:fixed;left:50%;right:auto;bottom:0;transform:translateX(-50%);z-index:16;width:min(100%,900px);max-height:60dvh;overflow-y:auto;overscroll-behavior:contain;margin:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));border:1px solid #c9a565;border-radius:18px 18px 0 0;background:#0f291feF;box-shadow:0 -9px 32px #0009;backdrop-filter:blur(12px)}
+  .gameMain .handArea p{margin:0 0 5px;font-size:11px;color:#f0dba6}
+  .gameMain .hand{display:grid;grid-template-columns:repeat(var(--hand-cols),minmax(0,1fr));justify-content:center;gap:3px;max-height:none;overflow:visible;padding:3px 1px 6px}
+  .gameMain .handChoice{min-width:0;display:flex;justify-content:center;padding:0}
+  .gameMain .hand .handChoice .playing-card{width:min(100%,68px,10dvh);height:auto;aspect-ratio:2/3}
+  .gameMain .handChoice.selected{transform:translateY(-4px)}
+  .gameMain .playConfirm{position:static;margin-top:3px;padding:5px 0;background:transparent}
+  .gameMain .playConfirm button{min-height:40px;padding:8px 12px}
+  .gameFelt{height:auto;min-height:300px;padding:15px 10px;border-radius:45px}
+  .gameFelt .opponents{overflow:visible;flex-wrap:wrap;justify-content:center}
+  .gameFelt .played{position:relative;inset:auto;min-height:105px;flex-wrap:wrap;overflow:visible}
+  .gameFelt .feltInner{min-height:105px}
+  .gameFelt .feltTitle{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+  .drawerBackdrop{display:block;position:fixed;inset:0;z-index:30;background:#000c}
+  .gameDrawer{position:absolute;right:0;top:0;bottom:0;width:min(420px,96vw);max-height:100dvh;overflow-y:auto;border-radius:18px 0 0 18px;padding:18px;animation:drawerEnter .2s ease-out}
+  .drawerHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .drawerHeading button{border:0;background:none;color:#f4e3bc;font-size:29px;min-width:44px;min-height:44px}
+  .gameDrawer .specialActions{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
+  .gameDrawer .specialActions h2{display:none}
+  .gameDrawer .specialActions select{width:100%;max-width:none;margin:5px 0}
+  .gameDrawer .specialActions .secondary{width:100%;margin-top:8px}
+  .gameDrawer .shuffleChoices{max-height:none}
+}
+@keyframes drawerEnter{from{transform:translateX(22px);opacity:.6}to{transform:translateX(0);opacity:1}}
+@media(max-width:420px){.mobileGameTools{right:8px;gap:5px}.mobileGameTools button{padding:7px 9px;font-size:11px}.gameFelt .seat:has(.opponentVisibleCards){max-width:100%}.gameFelt .opponents:has(>.seat:nth-child(2)) .seat:has(.opponentVisibleCards){max-width:calc(50% - 3px)}}
+@media(prefers-reduced-motion:reduce){.gameDrawer{animation:none}}
+.bidOpenButton{display:block;margin:10px auto 0;min-height:44px}
+.bidPopupBackdrop{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:clamp(95px,17dvh,165px) 16px 25px;background:#020d0ab0;backdrop-filter:blur(2px)}
+.bidPopup{position:relative;width:min(440px,100%);max-height:calc(100dvh - 120px);overflow-y:auto;text-align:center;border:2px solid #edca7b;box-shadow:0 24px 70px #000c,0 0 30px #e1bd6859;animation:bidPopupIn .2s ease-out}
+.bidPopup h2{margin:8px 0;font-size:clamp(23px,5vw,31px)}.bidPopup p{margin:0 0 15px;font-size:13px}.bidPopup small{display:block;margin-top:13px;color:#d8c69f;font-size:11px}.bidPopup .bidOptions{max-height:36dvh;overflow-y:auto;gap:8px}.bidPopup .bidOptions button{min-width:50px;min-height:48px}.bidPopupClose{position:absolute;top:8px;right:8px;display:grid;place-items:center;width:36px;height:36px;border:0;background:transparent;color:#f5e5b8;font-size:28px}
+@keyframes bidPopupIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:900px){.bidPopupBackdrop{padding-top:96px;padding-bottom:calc(var(--hand-dock-height,0px) + 16px);background:#020d0a8f}.bidPopup{max-height:calc(100dvh - var(--hand-dock-height,0px) - 110px);padding:18px 14px}.bidPopup .bidOptions button{min-width:45px;min-height:45px}}
+@media(prefers-reduced-motion:reduce){.bidPopup{animation:none}}
+.bidPopupPredictions{margin:0 0 13px;padding:9px;border:1px solid #6c8d70;border-radius:11px;background:#0a2119;text-align:left}
+.bidPopupPredictions>strong{display:block;margin-bottom:7px;color:#e8cb89;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.bidPopupPredictions>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.bidPopupPredictions span{display:flex;align-items:center;justify-content:space-between;gap:5px;min-width:0;padding:5px 7px;border-radius:7px;background:#244331;color:#f3ead4;font-size:11px}
+.bidPopupPredictions span.isMe{outline:1px solid #d8b76e}
+.bidPopupPredictions b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bidPopupPredictions em{flex:none;color:#e8cb89;font-style:normal;font-weight:700;white-space:nowrap}
+
+@media(max-width:900px){
+  .liveGamePage .gameWorkspace{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;padding:0;overflow:hidden}
+  .liveGamePage .mobileGameTop{position:static;flex:none;min-height:30px;gap:3px;padding:4px 8px;border-radius:7px;font-size:11px;line-height:1.2}
+  .liveGamePage .gameStatus{flex:none;min-height:32px;display:flex;flex-direction:row;align-items:center;gap:4px;margin:2px 0;padding:0 164px 0 3px;border:0;background:transparent}
+  .liveGamePage .gameStatus>div:first-child{display:none}
+  .liveGamePage .gameTurnMessage{min-width:0;margin:0;padding:0;border:0;background:none;font-size:11px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .liveGamePage .modeBadges{position:absolute;top:65px;left:50%;z-index:5;transform:translateX(-50%);display:flex;flex-wrap:nowrap;max-width:90%;margin:0;gap:3px;pointer-events:none}
+  .liveGamePage .modeBadges span{padding:2px 5px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .liveGamePage .mobileGameTools{position:static;flex:none;flex-direction:column;align-items:flex-end;gap:3px;width:100%;margin:0;padding:3px 3px 2px;filter:none}
+  .liveGamePage .mobileGameTools button{min-height:32px;padding:4px 7px;border-radius:9px;font-size:10px;box-shadow:0 2px 8px #0007}
+  .liveGamePage .mobileGameTools button b{min-width:16px;height:16px;font-size:9px}
+  .liveGamePage .gameLayout{flex:1;min-height:0;display:block;margin:0}
+  .liveGamePage .gameMain{height:100%;min-height:0;display:flex;flex-direction:column;position:relative}
+  .liveGamePage .gameMain>.gameFelt{flex:1 1 auto;height:0;min-height:0;margin:0}
+  .liveGamePage .gameMain .handArea{position:relative;left:auto;right:auto;bottom:auto;transform:none;flex:none;width:100%;height:auto;max-height:none;min-height:0;overflow:hidden;margin:2px 0 0;padding:4px 6px calc(4px + env(safe-area-inset-bottom));border-radius:12px 12px 0 0}
+  .liveGamePage .gameMain .handArea p{margin:0;font-size:10px;line-height:1.15}
+  .liveGamePage .gameMain .hand{gap:2px;padding:3px 0 1px}
+  .liveGamePage .gameMain .hand .handChoice .playing-card{width:auto;height:min(10dvh,calc((24dvh - 34px)/var(--hand-rows)));max-width:100%;aspect-ratio:2/3}
+  .liveGamePage .gameMain .playConfirm{margin-top:1px;padding:2px 0}
+  .liveGamePage .gameMain .playConfirm button{min-height:34px;padding:5px 9px;font-size:11px}
+  .liveGamePage .gameMain .bidOpenButton{position:relative;bottom:auto;left:auto;z-index:21;align-self:flex-start;transform:none;flex:none;min-height:35px;margin:2px 0 2px 8px;padding:7px 11px;font-size:11px;white-space:nowrap}
+  .liveGamePage .gameMain .modeAction{flex:none;max-height:25dvh;overflow-y:auto;margin:1px 0;padding:6px 10px;border-radius:10px;text-align:left}
+  .liveGamePage .gameMain .modeAction h2{font-size:15px;margin:0}
+  .liveGamePage .gameMain .modeAction p{font-size:10px;line-height:1.2;margin:1px 0 3px}
+  .liveGamePage .gameMain .modeAction select{min-height:32px;padding:4px 8px;font-size:11px}
+  .liveGamePage .gameMain .modeAction button{min-height:32px;padding:5px 8px;font-size:11px}
+  .liveGamePage .gameMain>.result{flex:none;max-height:45dvh;overflow-y:auto;margin:2px 0;padding:10px}
+  .liveGamePage .bidPopupBackdrop{padding:60px 8px calc(var(--hand-dock-height) + 8px)}
+  .liveGamePage .bidPopup{max-height:calc(100dvh - var(--hand-dock-height) - 72px)}
+}
+@media(max-width:900px) and (max-height:660px){
+  .liveGamePage .gameMain .hand .handChoice .playing-card{height:min(9dvh,calc((22dvh - 30px)/var(--hand-rows)))}
+  .liveGamePage .mobileGameTop{min-height:26px}
+  .liveGamePage .gameStatus{min-height:29px}
+}
+
+@media(min-width:901px){
+  .gamePage{max-width:1400px}
+  .gamePage .gameLayout{grid-template-columns:minmax(0,1fr) minmax(260px,26%)}
+}
+
+.exchangePopupBackdrop,.resultPopupBackdrop,.powerNoticeBackdrop{position:fixed;inset:0;z-index:42;display:grid;place-items:center;padding:16px;background:#020d0ac9;backdrop-filter:blur(4px)}
+.exchangePopup,.resultPopupBackdrop .result,.powerNotice{position:relative;width:min(570px,100%);max-height:calc(100dvh - 32px);overflow-y:auto;border:2px solid #e5c27a;box-shadow:0 24px 70px #000d,0 0 30px #e1bd6840;animation:bidPopupIn .2s ease-out}
+.exchangePopupClose,.resultPopupClose{position:absolute;top:9px;right:9px;z-index:2;display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:9px;background:#294033;color:#ffe7b3;font-size:25px}
+.exchangePopup .modeAction{margin:0;padding:0;border:0;background:none;box-shadow:none;text-align:left}
+.exchangePopup .modeAction h2{padding-right:40px}
+.exchangePopup .modeAction p{margin:8px 0 13px}
+.exchangePopup .modeAction .exchangeDecisions{justify-content:flex-start}
+.exchangePopupHand{margin-top:16px;padding-top:12px;border-top:1px solid #ffffff35;text-align:center;color:#f3dfad;font-size:12px;font-weight:700}
+.exchangePopupHand .hand{display:grid;grid-template-columns:repeat(var(--hand-cols),minmax(0,1fr));justify-items:center;gap:5px;max-width:620px;margin:auto;padding:12px 0 5px;overflow:visible}
+.exchangePopupHand .handChoice{min-width:0;padding:0}
+.exchangePopupHand .playing-card{width:min(100%,68px);height:auto;aspect-ratio:2/3}
+.exchangeOpenButton,.resultOpenButton{display:block;align-self:center;margin:10px auto}
+.resultPopupBackdrop .result{margin:0;text-align:center}
+.resultPopupBackdrop .result h2{padding-right:35px;padding-left:35px}
+.resultPopupBackdrop .result .results{margin-top:12px}
+.resultPopupBackdrop .result .primary{margin-top:15px}
+.resultPopupBackdrop .finalResult{display:flex;flex-direction:column;width:min(610px,100%);max-height:min(720px,calc(100dvh - 32px));overflow:hidden;padding:24px}
+.finalResult .resultPopupContent{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 4px 4px}
+.finalResult .resultPopupContent h2{margin:5px 0 0}
+.finalResult .winner{margin:10px 0;font-size:clamp(22px,5vw,29px);line-height:1.2}
+.finalResult .resultPopupContent>p:not(.winner){margin:8px 0;font-size:12px}
+.finalStandings{display:grid;gap:7px;margin-top:15px;text-align:left}
+.finalStandings>div{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;align-items:center;gap:10px;padding:9px 11px;border:1px solid #ffffff20;border-radius:11px;background:#0b211a}
+.finalStandings>div.winnerRow{border-color:#d9ba72;background:#284732}
+.finalStandings .playerAvatar{width:32px;height:32px;font-size:19px}
+.finalStandings b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.finalStandings span:not(.playerAvatar){color:#d9ccab;font-size:11px}
+.finalStandings strong{color:#f4dc9e;white-space:nowrap;font-size:12px}
+.resultPopupActions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;flex:none;padding-top:15px;margin-top:12px;border-top:1px solid #ffffff28}
+.resultPopupBackdrop .resultPopupActions .primary{margin:0}
+@media(max-width:620px){.resultPopupBackdrop{padding:10px 9px max(10px,env(safe-area-inset-bottom))}.resultPopupBackdrop .finalResult{max-height:calc(100dvh - 20px - env(safe-area-inset-bottom));padding:16px 11px}.finalStandings>div{grid-template-columns:30px minmax(0,1fr) auto;gap:6px;padding:7px 6px}.finalStandings .playerAvatar{width:29px;height:29px;font-size:17px}.finalStandings span:not(.playerAvatar){display:none}.resultPopupActions{display:grid;grid-template-columns:1fr 1fr}.resultPopupActions button{min-width:0;padding:10px 6px;font-size:12px}}
+.powerNoticeBackdrop{z-index:55}
+.powerNotice{width:min(380px,100%);padding:24px;text-align:center}
+.powerNoticeSymbol{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 12px;border:2px solid #e9c87e;border-radius:50%;background:#31563d;color:#ffe6a6;font-size:38px}
+.powerNotice h2{font-size:24px}.powerNotice p{font-size:13px}.powerNotice .secondary{margin-top:5px}
+@media(max-width:900px){
+  .liveGamePage .gameStatus{padding-right:3px}
+  .liveGamePage .gameMain>.resultOpenButton{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:5;margin:0;white-space:nowrap}
+  .exchangePopup,.resultPopupBackdrop .result{width:min(100%,520px);padding:16px 12px}
+  .exchangePopupHand .hand{gap:3px;padding:8px 0 4px}
+  .exchangePopupHand .playing-card{width:min(100%,54px,8dvh)}
+  .resultPopupBackdrop .result .results>div{grid-template-columns:minmax(60px,1.3fr) repeat(3,minmax(40px,1fr));gap:3px;padding:8px 2px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.exchangePopup,.resultPopupBackdrop .result,.powerNotice{animation:none}}
+
+/* Keep the table and the other players' bids visible while choosing on a phone. */
+@media(max-width:900px){
+  .liveGamePage .bidPopupBackdrop{align-items:center;justify-content:center;overflow:hidden;padding:clamp(105px,18dvh,155px) 10px calc(var(--hand-dock-height) + 8px);background:transparent;backdrop-filter:none;pointer-events:none}
+  .liveGamePage .bidPopup{pointer-events:auto;width:min(380px,100%);max-height:100%;overflow-y:auto;padding:16px 13px;border-radius:17px;background:#142d22fa;box-shadow:0 13px 30px #000b}
+  .liveGamePage .bidPopup .eyebrow{font-size:10px;letter-spacing:.1em}
+  .liveGamePage .bidPopup h2{margin:5px 24px 12px;font-size:clamp(20px,5.2vw,25px);line-height:1.15}
+  .liveGamePage .bidPopup p,.liveGamePage .bidPopup small{display:none}
+  .liveGamePage .bidPopup .bidOptions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;max-height:none;overflow:visible;margin:0}
+  .liveGamePage .bidPopup .bidOptions button{min-width:0;min-height:42px;height:42px;padding:0;border-radius:8px;font-size:14px}
+  .liveGamePage .bidPopupClose{top:5px;right:5px;width:32px;height:32px;font-size:23px}
+  .liveGamePage .bidPopupPredictions{margin-bottom:11px;padding:7px}
+  .liveGamePage .bidPopupPredictions span{font-size:10px;padding:4px 6px}
+}
+@media(max-width:360px){
+  .liveGamePage .phase-bid .mobileGameTools button span{display:none}
+}

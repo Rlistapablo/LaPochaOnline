@@ -1,0 +1,69 @@
+.gameWorkspace .gameFelt.polygonTable,.replayStage .gameFelt.polygonTable{--felt-center:#176443;--felt-edge:#0d422f;--felt-ring:#b18d55;position:relative;display:block;min-height:440px;overflow:visible;border:0;border-radius:0;padding:0;background:transparent;box-shadow:none;isolation:isolate}
+.gameWorkspace .polygonTable.trump-oros,.replayStage .polygonTable.trump-oros{--felt-center:#69692d;--felt-edge:#3b4826;--felt-ring:#d6b961}
+.gameWorkspace .polygonTable.trump-copas,.replayStage .polygonTable.trump-copas{--felt-center:#743e47;--felt-edge:#482d38;--felt-ring:#df9b8e}
+.gameWorkspace .polygonTable.trump-espadas,.replayStage .polygonTable.trump-espadas{--felt-center:#3d6880;--felt-edge:#244756;--felt-ring:#a6cad7}
+.gameWorkspace .polygonTable.trump-bastos,.replayStage .polygonTable.trump-bastos{--felt-center:#24734d;--felt-edge:#145035;--felt-ring:#b9ca85}
+.polygonTable .tableOutline{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 18px 24px #0009)}
+.polygonTable .tableRim{fill:var(--felt-edge);stroke:var(--felt-ring);stroke-width:2;vector-effect:non-scaling-stroke}
+.polygonTable .rotationArrow{fill:none;stroke:#ffe69a;stroke-width:2.5;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:1;filter:drop-shadow(0 0 3px #ffe69a)}
+.polygonTable .tableCenter{position:absolute;inset:27% 22%;z-index:1;display:grid;place-items:center;text-align:center;pointer-events:none}
+.polygonTable .tableCenter::before{content:"";position:absolute;inset:-15% -18%;z-index:-1;border-radius:50%;background:radial-gradient(ellipse,var(--felt-center),transparent 73%)}
+.polygonTable .tableTrumpSymbol{display:grid;place-items:center;width:clamp(90px,20vw,148px);aspect-ratio:1;filter:drop-shadow(0 5px 6px #0008) drop-shadow(0 0 18px var(--felt-ring))}
+.polygonTable .tableTrumpSymbol .card-art-svg{width:100%;height:100%;max-width:none;max-height:none;filter:none}
+.polygonTable .feltTitle{font-size:20px}
+.polygonTable .tableSeat{position:absolute;left:var(--seat-x);top:var(--seat-y);z-index:2;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;width:clamp(88px,16%,124px);padding:3px 2px;border:0;background:none;box-shadow:none;color:#fff3d5;text-align:center;text-shadow:0 2px 5px #00190f,0 0 8px #00190f;font-size:11px}
+.polygonTable .tableSeat.isTurn{animation:tableTurnPulse 1.7s ease-in-out infinite}
+.polygonTable .tableSeat.isTurn .playerAvatar{border:3px solid #ffe189;box-shadow:0 0 0 4px #f4d16c66,0 0 23px #ffe17d}
+.polygonTable .tableSeat.isMe .tableSeatHead b{color:#ffe19b}.polygonTable .tableSeat.isOut{opacity:.45;filter:grayscale(1)}
+.polygonTable .tableSeatMarker{min-height:11px;color:#ffe18e;font-size:8px;font-weight:900;letter-spacing:.12em}
+.polygonTable .tableSeatHead{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;max-width:100%;min-width:0}.polygonTable .tableSeatHead .playerAvatar{width:42px;height:42px;font-size:25px;box-shadow:0 3px 12px #0009}.polygonTable .tableSeatHead b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.polygonTable .tableSeat>small{white-space:nowrap;font-size:10px;color:#f8e7c6}.polygonTable .tableSeat>small span{margin-left:2px}.polygonTable .tableTurnIndicator{font-size:9px;color:#ffe38f}
+.polygonTable .opponentVisibleCards{position:absolute;top:calc(100% + 3px);left:50%;z-index:3;transform:translateX(-50%);width:max-content;max-width:min(42vw,360px);justify-content:center;padding:3px;background:#09271fe8;border-radius:8px}
+.polygonTable .opponentVisibleCards .playing-card.small{width:36px;height:52px}
+.polygonTable .tablePlay{position:absolute;left:var(--play-x);top:var(--play-y);z-index:3;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;filter:drop-shadow(0 4px 5px #0009);animation:tableCardIn .25s ease-out}
+.polygonTable .tablePlay .playing-card.small{width:42px;height:62px;pointer-events:none}
+.polygonTable .tablePlay.isWinningPlay .playing-card{box-shadow:0 0 0 3px #ffe381,0 0 23px #ffe381}
+@keyframes tableCardIn{from{opacity:0;transform:translate(-50%,-35%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes tableTurnPulse{50%{filter:drop-shadow(0 0 12px #ffe17dbd)}}
+@media(max-width:900px){.gameWorkspace .gameFelt.polygonTable{min-height:380px}.polygonTable .tableSeat{width:clamp(77px,20%,108px)}.polygonTable .tableCenter{inset:29% 21%}.polygonTable .tableTrumpSymbol{width:clamp(84px,17vw,118px)}}
+@media(max-width:580px){.gameWorkspace .gameFelt.polygonTable{min-height:340px}.polygonTable .tableSeat{width:clamp(67px,22%,85px);padding:3px 2px;font-size:9px}.polygonTable .tableSeatHead .playerAvatar{width:34px;height:34px;font-size:20px}.polygonTable .tableSeat>small{font-size:9px}.polygonTable .tableSeatMarker{font-size:7px}.polygonTable .tableCenter{inset:30% 21%}.polygonTable .tableTrumpSymbol{width:clamp(68px,20vw,100px)}.polygonTable .feltTitle{font-size:15px}.polygonTable .tablePlay .playing-card.small{width:32px;height:47px}.polygonTable .opponentVisibleCards{max-width:46vw}.polygonTable .opponentVisibleCards .playing-card.small{width:27px;height:39px}}
+@media(max-width:580px){.gameWorkspace .gameFelt.polygonTable:is(.players-6,.players-7,.players-8){min-height:410px}}
+@media(prefers-reduced-motion:reduce){.polygonTable .tableSeat.isTurn,.polygonTable .tablePlay{animation:none}}
+
+/* The table takes all space left between the compact room header and the hand. */
+@media(max-width:900px){
+  .liveGamePage .gameWorkspace .gameFelt.polygonTable{height:100%;min-height:0;max-height:none;overflow:visible}
+  .liveGamePage .polygonTable .tablePlay .playing-card.small{width:clamp(43px,12vw,58px);height:auto;aspect-ratio:2/3}
+  .liveGamePage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(35px,9vw,46px)}
+  .liveGamePage .polygonTable .tableSeat{width:clamp(70px,21vw,98px)}
+  .liveGamePage .polygonTable .tableSeatHead .playerAvatar{width:clamp(35px,10vw,47px);height:clamp(35px,10vw,47px);font-size:24px}
+  .liveGamePage .polygonTable .tableTrumpSymbol{width:clamp(75px,22vw,124px)}
+  .liveGamePage .polygonTable .tableCenter{inset:27% 19%}
+}
+@media(max-width:900px) and (max-height:660px){
+  .liveGamePage .polygonTable .tableSeatHead .playerAvatar{width:32px;height:32px;font-size:19px}
+  .liveGamePage .polygonTable .tableSeatMarker{min-height:8px;font-size:6px}
+  .liveGamePage .polygonTable .tableSeat>small{font-size:8px}
+  .liveGamePage .polygonTable .tablePlay .playing-card.small{width:clamp(38px,10vw,49px)}
+}
+@media(min-width:901px){
+  .gamePage .gameWorkspace .gameFelt.polygonTable{height:clamp(440px,calc(100dvh - 320px),680px);min-height:0}
+  .gamePage .polygonTable .tablePlay .playing-card.small{width:clamp(61px,5vw,76px);height:auto;aspect-ratio:2/3}
+  .gamePage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(49px,4vw,60px)}
+  .gamePage .polygonTable .tableSeatHead .playerAvatar{width:48px;height:48px;font-size:28px}
+  .gamePage .polygonTable .tableTrumpSymbol{width:clamp(120px,12vw,170px)}
+}
+.polygonTable .tableSeatMarker{height:23px;min-height:23px;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap}
+.polygonTable .tableSequenceBadge{display:inline-flex;align-items:center;gap:3px;padding:4px 6px;border:1px solid currentColor;border-radius:999px;background:#102a22e8;box-shadow:0 2px 9px #0009;text-shadow:none;font:900 9px/1 'DM Sans',sans-serif;letter-spacing:.06em}
+.polygonTable .tableSequenceBadge.start{color:#bff1a8}
+.polygonTable .tableSequenceBadge.end{color:#ffd0a1}
+.polygonTable .tableSequenceBadge.start span{font-size:11px}
+.polygonTable .tableSequenceBadge.end span{font-size:9px}
+.polygonTable .tableTurnIndicator{position:absolute;top:calc(100% + 2px);left:50%;transform:translateX(-50%);white-space:nowrap}
+.polygonTable .tableSeat.isTurn .opponentVisibleCards{top:calc(100% + 18px)}
+@media(max-width:580px){
+  .polygonTable .tableSeatMarker{height:18px;min-height:18px}
+  .polygonTable .tableSequenceBadge{padding:3px 4px;font-size:7px}
+  .polygonTable .tableSequenceBadge.start span{font-size:9px}
+  .polygonTable .tableSequenceBadge.end span{font-size:7px}
+}

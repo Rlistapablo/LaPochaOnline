@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+*.log
+.env.*
+!.env.example
+coverage
+.DS_Store
+*.sql.gz
+*.dump
+*.backup
+playwright-report
+test-results
+token.txt
+*.pem
+*.key
