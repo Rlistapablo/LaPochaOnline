@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS bot_profiles (
   player_id uuid NOT NULL,
   name text NOT NULL,
   avatar text NOT NULL,
-  difficulty text NOT NULL CHECK(difficulty IN ('easy','normal','hard')),
+  difficulty text NOT NULL CHECK(difficulty IN ('easy','normal','hard','expert')),
   PRIMARY KEY(room_code,player_id)
 );
 CREATE TABLE IF NOT EXISTS room_audit_log (

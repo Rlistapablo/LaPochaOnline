@@ -1,4 +1,5 @@
 import {Game,Player,VALUES,Value,Card,allowedBids,bid,play,view,isJoker,rank,configuredDeck,active,offerExchange,declineExchange,selectExchange,selectReveal,preparationActor,stealCard,reshuffleHands,turnOrder} from '../shared/game.js';
+import {chooseExpertBid,chooseExpertPlay,expertConfig,hardConfig} from './montecarlo.js';
 
 type Option={card:Card;value?:Value;rank:number};
 const cardRank=(card:Card,trump?:Card['suit'])=>isJoker(card)?VALUES.length-1:(card.suit===trump?VALUES.length:0)+VALUES.indexOf(card.value!);
@@ -65,6 +66,7 @@ export function chooseBotBid(g:Game,p:Player){
   const hand=view(g,p.id).players.find(player=>player.id===p.id)?.hand||[];
   const choices=allowedBids(g);
   if(p.bot==='easy')return choices[Math.floor(Math.random()*choices.length)];
+  if(p.bot==='expert'||p.bot==='hard'){const choice=chooseExpertBid(g,p,p.bot==='expert'?expertConfig:hardConfig);if(choice!==undefined)return choice;}
   const n=active(g).length;
   if(p.bot==='normal'){
     const unknown=unseen(g,p),order=turnOrder(g),position=order.indexOf(p.id),opponents=order.filter(id=>id!==p.id);
@@ -92,6 +94,7 @@ export function chooseBotPlay(g:Game,p:Player){
   const visible=view(g,p.id),hand=(visible.players.find(player=>player.id===p.id)?.hand||[]).filter((card):card is Card=>!!card);
   const options=optionsFor(hand,g.trumpSuit),need=(p.bid??0)-p.wins;
   if(p.bot==='easy')return options[Math.floor(Math.random()*options.length)];
+  if(p.bot==='expert'||p.bot==='hard'){const choice=chooseExpertPlay(g,p,p.bot==='expert'?expertConfig:hardConfig);if(choice)return choice;}
   const tableRank=visible.table.length?Math.max(...visible.table.map(item=>isJoker(item.card)?rank(item):cardRank(item.card,g.trumpSuit))):-1;
   const remaining=turnOrder(g,visible.table.length?g.players.findIndex(player=>player.id===visible.table[0].playerId):g.turnIndex).slice(visible.table.length+1);
   const unknown=unseen(g,p);

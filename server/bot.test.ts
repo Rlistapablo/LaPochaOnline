@@ -26,7 +26,7 @@ it('el bot difícil usa las cartas visibles del rival en la predicción oculta',
 it('el bot difícil gana con comodín cuando necesita la última baza',()=>{
  const settings:Settings={name:'test',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'hard',turnSeconds:30,sounds:false};
  const g=createGame('PLAY',{id:'human',name:'Humano',avatar:'🃏',connected:true},settings);addPlayer(g,{id:'bot',name:'Bot',avatar:'🤖',connected:true,bot:'hard'});start(g);
- g.phase='play';g.turnIndex=1;g.players[1].bid=1;g.players[1].hand=[{id:'joker_1'}];g.table=[{playerId:'human',card:{id:'Oros_As',suit:'Oros',value:'As'}}];
+ g.phase='play';g.turnIndex=1;g.players[1].bid=1;g.players[0].hand=[];g.players[1].hand=[{id:'joker_1'}];g.table=[{playerId:'human',card:{id:'Oros_As',suit:'Oros',value:'As'}}];
  const choice=chooseBotPlay(g,g.players[1]);expect(choice.card.id).toBe('joker_1');expect(choice.value).toBe('As');
 });
 it('los bots resuelven intercambio y revelación antes de jugar con triunfo',()=>{
@@ -127,4 +127,22 @@ it('el bot roba una carta fuerte mostrada a cambio de una débil',()=>{
  expect(g.players[0].steals).toBe(0);
  expect(g.pendingEvents?.some(event=>event.type==='card_stolen')).toBe(true);
  assertIntegrity(g);
+});
+it('los bots difícil y experto completan partidas con jugadas legales en varios modos',()=>{
+ const variants:Partial<Settings>[]=[{},{modes:{trump:true}},{modes:{deck:'jokers'}},{modes:{vision:'blind'}}];
+ for(const extra of variants)for(const level of ['hard','expert'] as const){
+  const settings:Settings={name:'mc',private:true,maxPlayers:3,maxCards:4,lives:3,penalty:'normal',oneCard:'visible',bots:3,difficulty:level,turnSeconds:30,sounds:false,...extra};
+  const g=createGame('MC',{id:'a',name:'A',avatar:'A',connected:true,bot:level},settings);
+  addPlayer(g,{id:'b',name:'B',avatar:'B',connected:true,bot:level});addPlayer(g,{id:'c',name:'C',avatar:'C',connected:true,bot:'normal'});start(g);
+  let guard=0;
+  while(g.phase!=='finished'&&guard++<400){runBots(g);assertIntegrity(g);if(g.phase==='roundEnd')advance(g,g.version);}
+  expect(g.phase).toBe('finished');
+ }
+});
+it('el bot experto elige con una sola carta la baza que necesita cuando el rival ya jugó',()=>{
+ const settings:Settings={name:'mc',private:true,maxPlayers:2,maxCards:1,lives:3,penalty:'normal',oneCard:'visible',bots:1,difficulty:'expert',turnSeconds:30,sounds:false};
+ const g=createGame('MC1',{id:'human',name:'Humano',avatar:'H',connected:true},settings);addPlayer(g,{id:'bot',name:'Bot',avatar:'B',connected:true,bot:'expert'});start(g);
+ g.phase='play';g.turnIndex=1;g.players[0].hand=[];g.players[1].bid=1;g.players[1].hand=[{id:'joker_1'}];
+ g.table=[{playerId:'human',card:{id:'Oros_As',suit:'Oros',value:'As'}}];
+ const choice=chooseBotPlay(g,g.players[1]);expect(choice.card.id).toBe('joker_1');expect(choice.value).toBe('As');
 });

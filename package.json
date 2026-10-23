@@ -11,6 +11,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "test": "vitest run",
     "simulate": "tsx scripts/simulate.ts",
+    "bench:bots": "tsx scripts/bot-benchmark.ts",
     "smoke": "tsx scripts/smoke.ts",
     "smoke:rooms": "tsx scripts/rooms-smoke.ts",
     "smoke:production": "tsx scripts/production-smoke.ts",
