@@ -1,4 +1,4 @@
-import {it,expect} from 'vitest';
+import {it,expect,vi} from 'vitest';
 import {createGame,addPlayer,start,advance,assertIntegrity,makeDeck,bid,offerExchange,selectExchange,type Settings,type Game,type Card} from '../shared/game';
 import {runBots,runBotTurn,chooseBotBid,chooseBotPlay} from './bot';
 
@@ -69,9 +69,14 @@ it('una predicción a ciegas no depende de la carta real del bot',()=>{
  const g=createGame('BLIND',{id:'bot',name:'Bot',avatar:'B',connected:true,bot:'hard'},settings);addPlayer(g,{id:'human',name:'Humano',avatar:'H',connected:true});start(g);
  g.turnIndex=0;g.firstIndex=0;
  putInHand(g,'bot',makeDeck().find(c=>c.id==='Oros_As')!);
- const first=chooseBotBid(g,g.players[0]);
- putInHand(g,'bot',makeDeck().find(c=>c.id==='Oros_2')!);
- expect(chooseBotBid(g,g.players[0])).toBe(first);
+  let seed=12345;
+  const random=vi.spyOn(Math,'random').mockImplementation(()=>{seed=(seed*1664525+1013904223)>>>0;return seed/2**32;});
+  try{
+    const first=chooseBotBid(g,g.players[0]);
+    putInHand(g,'bot',makeDeck().find(c=>c.id==='Oros_2')!);
+    seed=12345;
+    expect(chooseBotBid(g,g.players[0])).toBe(first);
+  }finally{random.mockRestore();}
 });
 
 it('en un intercambio el bot conserva su triunfo fuerte',()=>{

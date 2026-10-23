@@ -64,6 +64,14 @@ export function replaceLeaverWithBot(g:Game,playerId:string){
   g.version++;recordEvent(g,'player_replaced_by_bot',{seatId:player.id,name:previousName},controllerId);
   return player;
 }
+export function returnToBotSeat(g:Game,playerId:string,user:{id:string;name:string;avatar:string}){
+  const player=g.players.find(p=>p.id===playerId);
+  if(!player?.bot||player.id!==user.id&&player.controllerId!==user.id)throw Error('Asiento no disponible');
+  player.bot=undefined;player.controllerId=player.id===user.id?undefined:user.id;
+  player.name=user.name;player.avatar=user.avatar;player.connected=true;
+  g.version++;recordEvent(g,'player_returned',{seatId:player.id,name:user.name},user.id);
+  return player;
+}
 function nextActive(g: Game, from: number) { for(let n=1;n<=g.players.length;n++){const i=(from+n)%g.players.length;if(!g.players[i].eliminated)return i;} throw Error('Sin jugadores activos'); }
 export function current(g: Game): Player { return g.players[g.turnIndex]; }
 export function turnOrder(g:Game,first=g.firstIndex):string[]{return Array.from({length:g.players.length},(_,offset)=>g.players[(first+offset)%g.players.length]).filter(p=>!p.eliminated).map(p=>p.id);}

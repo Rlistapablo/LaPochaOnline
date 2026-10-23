@@ -257,3 +257,40 @@
 @media(max-width:360px){
   .liveGamePage .phase-bid .mobileGameTools button span{display:none}
 }
+
+/* Desktop game view: the table grows into the free space while the hand stays in view. */
+@media(min-width:901px){
+  body:has(.liveGamePage){height:100dvh;overflow:hidden}
+  body:has(.liveGamePage) main{height:calc(100dvh - 78px);min-height:0;overflow:hidden}
+  body:has(.liveGamePage) footer{display:none}
+  .liveGamePage{height:100%;max-height:100%;display:flex;flex-direction:column;padding:7px 20px 8px;overflow:hidden}
+  .liveGamePage .roomTop{flex:none;min-height:43px;margin:0 0 5px}
+  .liveGamePage .roomTop h1{font-size:clamp(21px,2vw,27px);margin-top:1px}
+  .liveGamePage .roomTop .eyebrow{font-size:10px}
+  .liveGamePage .roomTopActions button{padding:8px 11px;font-size:11px}
+  .liveGamePage .gameWorkspace{flex:1;min-height:0;display:flex;flex-direction:column}
+  .liveGamePage .gameStatus{flex:none;min-height:38px;margin:0 0 4px}
+  .liveGamePage .gameStatus h2{font-size:19px;margin-top:1px}
+  .liveGamePage .gameTurnMessage{padding:5px 9px;font-size:11px}
+  .liveGamePage .modeBadges{flex:none;margin:0 0 4px}
+  .liveGamePage .gameLayout{flex:1;min-height:0;align-items:stretch}
+  .liveGamePage .gameMain{min-height:0;display:flex;flex-direction:column}
+  .liveGamePage .gameRail{height:100%;min-height:0;position:static}
+  .liveGamePage .gameMain>.gameFelt.polygonTable{flex:1 1 auto;height:0!important;min-height:0!important;max-height:none;margin:0}
+  .liveGamePage .gameMain .handArea{position:relative;bottom:0;flex:none;max-height:29dvh;min-height:0;overflow:hidden;margin:3px 0 0;padding:3px 8px 2px;border:1px solid #ba995e;border-radius:12px;background:#10291f}
+  .liveGamePage .gameMain .handArea p{margin:0;font-size:10px;line-height:1.2}
+  .liveGamePage .gameMain .hand{display:grid;grid-template-columns:repeat(var(--desktop-hand-cols),minmax(0,1fr));justify-items:center;align-items:center;gap:2px 3px;max-height:none;overflow:visible;padding:3px 0}
+  .liveGamePage .gameMain .handChoice{min-width:0;padding:0}
+  .liveGamePage .gameMain .handChoice .playing-card{width:auto;height:min(10.5dvh,100px);max-width:100%;aspect-ratio:2/3}
+  .liveGamePage .gameMain .hand:has(.handChoice:nth-child(12)) .handChoice .playing-card{height:min(8.5dvh,78px)}
+  .liveGamePage .gameMain .playConfirm{padding:1px 0 2px;gap:5px}
+  .liveGamePage .gameMain .playConfirm button{padding:6px 9px;font-size:11px}
+}
+@media(min-width:901px) and (max-height:700px){
+  .liveGamePage .roomTop{min-height:36px}
+  .liveGamePage .gameStatus{min-height:30px}
+  .liveGamePage .gameMain .handChoice .playing-card{height:min(9dvh,82px)}
+  .liveGamePage .gameMain .hand:has(.handChoice:nth-child(12)) .handChoice .playing-card{height:min(7.5dvh,65px)}
+  .liveGamePage .polygonTable .tableSeatHead .playerAvatar{width:36px;height:36px;font-size:21px}
+  .liveGamePage .polygonTable .tablePlay .playing-card.small{width:clamp(42px,4vw,56px)}
+}

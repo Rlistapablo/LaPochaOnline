@@ -6,6 +6,12 @@
 @media(max-width:650px){header{height:auto;min-height:74px;align-items:stretch;flex-direction:column;padding:9px 16px;gap:7px}header .brand{align-self:flex-start}header nav{max-width:100%;overflow-x:auto;white-space:nowrap;padding-bottom:6px;scrollbar-width:thin}header nav button{flex:none}header nav button:nth-child(2),header nav button:nth-child(3){display:inline-block}}
 
 .mobileNavToggle{display:none}
+.privateRoomsPanel h2{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.privateRoomsPanel .count{float:none}
+.privateRoomRow{gap:10px}
+.privateRoomRow span{min-width:0;overflow:hidden}
+.privateRoomRow b,.privateRoomRow small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.privateRoomRow button.secondary{flex:none;border:1px solid #c5a864;border-radius:9px;background:#294332;color:#f9e8bc;padding:9px 11px;font-size:11px;font-weight:700}
 .siteNav button[aria-current="page"]{color:#f4d28a}
 @media(max-width:980px){
   .siteHeader{height:78px;min-height:78px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;padding:0 16px}

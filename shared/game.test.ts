@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {makeDeck,createGame,addPlayer,takeOverBot,replaceLeaverWithBot,start,bid,play,advance,rematch,finishGame,oneCardMode,allowedBids,assertIntegrity,view,trickWinner,schedule,penaltyForRound,VALUES,type Settings} from './game';
+import {makeDeck,createGame,addPlayer,takeOverBot,replaceLeaverWithBot,returnToBotSeat,start,bid,play,advance,rematch,finishGame,oneCardMode,allowedBids,assertIntegrity,view,trickWinner,schedule,penaltyForRound,VALUES,type Settings} from './game';
 const settings:Settings={name:'test',private:true,maxPlayers:4,maxCards:5,lives:3,penalty:'normal',oneCard:'hidden',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
 function game(){const g=createGame('TEST',{id:'a',name:'A',avatar:'🃏',connected:true},{...settings});addPlayer(g,{id:'b',name:'B',avatar:'🃏',connected:true});return g;}
 describe('motor físico',()=>{
@@ -10,6 +10,17 @@ describe('motor físico',()=>{
   expect(g.players[turn].bot).toBe('normal');expect(g.players[turn].hand).toEqual(cards);
   expect(g.turnIndex).toBe(turn);expect(g.players[turn].controllerId).toBeUndefined();
   expect(g.pendingEvents?.at(-1)?.type).toBe('player_replaced_by_bot');
+  assertIntegrity(g);
+ });
+ it('devuelve al jugador de una sala privada el mismo asiento y mano al regresar',()=>{
+  const g=game();start(g);
+  const seat=g.players[0],cards=[...seat.hand],turn=g.turnIndex;
+  replaceLeaverWithBot(g,seat.id);
+  expect(()=>returnToBotSeat(g,seat.id,{id:'intruso',name:'Intruso',avatar:'🃏'})).toThrow('Asiento no disponible');
+  returnToBotSeat(g,seat.id,{id:'a',name:'A',avatar:'🃏'});
+  expect(seat.bot).toBeUndefined();expect(seat.hand).toEqual(cards);
+  expect(g.turnIndex).toBe(turn);expect(view(g,'a').players[0].hand).toEqual(cards);
+  expect(g.pendingEvents?.at(-1)?.type).toBe('player_returned');
   assertIntegrity(g);
  });
  it('sustituye un bot público sin mover su asiento ni revelar cartas a espectadores',()=>{
