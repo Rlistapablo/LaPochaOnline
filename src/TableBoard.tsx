@@ -1,10 +1,11 @@
+import {AvatarIcon} from './SpanishSuitIcon';
 import {Fragment,type CSSProperties} from 'react';
 import type {View} from '../shared/game';
 import {CardView,SuitArt} from './CardView';
 import {useVisibleTrick} from './TrickHistory';
 import './table-board.css';
 
-const avatarOf=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:data.icon||'🃏';}catch{return raw||'🃏';}};
+const avatarOf=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:<AvatarIcon icon={data.icon||'🃏'}/>;}catch{return <AvatarIcon icon={raw||'🃏'}/>;}};
 
 export function TableBoard({game,userId}:{game:View;userId:string}){
   const {plays,revealing}=useVisibleTrick(game);

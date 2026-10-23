@@ -1,9 +1,10 @@
+import {spanishSuits} from './SpanishSuitIcon';
 import {useEffect,useState} from 'react';
 import type {View} from '../shared/game';
 import './bot-editor.css';
 
 type Bot=View['players'][number];
-const icons=['🤖','🃏','👑','🦊','🐯','🦉','♠️','♥️'];
+const icons=['🤖','🃏','👑','🦊','🐯','🦉',...spanishSuits];
 
 export function BotEditor({bot,save}:{bot:Bot;save:(profile:{id:string;name:string;avatar:string;difficulty:string})=>void}){
   const [name,setName]=useState(bot.name),[avatar,setAvatar]=useState(bot.avatar),[difficulty,setDifficulty]=useState(bot.bot||'normal');

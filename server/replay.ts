@@ -64,3 +64,22 @@ export async function deleteReplay(gameId:string,playerId:string,isAdmin=false){
     await client.query('COMMIT');
   }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
 }
+
+export async function deleteReplays(gameIds:string[],playerId:string,isAdmin=false){
+  if(!Array.isArray(gameIds))throw Error('Selección de repeticiones inválida');
+  const ids=[...new Set(gameIds)];
+  if(!ids.length||ids.length>100||ids.some(id=>typeof id!=='string'||!/^[0-9a-f-]{36}$/i.test(id)))throw Error('Selección de repeticiones inválida');
+  const client=await pool.connect();
+  try{
+    await client.query('BEGIN');
+    const found=await client.query<{id:string;room_code:string;cycle:number;participant:boolean}>('SELECT g.id,g.room_code,g.cycle,EXISTS(SELECT 1 FROM game_players gp WHERE gp.game_id=g.id AND gp.player_id=$2) participant FROM games g LEFT JOIN game_replays gr ON gr.game_id=g.id WHERE g.id=ANY($1::uuid[]) AND gr.available IS DISTINCT FROM false ORDER BY g.id FOR UPDATE OF g',[ids,playerId]);
+    if(found.rows.length!==ids.length)throw Error('Repetición no disponible');
+    if(!isAdmin&&found.rows.some(game=>!game.participant))throw Error('No puedes borrar esta repetición');
+    for(const game of found.rows){
+      await client.query('DELETE FROM game_events WHERE room_code=$1 AND match_cycle=$2',[game.room_code,game.cycle]);
+      await client.query('DELETE FROM game_snapshots WHERE room_code=$1 AND match_cycle=$2',[game.room_code,game.cycle]);
+      await client.query('INSERT INTO game_replays(game_id,available,event_count) VALUES($1,false,0) ON CONFLICT(game_id) DO UPDATE SET available=false,event_count=0',[game.id]);
+    }
+    await client.query('COMMIT');
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
+}

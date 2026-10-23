@@ -49,3 +49,4 @@
   .liveGamePage .roomLeave::before{content:'⇥';font-size:20px}
   .liveGamePage .roomLeave{border:1px solid #85664a;background:#291d18;color:#ffdeb5}
 }
+.spanishSuitIcon{display:inline-flex;align-items:center;justify-content:center;width:1em;height:1em;vertical-align:middle;flex:none}.spanishSuitIcon svg{display:block;width:100%;height:100%}.brandIcon{display:inline-flex;vertical-align:middle}.brandIcon .spanishSuitIcon{width:1em;height:1em}.heroSuits{display:flex;align-items:center;gap:14px;letter-spacing:normal}.heroSuits .spanishSuitIcon{width:46px;height:46px}.footerSuits{display:inline-flex;align-items:center;gap:6px;vertical-align:middle;letter-spacing:normal}.footerSuits .spanishSuitIcon{width:19px;height:19px}.avatar .spanishSuitIcon,.playerAvatar .spanishSuitIcon{width:70%;height:70%}.avatarChoices .spanishSuitIcon{width:1em;height:1em}

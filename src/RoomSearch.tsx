@@ -1,3 +1,4 @@
+import {AvatarIcon} from './SpanishSuitIcon';
 import {useState} from 'react';
 
 export type PublicRoom={code:string;name:string;host:string;hostAvatar:string;players:number;seats:number;max:number;bots:number;lives:number;penalty:string;maxCards:number;status:string;joinable:boolean};

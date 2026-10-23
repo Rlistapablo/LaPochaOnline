@@ -1,3 +1,4 @@
+import {AvatarIcon} from './SpanishSuitIcon';
 import {Fragment,useEffect,useMemo,useState,type CSSProperties} from 'react';
 import {CardView,SuitArt} from './CardView';
 import {SUITS} from '../shared/game';
@@ -8,11 +9,11 @@ import './table-board.css';
 import './replay.css';
 
 type ReplayEntry={id:string;room_name:string;room_code:string;finished_at:string;won:boolean};
-const request=async(path:string,method='GET')=>{
-  const response=await fetch(apiPath('/replays'+path),{method,headers:{Authorization:'Bearer '+(localStorage.getItem('pocha_token')||'')}});
+const request=async(path:string,method='GET',body?:unknown)=>{
+  const response=await fetch(apiPath('/replays'+path),{method,headers:{Authorization:'Bearer '+(localStorage.getItem('pocha_token')||''),...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined});
   return readApiResponse(response);
 };
-const avatar=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:data.icon||'🃏';}catch{return raw||'🃏';}};
+const avatar=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:<AvatarIcon icon={data.icon||'🃏'}/>;}catch{return <AvatarIcon icon={raw||'🃏'}/>;}};
 const time=(raw:string)=>raw?new Date(raw).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}):'';
 
 function ReplayPowers({scene,id,compact=false}:{scene:ReplayScene;id:string;compact?:boolean}){
@@ -116,18 +117,106 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
 }
 
 export function ReplayLibrary({initialRoom}:{initialRoom?:{code:string;cycle:number}|null}){
-  const [list,setList]=useState<ReplayEntry[]>([]),[listLoaded,setListLoaded]=useState(false),[page,setPage]=useState(0),[replay,setReplay]=useState<ReplayData|null>(null),[index,setIndex]=useState(0),[playing,setPlaying]=useState(false),[focusId,setFocusId]=useState(''),[showHands,setShowHands]=useState(false),[deletingId,setDeletingId]=useState(''),[error,setError]=useState('');
+  const [list,setList]=useState<ReplayEntry[]>([]);
+  const [listLoaded,setListLoaded]=useState(false);
+  const [page,setPage]=useState(0);
+  const [replay,setReplay]=useState<ReplayData|null>(null);
+  const [index,setIndex]=useState(0);
+  const [playing,setPlaying]=useState(false);
+  const [focusId,setFocusId]=useState('');
+  const [showHands,setShowHands]=useState(false);
+  const [deletingId,setDeletingId]=useState('');
+  const [selecting,setSelecting]=useState(false);
+  const [selectedIds,setSelectedIds]=useState<string[]>([]);
+  const [error,setError]=useState('');
   const [openingRoom,setOpeningRoom]=useState(!!initialRoom);
   const scenes=useMemo(()=>replay?buildReplayTimeline(replay):[],[replay]);
-  const loadList=async()=>{try{const next=await request('?page='+page) as ReplayEntry[];setList(next);setListLoaded(true);setError('');}catch(cause){setListLoaded(false);setError(String(cause));}};
+  const loadList=async()=>{
+    try{
+      const next=await request('?page='+page) as ReplayEntry[];
+      setList(next);setListLoaded(true);setError('');
+    }catch(cause){setListLoaded(false);setError(String(cause));}
+  };
   useEffect(()=>{void loadList();},[page]);
-  useEffect(()=>{if(!initialRoom)return;let cancelled=false;setOpeningRoom(true);request('/by-room/'+encodeURIComponent(initialRoom.code)+'/'+initialRoom.cycle).then((data:ReplayData)=>{if(cancelled)return;setReplay(data);setFocusId(data.players.find(player=>!player.is_bot)?.player_id||data.players[0]?.player_id||'');setIndex(0);setPlaying(false);setShowHands(false);setError('');}).catch(cause=>{if(!cancelled)setError(String(cause));}).finally(()=>{if(!cancelled)setOpeningRoom(false);});return()=>{cancelled=true;};},[initialRoom?.code,initialRoom?.cycle]);
-  useEffect(()=>{if(!playing)return;if(index>=scenes.length-1){setPlaying(false);return;}const timer=setTimeout(()=>setIndex(index+1),1800);return()=>clearTimeout(timer);},[playing,index,scenes.length]);
-  const open=async(id:string)=>{try{const data=await request('/'+id) as ReplayData;setReplay(data);setFocusId(data.players.find(player=>!player.is_bot)?.player_id||data.players[0]?.player_id||'');setIndex(0);setPlaying(false);setShowHands(false);setError('');}catch(cause){setError(String(cause));}};
+  useEffect(()=>{
+    if(!initialRoom)return;
+    let cancelled=false;
+    setOpeningRoom(true);
+    request('/by-room/'+encodeURIComponent(initialRoom.code)+'/'+initialRoom.cycle).then((data:ReplayData)=>{
+      if(cancelled)return;
+      setReplay(data);
+      setFocusId(data.players.find(player=>!player.is_bot)?.player_id||data.players[0]?.player_id||'');
+      setIndex(0);setPlaying(false);setShowHands(false);setError('');
+    }).catch(cause=>{if(!cancelled)setError(String(cause));}).finally(()=>{if(!cancelled)setOpeningRoom(false);});
+    return()=>{cancelled=true;};
+  },[initialRoom?.code,initialRoom?.cycle]);
+  useEffect(()=>{
+    if(!playing)return;
+    if(index>=scenes.length-1){setPlaying(false);return;}
+    const timer=setTimeout(()=>setIndex(index+1),1800);
+    return()=>clearTimeout(timer);
+  },[playing,index,scenes.length]);
+  const open=async(id:string)=>{
+    try{
+      const data=await request('/'+id) as ReplayData;
+      setReplay(data);
+      setFocusId(data.players.find(player=>!player.is_bot)?.player_id||data.players[0]?.player_id||'');
+      setIndex(0);setPlaying(false);setShowHands(false);setError('');
+    }catch(cause){setError(String(cause));}
+  };
+  const refreshAfterDelete=async()=>{
+    const next=await request('?page='+page) as ReplayEntry[];
+    setList(next);
+    if(!next.length&&page>0)setPage(page-1);
+  };
   const remove=async(item:ReplayEntry)=>{
     setDeletingId(item.id);setError('');
-    try{await request('/'+item.id,'DELETE');const next=await request('?page='+page) as ReplayEntry[];setList(next);if(!next.length&&page>0)setPage(page-1);if(replay?.game.id===item.id){setReplay(null);setPlaying(false);}}catch(cause){setError(String(cause));}finally{setDeletingId('');}
+    try{
+      await request('/'+item.id,'DELETE');
+      await refreshAfterDelete();
+      setSelectedIds(ids=>ids.filter(id=>id!==item.id));
+      if(replay?.game.id===item.id){setReplay(null);setPlaying(false);}
+    }catch(cause){setError(String(cause));}finally{setDeletingId('');}
   };
+  const removeSelected=async()=>{
+    if(!selectedIds.length)return;
+    setDeletingId('bulk');setError('');
+    try{
+      await request('','DELETE',{ids:selectedIds});
+      await refreshAfterDelete();
+      setSelectedIds([]);setSelecting(false);
+    }catch(cause){setError(String(cause));}finally{setDeletingId('');}
+  };
+  const toggleSelection=(id:string)=>setSelectedIds(ids=>ids.includes(id)?ids.filter(value=>value!==id):[...ids,id]);
+  const currentIds=list.map(item=>item.id);
+  const allCurrentSelected=!!currentIds.length&&currentIds.every(id=>selectedIds.includes(id));
+  const toggleCurrentPage=()=>setSelectedIds(ids=>allCurrentSelected?ids.filter(id=>!currentIds.includes(id)):[...new Set([...ids,...currentIds])]);
   if(openingRoom&&!replay)return <section className="shell replayPage"><h1>Abriendo repetición…</h1></section>;
-  return <section className="shell replayPage"><span className="eyebrow">ARCHIVO DE PARTIDAS</span><h1>Repetición de partida</h1>{error&&<div className="replayError" role="alert"><p>{error}</p><button className="secondary" onClick={()=>void loadList()}>Reintentar</button></div>}{!replay?<><p>Elige una partida para volver a verla como si estuvieras en la mesa.</p><div className="replayList">{list.map(item=><article className="panel replayItem" key={item.id}><button className="replayItemOpen" onClick={()=>open(item.id)}><span className="replayArchiveIcon">🃏</span><strong>{item.room_name||'Sala '+item.room_code}</strong><span>{new Date(item.finished_at).toLocaleString('es-ES')} · {item.won?'Victoria':'Partida terminada'}</span><b>Entrar en la repetición →</b></button><button className="replayDelete" disabled={!!deletingId} onClick={()=>remove(item)} aria-label={'Borrar repetición de '+(item.room_name||'Sala '+item.room_code)}>{deletingId===item.id?'Borrando…':'Borrar repetición'}</button></article>)}{listLoaded&&!list.length&&<p>No hay partidas terminadas en esta página.</p>}</div><div className="replayPager"><button className="secondary" disabled={page===0} onClick={()=>setPage(page-1)}>Anterior</button><span>Página {page+1}</span><button className="secondary" disabled={list.length<20} onClick={()=>setPage(page+1)}>Siguiente</button></div></>:<><button className="secondary replayBack" onClick={()=>{setReplay(null);setPlaying(false);}}>← Volver al archivo</button><ReplayBoard replay={replay} scenes={scenes} index={index} setIndex={setIndex} playing={playing} setPlaying={setPlaying} focusId={focusId} setFocusId={setFocusId} showHands={showHands} setShowHands={setShowHands}/></>}</section>;
+  return <section className="shell replayPage">
+    <span className="eyebrow">ARCHIVO DE PARTIDAS</span>
+    <h1>Repetición de partida</h1>
+    {error&&<div className="replayError" role="alert"><p>{error}</p><button className="secondary" onClick={()=>void loadList()}>Reintentar</button></div>}
+    {!replay?<>
+      <p>Elige una partida para volver a verla como si estuvieras en la mesa.</p>
+      {listLoaded&&!!list.length&&<div className="replaySelectionBar">
+        <button className="secondary" type="button" disabled={!!deletingId} onClick={()=>{setSelecting(value=>!value);setSelectedIds([]);}}>{selecting?'Cancelar selección':'Seleccionar varias'}</button>
+        {selecting&&<>
+          <label className="replaySelectAll"><input type="checkbox" checked={allCurrentSelected} onChange={toggleCurrentPage} disabled={!!deletingId}/> Seleccionar página</label>
+          <span aria-live="polite">{selectedIds.length} seleccionadas</span>
+          <button className="replayDelete replayBulkDelete" type="button" disabled={!selectedIds.length||!!deletingId} onClick={()=>void removeSelected()}>{deletingId==='bulk'?'Borrando…':`Borrar ${selectedIds.length} repeticiones`}</button>
+        </>}
+      </div>}
+      <div className="replayList">{list.map(item=><article className={`panel replayItem ${selectedIds.includes(item.id)?'is-selected':''}`} key={item.id}>
+        {selecting&&<label className="replaySelectItem"><input type="checkbox" checked={selectedIds.includes(item.id)} disabled={!!deletingId} onChange={()=>toggleSelection(item.id)}/><span>Seleccionar repetición de {item.room_name||'Sala '+item.room_code}</span></label>}
+        <button className="replayItemOpen" onClick={()=>selecting?toggleSelection(item.id):open(item.id)} disabled={!!deletingId} aria-label={selecting?'Seleccionar '+(item.room_name||'Sala '+item.room_code):undefined}>
+          <span className="replayArchiveIcon"><SuitArt suit="Oros"/></span>
+          <strong>{item.room_name||'Sala '+item.room_code}</strong>
+          <span>{new Date(item.finished_at).toLocaleString('es-ES')} · {item.won?'Victoria':'Partida terminada'}</span>
+          <b>{selecting?'Seleccionar partida':'Entrar en la repetición →'}</b>
+        </button>
+        {!selecting&&<button className="replayDelete" disabled={!!deletingId} onClick={()=>void remove(item)} aria-label={'Borrar repetición de '+(item.room_name||'Sala '+item.room_code)}>{deletingId===item.id?'Borrando…':'Borrar repetición'}</button>}
+      </article>)}{listLoaded&&!list.length&&<p>No hay partidas terminadas en esta página.</p>}</div>
+      <div className="replayPager"><button className="secondary" disabled={page===0||!!deletingId} onClick={()=>setPage(page-1)}>Anterior</button><span>Página {page+1}</span><button className="secondary" disabled={list.length<20||!!deletingId} onClick={()=>setPage(page+1)}>Siguiente</button></div>
+    </>:<><button className="secondary replayBack" onClick={()=>{setReplay(null);setPlaying(false);}}>← Volver al archivo</button><ReplayBoard replay={replay} scenes={scenes} index={index} setIndex={setIndex} playing={playing} setPlaying={setPlaying} focusId={focusId} setFocusId={setFocusId} showHands={showHands} setShowHands={setShowHands}/></>}
+  </section>;
 }

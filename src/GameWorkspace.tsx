@@ -1,3 +1,4 @@
+import {AvatarIcon} from './SpanishSuitIcon';
 import {useEffect,useRef,useState,type CSSProperties} from 'react';
 import type {Card,Value,View,TrickRecord} from '../shared/game';
 import {VALUES,configuredDeck} from '../shared/game';
@@ -10,7 +11,7 @@ type Tab='players'|'history'|'round';
 type MobileDrawer='info'|'powers';
 const nameOf=(game:View,id:string)=>game.players.find(p=>p.id===id)?.name||'Jugador';
 const joinNames=(names:string[])=>names.length<2?names[0]||'otro jugador':`${names.slice(0,-1).join(', ')} y ${names.at(-1)}`;
-const avatarOf=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:data.icon||'🃏';}catch{return raw||'🃏';}};
+const avatarOf=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<img src={data.image} alt=""/>:<AvatarIcon icon={data.icon||'🃏'}/>;}catch{return <AvatarIcon icon={raw||'🃏'}/>;}};
 
 function PlayerCard({game,player,position}:{game:View;player:PlayerView;position:number}){
   const active=game.turnId===player.id&&['bid','play'].includes(game.phase);

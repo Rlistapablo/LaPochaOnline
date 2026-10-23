@@ -2,7 +2,7 @@ import {beforeEach,expect,it,vi} from 'vitest';
 
 const {query,connect,release}=vi.hoisted(()=>({query:vi.fn(),connect:vi.fn(),release:vi.fn()}));
 vi.mock('./db.js',()=>({pool:{connect,query}}));
-import {deleteReplay,getReplayByRoom} from './replay';
+import {deleteReplay,deleteReplays,getReplayByRoom} from './replay';
 
 beforeEach(()=>{
   query.mockReset();connect.mockReset();release.mockReset();
@@ -35,4 +35,26 @@ it('abre la repetición exacta de una sala y un ciclo',async()=>{
   expect(result.game.id).toBe('game-id');
   expect(query.mock.calls[0][1]).toEqual(['ABC123',2]);
   expect(query.mock.calls[1][1]).toEqual(['game-id','player-id']);
+});
+
+it('borra varias repeticiones en una sola transacción',async()=>{
+  const ids=['00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002'];
+  query.mockImplementation(async(sql:string)=>sql.startsWith('SELECT g.id,g.room_code')?{rows:[
+    {id:ids[0],room_code:'ABC123',cycle:1,participant:true},
+    {id:ids[1],room_code:'DEF456',cycle:2,participant:true},
+  ]}:{rows:[]});
+  await deleteReplays(ids,'player-id');
+  expect(query.mock.calls.filter(([sql])=>String(sql).startsWith('DELETE FROM game_events'))).toHaveLength(2);
+  expect(query.mock.calls.at(-1)?.[0]).toBe('COMMIT');
+  expect(query.mock.calls[1][1]).toEqual([ids,'player-id']);
+});
+
+it('revierte el borrado conjunto si alguna repetición es ajena',async()=>{
+  const ids=['00000000-0000-0000-0000-000000000001','00000000-0000-0000-0000-000000000002'];
+  query.mockImplementation(async(sql:string)=>sql.startsWith('SELECT g.id,g.room_code')?{rows:[
+    {id:ids[0],room_code:'ABC123',cycle:1,participant:true},
+    {id:ids[1],room_code:'DEF456',cycle:2,participant:false},
+  ]}:{rows:[]});
+  await expect(deleteReplays(ids,'player-id')).rejects.toThrow();
+  expect(query.mock.calls.map(([sql])=>sql)).toEqual(['BEGIN',expect.stringContaining('SELECT g.id,g.room_code'),'ROLLBACK']);
 });
