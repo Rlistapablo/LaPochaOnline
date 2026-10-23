@@ -54,6 +54,16 @@ export function takeOverBot(g:Game,user:{id:string;name:string;avatar:string}){
   g.version++;recordEvent(g,'bot_replaced',{seatId:bot.id,name:user.name},user.id);
   return bot;
 }
+export function replaceLeaverWithBot(g:Game,playerId:string){
+  if(g.phase==='lobby'||g.phase==='finished')throw Error('No hay partida en curso');
+  const player=g.players.find(p=>p.id===playerId);
+  if(!player||player.bot)throw Error('Jugador no disponible');
+  const previousName=player.name,controllerId=player.controllerId||player.id;
+  player.bot='normal';player.controllerId=undefined;player.name=`Bot de ${previousName}`.slice(0,24);player.avatar='🤖';player.connected=true;
+  if(g.hostId===player.id){const next=g.players.find(p=>p.id!==player.id&&!p.bot);if(next)g.hostId=next.id;}
+  g.version++;recordEvent(g,'player_replaced_by_bot',{seatId:player.id,name:previousName},controllerId);
+  return player;
+}
 function nextActive(g: Game, from: number) { for(let n=1;n<=g.players.length;n++){const i=(from+n)%g.players.length;if(!g.players[i].eliminated)return i;} throw Error('Sin jugadores activos'); }
 export function current(g: Game): Player { return g.players[g.turnIndex]; }
 export function turnOrder(g:Game,first=g.firstIndex):string[]{return Array.from({length:g.players.length},(_,offset)=>g.players[(first+offset)%g.players.length]).filter(p=>!p.eliminated).map(p=>p.id);}
