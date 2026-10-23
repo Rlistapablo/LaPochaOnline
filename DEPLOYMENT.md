@@ -32,7 +32,7 @@ sudo systemctl start pocha
 sudo systemctl status pocha
 ```
 
-Antes de actualizar una instalación con datos, crea un respaldo con `pg_dump -Fc`. Las migraciones nuevas son incrementales y no borran cuentas, salas ni historiales. Si la actualización falla, conserva el respaldo y revisa `schema_migrations` antes de reiniciar el servicio.
+Antes de actualizar una instalación con datos, crea un respaldo con `pg_dump -Fc`. Las migraciones nuevas son incrementales y no borran cuentas ni historiales. Al arrancar, la aplicación elimina las salas que ya estaban terminadas y conserva sus resultados y repeticiones. Si la actualización falla, conserva el respaldo y revisa `schema_migrations` antes de reiniciar el servicio.
 
 Si la app se sirve en `/pocha/`, usa `npm run build:pocha` en lugar de `npm run build` cada vez que instales o actualices.
 

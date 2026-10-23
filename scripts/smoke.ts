@@ -16,14 +16,15 @@ try{
  if(va.phase!=='bid'||vb.phase!=='bid'||va.players.find((p:any)=>p.id===a.user.id).hand[0]!==null||vb.players.find((p:any)=>p.id===b.user.id).hand[0]!==null)throw Error('Carta propia filtrada');
  if(va.players.find((p:any)=>p.id===b.user.id).hand[0]===undefined)throw Error('Carta rival no visible');
  for(let i=0;i<2;i++){const v=va.turnId===a.user.id?va:vb,s=v.turnId===a.user.id?sa:sb;[va,vb]=await act(s,'bid',v.version,v.allowedBids[0]);}
+ const closed=new Promise<any>(resolve=>sa.once('room_closed',resolve));
  for(let i=0;i<2;i++){const v=va.turnId===a.user.id?va:vb,s=v.turnId===a.user.id?sa:sb;const card=v.players.find((p:any)=>p.id===v.turnId).hand[0];[va,vb]=await act(s,'play',v.version,{cardId:card.id,...(card.id.startsWith('joker')?{declaredValue:'As'}:{})});}
  if(!['roundEnd','finished'].includes(va.phase)||va.players.some((p:any)=>p.lives<0))throw Error('Resultado inválido');
  if(va.phase==='roundEnd')[va,vb]=await act(sa,'finish',va.version);
  if(va.phase!=='finished'||!va.winners.length)throw Error('Partida sin ganador');
- [va,vb]=await act(sa,'rematch',va.version);
- if(va.phase!=='lobby'||va.cycle!==1)throw Error('Revancha no iniciada');
+ if(!(await closed).finished)throw Error('La sala terminada no se cerró');
+ await emit(sa,'join',code).then(()=>{throw Error('Se permitió regresar a una sala terminada');},error=>{if(!String(error).includes('Sala no encontrada'))throw error;});
  await new Promise(resolve=>setTimeout(resolve,150));
  const profile=await fetch(root+'/api/me',{headers:{Authorization:`Bearer ${a.token}`}}).then(r=>r.json());
  if(!profile.history?.some((h:any)=>h.room_code===code))throw Error('Historial no guardado');
- console.log('Registro, dos sockets, sala privada, información oculta, partida completa, historial y revancha: correctos.');
+ console.log('Registro, dos sockets, sala privada, información oculta, partida completa, historial y borrado de sala: correctos.');
 }finally{sa.disconnect();sb.disconnect();}

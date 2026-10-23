@@ -15,10 +15,11 @@ try{
   await emit(b,'action',{code,type:'ready',version:stateB.version});
   await emit(a,'action',{code,type:'start',version:stateA.version});
   const rejected=await emit(b,'action',{code,type:'finish',version:stateB.version});if(!rejected.error)throw Error('Un participante terminó la partida');
+  const closedA=new Promise<any>(resolve=>a.once('room_closed',resolve)),closedB=new Promise<any>(resolve=>b.once('room_closed',resolve));
   const finished=await emit(a,'action',{code,type:'finish',version:stateA.version});for(let i=0;i<20&&stateB.phase!=='finished';i++)await new Promise(resolve=>setTimeout(resolve,50));if(!finished.ok||stateA.phase!=='finished'||stateB.phase!=='finished'||stateA.endReason!=='manual'||stateA.autoRestartAt)throw Error(`El cierre manual no llegó a ambos jugadores: ${JSON.stringify({finished,phaseA:stateA.phase,phaseB:stateB.phase,reason:stateA.endReason,autoRestartAt:stateA.autoRestartAt})}`);
+  if(!(await closedA).finished||!(await closedB).finished||(await pool.query('SELECT 1 FROM rooms WHERE code=$1',[code])).rowCount)throw Error('La sala terminada no se eliminó');
   const match=(await pool.query('SELECT competitive,result FROM matches WHERE room_code=$1 ORDER BY created_at DESC LIMIT 1',[code])).rows[0];
   if(!match||match.competitive||match.result.endReason!=='manual'||match.result.history.length!==0)throw Error('Resultado manual mal guardado');
-  const rematch=await emit(a,'action',{code,type:'rematch',version:stateA.version});if(!rematch.ok||stateA.phase!=='lobby')throw Error('La revancha no quedó disponible');
   const botsRoom=(await emit(a,'create',{name:'Cierre con bots',private:true,maxPlayers:3,maxCards:5,lives:3})).code;
   await emit(a,'action',{code:botsRoom,type:'bot',value:'hard',version:stateA.version});
   await emit(a,'action',{code:botsRoom,type:'bot',value:'normal',version:stateA.version});
@@ -28,10 +29,10 @@ try{
   const previousBotBids=stateA.players.filter((p:any)=>p.bot).map((p:any)=>p.bid);
   const pendingBid=emit(a,'action',{code:botsRoom,type:'bid',value:0,version:beforeBidVersion});
   await new Promise(resolve=>setTimeout(resolve,100));
+  const closedBots=new Promise<any>(resolve=>a.once('room_closed',resolve));
   const pendingFinish=emit(a,'action',{code:botsRoom,type:'finish',version:beforeBidVersion+1});
   const [bidResult,finishResult]=await Promise.all([pendingBid,pendingFinish]);
   if(!bidResult.ok||!finishResult.ok||stateA.phase!=='finished'||JSON.stringify(stateA.players.filter((p:any)=>p.bot).map((p:any)=>p.bid))!==JSON.stringify(previousBotBids))throw Error('El cierre no interrumpió los turnos pendientes de bots');
-  console.log('Cierre manual: solo anfitrión, resultado guardado sin clasificación competitiva, revancha e interrupción de bots correctos.');
-  a.emit('leave',code);b.emit('leave',code);
-  a.emit('leave',botsRoom);
+  if(!(await closedBots).finished||(await pool.query('SELECT 1 FROM rooms WHERE code=$1',[botsRoom])).rowCount)throw Error('La sala con bots no se eliminó');
+  console.log('Cierre manual: solo anfitrión, resultado y repetición guardados, salas eliminadas e interrupción de bots correctos.');
 }finally{a.disconnect();b.disconnect();await pool.end();}

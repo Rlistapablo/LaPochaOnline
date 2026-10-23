@@ -36,7 +36,7 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
 });
 
-it('muestra el cierre de partida en un modal con revancha y repetición',()=>{
+it('muestra el cierre de partida en un modal con repetición y sin revancha',()=>{
   const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:1,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
   const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
   addPlayer(game,{id:'b',name:'Berta',avatar:'🃏',connected:true});
@@ -46,10 +46,11 @@ it('muestra el cierre de partida en un modal con revancha y repetición',()=>{
   expect(html).toContain('aria-label="Resultado final"');
   expect(html).toContain('Clasificación final');
   expect(html).toContain('Ver repetición');
-  expect(html).toContain('Nueva partida');
+  expect(html).toContain('La sala se ha cerrado');
+  expect(html).not.toContain('Nueva partida');
   expect(html).toContain('Ganador');
   const guest=renderToStaticMarkup(<GameWorkspace game={view(game,'b')} userId="b" action={()=>{}} onReplay={()=>{}}/>);
-  expect(guest).toContain('Esperando a que el creador de la sala');
+  expect(guest).toContain('La sala se ha cerrado');
   expect(guest).not.toContain('Nueva partida</button>');
 });
 
