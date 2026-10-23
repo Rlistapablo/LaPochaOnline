@@ -2,7 +2,7 @@ import {beforeEach,expect,it,vi} from 'vitest';
 
 const {query,connect,release}=vi.hoisted(()=>({query:vi.fn(),connect:vi.fn(),release:vi.fn()}));
 vi.mock('./db.js',()=>({pool:{connect,query}}));
-import {deleteReplay,deleteReplays,getReplayByRoom} from './replay';
+import {deleteReplay,deleteReplays,getRematchSettings,getReplayByRoom} from './replay';
 
 beforeEach(()=>{
   query.mockReset();connect.mockReset();release.mockReset();
@@ -57,4 +57,16 @@ it('revierte el borrado conjunto si alguna repetición es ajena',async()=>{
   ]}:{rows:[]});
   await expect(deleteReplays(ids,'player-id')).rejects.toThrow();
   expect(query.mock.calls.map(([sql])=>sql)).toEqual(['BEGIN',expect.stringContaining('SELECT g.id,g.room_code'),'ROLLBACK']);
+});
+
+it('recupera las mismas reglas para un participante de una sala privada terminada',async()=>{
+  const settings={name:'Mesa',private:true,modes:{trump:true,exchangeUses:2},maxCards:5};
+  query.mockResolvedValue({rows:[{settings,participant:true}]});
+  await expect(getRematchSettings('ABC123',2,'player-id')).resolves.toEqual(settings);
+  expect(query.mock.calls[0][1]).toEqual(['ABC123',2,'player-id']);
+});
+
+it('impide usar una sala privada ajena como origen de revancha',async()=>{
+  query.mockResolvedValue({rows:[{settings:{private:true},participant:false}]});
+  await expect(getRematchSettings('ABC123',2,'other-player')).rejects.toThrow('Revancha no disponible');
 });

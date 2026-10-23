@@ -36,22 +36,25 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
 });
 
-it('muestra el cierre de partida en un modal con repetición y sin revancha',()=>{
+it('ofrece revancha a los participantes tras cerrar la sala',()=>{
   const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:1,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
   const game=createGame('TEST',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
   addPlayer(game,{id:'b',name:'Berta',avatar:'🃏',connected:true});
   start(game);
   game.phase='finished';game.winners=['a'];game.players[1].lives=0;game.players[1].eliminated=true;
-  const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}} onReplay={()=>{}}/>);
+  const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}} onReplay={()=>{}} onRematch={()=>{}}/>);
   expect(html).toContain('aria-label="Resultado final"');
   expect(html).toContain('Clasificación final');
   expect(html).toContain('Ver repetición');
+  expect(html).toContain('Revancha');
   expect(html).toContain('La sala se ha cerrado');
   expect(html).not.toContain('Nueva partida');
   expect(html).toContain('Ganador');
-  const guest=renderToStaticMarkup(<GameWorkspace game={view(game,'b')} userId="b" action={()=>{}} onReplay={()=>{}}/>);
+  const guest=renderToStaticMarkup(<GameWorkspace game={view(game,'b')} userId="b" action={()=>{}} onReplay={()=>{}} onRematch={()=>{}}/>);
   expect(guest).toContain('La sala se ha cerrado');
-  expect(guest).not.toContain('Nueva partida</button>');
+  expect(guest).toContain('Revancha');
+  const spectator=renderToStaticMarkup(<GameWorkspace game={view(game)} userId="spectator" action={()=>{}} onReplay={()=>{}} onRematch={()=>{}}/>);
+  expect(spectator).not.toContain('Revancha');
 });
 
 it('muestra las predicciones ajenas dentro del modal de apuesta',()=>{

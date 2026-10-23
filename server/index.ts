@@ -10,7 +10,7 @@ import { pool, migrate, saveRoom, loadRooms, deleteRoom, purgeRoomCycle } from '
 import { resolve } from 'node:path';
 import { Game, Settings, createGame, addPlayer, takeOverBot, replaceLeaverWithBot, returnToBotSeat, start, bid, play, advance, rematch, finishGame, cancelGame, view, recordEvent, normalizeModes, validateModes, offerExchange, declineExchange, selectExchange, selectReveal, stealCard, reshuffleHands, preparationActor } from '../shared/game.js';
 import { runBotTurn } from './bot.js';
-import {finalizeReplay,listReplays,getReplay,getReplayByRoom,deleteReplay,deleteReplays} from './replay.js';
+import {finalizeReplay,listReplays,getReplay,getReplayByRoom,deleteReplay,deleteReplays,getRematchSettings} from './replay.js';
 
 if(!process.env.JWT_SECRET||process.env.JWT_SECRET.length<32)throw Error('JWT_SECRET debe tener al menos 32 caracteres');
 const origin=process.env.CLIENT_ORIGIN||new URL(process.env.PUBLIC_APP_URL||'http://localhost:5173').origin;
@@ -110,6 +110,38 @@ io.use(async(socket,next)=>{try{let u=auth(String(socket.handshake.auth.token||'
 io.on('connection',socket=>{const u=socket.data.user as Identity;socket.emit('rooms',publicRooms());
  socket.on('private_rooms',(codes:unknown,cb:(rooms:ReturnType<typeof privateRoomsFor>)=>void)=>cb(privateRoomsFor(u.id,codes)));
  socket.on('create',async(raw:Partial<Settings>,cb)=>{try{const settings:Settings={name:String(raw.name||'Mesa de La Pocha').slice(0,36),private:!!raw.private,maxPlayers:Math.max(2,Math.min(8,Number(raw.maxPlayers)||4)),maxCards:Math.max(1,Math.min(21,Number(raw.maxCards)||5)),jokerCount:Math.max(0,Math.min(20,Number.isInteger(Number(raw.jokerCount))?Number(raw.jokerCount):2)),lives:raw.lives===5?5:3,penalty:raw.penalty==='progressive'?'progressive':'normal',oneCard:['hidden','visible','alternate'].includes(raw.oneCard||'')?raw.oneCard!:'hidden',bots:0,difficulty:'normal',turnSeconds:Math.max(10,Math.min(120,Number(raw.turnSeconds)||30)),sounds:raw.sounds!==false,modes:normalizeModes(raw.modes)};validateModes(settings);let code;do{code=randomBytes(3).toString('hex').toUpperCase();}while(rooms.has(code)||(await pool.query('SELECT 1 FROM games WHERE room_code=$1 UNION ALL SELECT 1 FROM game_events WHERE room_code=$1 LIMIT 1',[code])).rowCount);const g=createGame(code,{id:u.id,name:u.name,avatar:u.avatar,connected:true},settings);recordEvent(g,'room_created',{settings},u.id);await saveRoom(g);rooms.set(code,g);socket.join(`${code}:${u.id}`);publish(g);cb({code});}catch(e){cb({error:String(e)});}});
+ socket.on('rematch',async(source:{code:string;cycle:number},cb)=>{
+  try{
+   const sourceCode=String(source?.code||'').toUpperCase(),cycle=Number(source?.cycle);
+   const settings=await getRematchSettings(sourceCode,cycle,u.id);
+   const code=await serialized(`rematch:${sourceCode}:${cycle}`,async()=>{
+    const existingRoom=[...rooms.values()].find(g=>g.phase==='lobby'&&g.rematchOf?.code===sourceCode&&g.rematchOf.cycle===cycle);
+    if(existingRoom){
+     await serialized(existingRoom.code,async()=>{
+      if(rooms.get(existingRoom.code)!==existingRoom||existingRoom.phase!=='lobby')throw Error('La sala de revancha ya comenzó');
+      const existing=existingRoom.players.find(p=>p.id===u.id||p.controllerId===u.id);
+      if(existing){existing.connected=true;existing.name=u.name;existing.avatar=u.avatar;}
+      else addPlayer(existingRoom,{id:u.id,name:u.name,avatar:u.avatar,connected:true});
+      await saveRoom(existingRoom);
+      socket.join(`${existingRoom.code}:${u.id}`);
+      publish(existingRoom);
+     });
+     return existingRoom.code;
+    }
+    let code:string;
+    do{code=randomBytes(3).toString('hex').toUpperCase();}while(rooms.has(code)||(await pool.query('SELECT 1 FROM games WHERE room_code=$1 UNION ALL SELECT 1 FROM game_events WHERE room_code=$1 LIMIT 1',[code])).rowCount);
+    const room=createGame(code,{id:u.id,name:u.name,avatar:u.avatar,connected:true},{...settings,modes:{...settings.modes}});
+    room.rematchOf={code:sourceCode,cycle};
+    recordEvent(room,'room_created',{settings:room.settings,rematchOf:room.rematchOf},u.id);
+    await saveRoom(room);
+    rooms.set(code,room);
+    socket.join(`${code}:${u.id}`);
+    publish(room);
+    return code;
+   });
+   cb({code});
+  }catch(e){cb({error:e instanceof Error?e.message:String(e)});}
+ });
  socket.on('join',async(code:string,cb)=>{try{const key=String(code).toUpperCase();const g=rooms.get(key);if(!g)throw Error('Sala no encontrada');await serialized(key,async()=>{if(rooms.get(key)!==g)throw Error('Sala no encontrada');if(g.bannedIds?.includes(u.id))throw Error('No puedes volver a esta sala');const p=g.players.find(x=>x.id===u.id||x.controllerId===u.id);if(p){const departure=departureTimers.get(`${key}:${p.id}`);if(departure)clearTimeout(departure);departureTimers.delete(`${key}:${p.id}`);if(p.bot)returnToBotSeat(g,p.id,u);p.connected=true;socket.leave(`${key}:spectators`);socket.join(`${key}:${p.id}`);}else if(!g.settings.private&&g.players.some(x=>!!x.bot&&!x.eliminated)){const bot=takeOverBot(g,u);socket.leave(`${key}:spectators`);socket.join(`${key}:${bot.id}`);}else if(g.phase==='lobby'){addPlayer(g,{id:u.id,name:u.name,avatar:u.avatar,connected:true});socket.join(`${key}:${u.id}`);}else{throw Error('No hay bots disponibles para sustituir');}await saveRoom(g);publish(g);});cb({code:key});}catch(e){cb({error:e instanceof Error?e.message:String(e)});}});
  socket.on('spectate',async(code:string,cb)=>{try{const key=String(code).toUpperCase();const g=rooms.get(key);if(!g||(g.settings.private&&!adminIds.has(u.id)))throw Error('Partida no disponible para espectadores');if(g.players.some(p=>p.id===u.id||p.controllerId===u.id))throw Error('Ya participas en la sala');socket.join(`${key}:spectators`);socket.emit('state',view(g));cb({code:key});}catch(e){cb({error:e instanceof Error?e.message:String(e)});}});
  socket.on('delete_room',async(code:string,cb)=>{const key=String(code).toUpperCase();let requested=false;try{const room=rooms.get(key);if(!room)throw Error('Sala no encontrada');if(room.hostId!==room.players.find(p=>p.id===u.id||p.controllerId===u.id)?.id&&!adminIds.has(u.id))throw Error('Solo el anfitrión');endRequests.add(key);requested=true;await serialized(key,async()=>{const g=rooms.get(key);if(!g)throw Error('Sala no encontrada');if(g.hostId!==g.players.find(p=>p.id===u.id||p.controllerId===u.id)?.id&&!adminIds.has(u.id))throw Error('Solo el anfitrión');await removeRoom(g,u.id);});cb({ok:true});}catch(e){cb({error:e instanceof Error?e.message:String(e)});}finally{if(requested)endRequests.delete(key);}});

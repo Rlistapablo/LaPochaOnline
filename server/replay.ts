@@ -1,5 +1,13 @@
 import {pool} from './db.js';
-import type {Game} from '../shared/game.js';
+import type {Game,Settings} from '../shared/game.js';
+
+export async function getRematchSettings(code:string,cycle:number,playerId:string):Promise<Settings>{
+  if(!/^[A-Z0-9]{4,12}$/.test(code)||!Number.isSafeInteger(cycle)||cycle<0)throw Error('Partida inválida');
+  const found=await pool.query<{settings:Settings;participant:boolean}>('SELECT g.settings,EXISTS(SELECT 1 FROM game_players gp WHERE gp.game_id=g.id AND (gp.player_id=$3 OR gp.user_id=$3)) participant FROM games g WHERE g.room_code=$1 AND g.cycle=$2 AND g.finished_at IS NOT NULL',[code,cycle,playerId]);
+  const source=found.rows[0];
+  if(!source||source.settings.private&&!source.participant)throw Error('Revancha no disponible');
+  return source.settings;
+}
 
 export async function finalizeReplay(g:Game){
   const found=await pool.query<{id:string}>('SELECT id FROM games WHERE room_code=$1 AND cycle=$2',[g.code,g.cycle]);
