@@ -35,25 +35,27 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect(second).toMatch(/aria-label="Ana\. Termina[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge end"/);
   expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
   expect(first).toContain('class="tableOuterRim"');
-  expect(first).toContain('viewBox="0 0 100 100" preserveAspectRatio="none"');
-  expect(first).toContain('<circle class="tableOuterRim" cx="50" cy="50" r="47"');
+  expect(first).toContain('viewBox="0 0 100 150" preserveAspectRatio="none"');
+  expect(first).toMatch(/class="tableOuterRim" d="M50 3 A47 47 [^"]* L97 100 [^"]* L3 50/);
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
 });
 
-it('reparte entre dos y ocho jugadores a igual distancia del centro circular',()=>{
+it('reparte entre dos y ocho jugadores por el contorno vertical y pone las cartas delante',()=>{
   for(let count=2;count<=8;count++){
     const ids=Array.from({length:count},(_,index)=>String(index));
     const {vertices}=tableLayout(ids);
     expect(vertices.map(vertex=>vertex.id)).toEqual(ids);
     for(const vertex of vertices){
-      expect(Math.hypot(vertex.seatX-50,vertex.seatY-50)).toBeCloseTo(37);
-      expect(Math.hypot(vertex.playX-50,vertex.playY-50)).toBeCloseTo(22);
+      expect(vertex.seatX).toBeGreaterThanOrEqual(0);
+      expect(vertex.seatX).toBeLessThanOrEqual(100);
+      expect(vertex.seatY).toBeGreaterThanOrEqual(0);
+      expect(vertex.seatY).toBeLessThanOrEqual(100);
+      expect(Math.hypot(vertex.playX-50,(vertex.playY-50)*1.5)).toBeLessThan(Math.hypot(vertex.seatX-50,(vertex.seatY-50)*1.5));
     }
-    const angles=vertices.map(vertex=>Math.atan2(vertex.seatY-50,vertex.seatX-50));
-    for(let index=1;index<count;index++){
-      const step=(angles[index-1]-angles[index]+2*Math.PI)%(2*Math.PI);
-      expect(step).toBeCloseTo(2*Math.PI/count);
-    }
+    expect(vertices[0].seatX).toBeCloseTo(50);
+    expect(vertices[0].seatY).toBeGreaterThan(80);
+    if(count%2===0){expect(vertices[count/2].seatX).toBeCloseTo(50);expect(vertices[count/2].seatY).toBeLessThan(20);}
+    if(count===4){expect(vertices[1].seatX).toBeGreaterThan(80);expect(vertices[3].seatX).toBeLessThan(20);}
   }
 });
 

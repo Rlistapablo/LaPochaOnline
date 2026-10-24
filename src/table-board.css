@@ -1,6 +1,6 @@
 .gameWorkspace .gameFelt.polygonTable,.replayStage .gameFelt.polygonTable{--felt-center:#176443;--felt-edge:#0d422f;--felt-ring:#b18d55;position:relative;display:block;min-height:440px;overflow:visible;border:0;border-radius:0;padding:0;background:transparent;box-shadow:none;isolation:isolate;container-type:size}
-.polygonTable .tableSurface{position:absolute;left:50%;top:50%;width:min(100cqw,155cqh);height:min(100cqh,64.516cqw);transform:translate(-50%,-50%);isolation:isolate}
-@media(max-width:900px){.polygonTable .tableSurface{width:min(100cqw,130cqh);height:min(100cqh,76.923cqw)}}
+.polygonTable .tableSurface{position:absolute;left:50%;top:50%;width:min(100cqw,67cqh);height:min(100cqh,149.254cqw);transform:translate(-50%,-50%);isolation:isolate}
+@media(max-width:900px){.polygonTable .tableSurface{width:min(100cqw,78cqh);height:min(100cqh,128.205cqw)}}
 .gameWorkspace .polygonTable.trump-oros,.replayStage .polygonTable.trump-oros{--felt-center:#69692d;--felt-edge:#3b4826;--felt-ring:#d6b961}
 .gameWorkspace .polygonTable.trump-copas,.replayStage .polygonTable.trump-copas{--felt-center:#743e47;--felt-edge:#482d38;--felt-ring:#df9b8e}
 .gameWorkspace .polygonTable.trump-espadas,.replayStage .polygonTable.trump-espadas{--felt-center:#3d6880;--felt-edge:#244756;--felt-ring:#a6cad7}
@@ -13,6 +13,7 @@
 .polygonTable .tableCenter{position:absolute;inset:27% 22%;z-index:1;display:grid;place-items:center;text-align:center;pointer-events:none}
 .polygonTable .tableCenter::before{content:"";position:absolute;inset:-15% -18%;z-index:-1;border-radius:50%;background:radial-gradient(ellipse,var(--felt-center),transparent 73%)}
 .polygonTable .tableTrumpSymbol{display:grid;place-items:center;width:clamp(90px,20vw,148px);aspect-ratio:1;filter:drop-shadow(0 5px 6px #0008) drop-shadow(0 0 18px var(--felt-ring))}
+.gameWorkspace .polygonTable .tableSurface .tableTrumpSymbol,.replayStage .polygonTable .tableSurface .tableTrumpSymbol{width:clamp(64px,7dvw,92px)}
 .polygonTable .tableTrumpSymbol .card-art-svg{width:100%;height:100%;max-width:none;max-height:none;filter:none}
 .polygonTable .feltTitle{font-size:20px}
 .polygonTable .tableSeat{position:absolute;left:var(--seat-x);top:var(--seat-y);z-index:2;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:2px;width:clamp(88px,16%,124px);padding:3px 2px;border:0;background:none;box-shadow:none;color:#fff3d5;text-align:center;text-shadow:0 2px 5px #00190f,0 0 8px #00190f;font-size:11px}
