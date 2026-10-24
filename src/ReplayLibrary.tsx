@@ -47,6 +47,7 @@ function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:R
   const startId=scene.order[0],endId=scene.order.at(-1);
   const trumpSuit=SUITS.find(suit=>suit===scene.trumpSuit);
   return <div className={`table gameFelt polygonTable replayFelt players-${count} ${trumpSuit?`trump-${trumpSuit.toLowerCase()}`:''}`} aria-label={`Mesa de repetición de ${count} jugadores. Sentido antihorario.${trumpSuit?` Triunfo: ${trumpSuit}.`:''}`}>
+    <div className="tableSurface">
     <TableOutline layout={layout} startId={startId} endId={endId} markerId="pocha-replay-turn-arrow"/>
     <div className="tableCenter">{trumpSuit?<div className="tableTrumpSymbol replayTrumpSymbol" aria-label={`Triunfo de la ronda: ${trumpSuit}`}><SuitArt suit={trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
     {vertices.map(vertex=>{
@@ -66,6 +67,7 @@ function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:R
         {id!==focusId&&hand.length>0&&<div className="opponentVisibleCards replaySeatCards">{visibleCards.map(card=><CardView key={card.id} card={card} small/>)}{Array.from({length:hiddenCount},(_,index)=><CardView key={index} card={null} hidden small/>)}</div>}
       </div>{play&&<div className={`tablePlay ${scene.winnerId===id?'isWinningPlay':''}`} style={playStyle} aria-label={`${player.name} jugó en posición ${scene.table.indexOf(play)+1}`}><CardView card={play.card} small declaredValue={play.declaredValue}/></div>}</Fragment>;
     })}
+    </div>
   </div>;
 }
 

@@ -16,6 +16,7 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
   const layout=tableLayout(seats);
   const {vertices}=layout;
   return <div className={`table gameFelt polygonTable players-${count} ${game.trumpSuit?`trump-${game.trumpSuit.toLowerCase()}`:''}`} aria-label={`Tapete de ${count} jugadores. Sentido antihorario.${game.trumpSuit?` Triunfo: ${game.trumpSuit}.`:''}`}>
+    <div className="tableSurface">
     <TableOutline layout={layout} startId={startId} endId={endId} markerId="pocha-turn-arrow"/>
     <div className="tableCenter">{game.trumpSuit?<div className="tableTrumpSymbol" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
     {vertices.map(vertex=>{
@@ -29,5 +30,6 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
         {player.id!==userId&&player.hand?.some(Boolean)&&<div className="opponentVisibleCards">{player.hand.map((card,cardIndex)=>card?<CardView key={card.id} card={card} small/>:<CardView key={cardIndex} card={null} hidden small/>)}</div>}
       </div>{play&&<div className={`tablePlay ${revealing&&game.lastTrick?.winnerId===player.id?'isWinningPlay':''}`} style={playStyle} aria-label={`${player.name} jugó en posición ${plays.indexOf(play)+1}`}><CardView card={play.card} small declaredValue={play.declaredValue}/></div>}</Fragment>;
     })}
+    </div>
   </div>;
 }

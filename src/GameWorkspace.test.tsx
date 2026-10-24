@@ -5,6 +5,7 @@ import {GameWorkspace} from './GameWorkspace';
 import {TrickHistory} from './TrickHistory';
 import {CardView} from './CardView';
 import {TableBoard} from './TableBoard';
+import {tableLayout} from './TableOutline';
 
 it('muestra una partida pública al espectador sin controles de juego ni manos privadas',()=>{
   const settings:Settings={name:'Pública',private:false,maxPlayers:2,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
@@ -34,8 +35,25 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect(second).toMatch(/aria-label="Ana\. Termina[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge end"/);
   expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
   expect(first).toContain('class="tableOuterRim"');
-  expect(first).toMatch(/class="tableOuterRim" d="[^"]* Q[^"]*"/);
+  expect(first).toContain('<circle class="tableOuterRim" cx="50" cy="50" r="47"');
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
+});
+
+it('reparte entre dos y ocho jugadores a igual distancia del centro circular',()=>{
+  for(let count=2;count<=8;count++){
+    const ids=Array.from({length:count},(_,index)=>String(index));
+    const {vertices}=tableLayout(ids);
+    expect(vertices.map(vertex=>vertex.id)).toEqual(ids);
+    for(const vertex of vertices){
+      expect(Math.hypot(vertex.seatX-50,vertex.seatY-50)).toBeCloseTo(37);
+      expect(Math.hypot(vertex.playX-50,vertex.playY-50)).toBeCloseTo(22);
+    }
+    const angles=vertices.map(vertex=>Math.atan2(vertex.seatY-50,vertex.seatX-50));
+    for(let index=1;index<count;index++){
+      const step=(angles[index-1]-angles[index]+2*Math.PI)%(2*Math.PI);
+      expect(step).toBeCloseTo(2*Math.PI/count);
+    }
+  }
 });
 
 it('ofrece revancha a los participantes tras cerrar la sala',()=>{

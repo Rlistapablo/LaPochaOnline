@@ -64,9 +64,9 @@ it('mantiene las posiciones al rotar el inicio de la ronda',()=>{
   const scenes=buildReplayTimeline(rotated);
   const render=(index:number)=>renderToStaticMarkup(<ReplayBoard replay={rotated} scenes={scenes} index={index} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="a" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
   const first=render(0),second=render(1);
-  expect(first).toContain('style="--seat-x:50%;--seat-y:85%" aria-label="Ana. Comienza');
-  expect(second).toContain('style="--seat-x:50%;--seat-y:85%" aria-label="Ana. Termina');
-  expect(second).toContain('style="--seat-x:50%;--seat-y:15%" aria-label="Bot Pepe. Comienza');
+  expect(first).toContain('style="--seat-x:50%;--seat-y:87%" aria-label="Ana. Comienza');
+  expect(second).toContain('style="--seat-x:50%;--seat-y:87%" aria-label="Ana. Termina');
+  expect(second).toContain('style="--seat-x:50%;--seat-y:13%" aria-label="Bot Pepe. Comienza');
   expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
 });
