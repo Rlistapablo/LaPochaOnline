@@ -43,3 +43,96 @@
 .replayStage .polygonTable .tableSeat.isTurn .replaySeatCards{top:calc(100% + 18px)}
 @media(max-width:1000px){.replayStage .gameFelt.polygonTable{height:clamp(390px,55vh,600px);min-height:390px}}
 @media(max-width:620px){.replayStage .gameFelt.polygonTable{height:clamp(360px,55svh,510px);min-height:360px}.replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(35px,10vw,47px);height:clamp(35px,10vw,47px);font-size:24px}.replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(43px,12vw,58px)}.replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(35px,9vw,46px)}.replayStage .polygonTable .tableTrumpSymbol{width:clamp(82px,22vw,118px)}.replayStage .polygonTable .replaySeatCards{max-width:38vw}.replayStage .polygonTable .replaySeatCards .playing-card.small{width:26px;height:38px}.replayStage .polygonTable .replayPowerList.compact{font-size:8px}}
+
+/* The replay viewer occupies the viewport; long timelines scroll inside its explorer. */
+body:has(.replayViewing){height:100dvh;overflow:hidden}
+body:has(.replayViewing) main{height:calc(100dvh - 78px);min-height:0;overflow:hidden}
+body:has(.replayViewing) footer{display:none}
+.replayViewing{width:100%;max-width:1600px;height:100%;min-height:0;display:flex;flex-direction:column;padding:6px 20px 8px;overflow:hidden}
+.replayViewing .replayBack{flex:none;align-self:flex-start;margin:0 0 5px;padding:6px 10px;font-size:11px}
+.replayViewing .replayStage{flex:1;min-height:0;display:flex;flex-direction:column}
+.replayViewing .replayStageHead{flex:none;gap:8px;min-height:48px;margin:0 0 4px}
+.replayViewing .replayStageHead>div:first-child{min-width:0}
+.replayViewing .replayStageHead .eyebrow{font-size:9px}
+.replayViewing .replayStageHead h2{font-size:clamp(18px,2vw,25px);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.replayViewing .replayStageHead p{font-size:11px;line-height:1.2}
+.replayViewing .replayNow{min-width:0;max-width:40%;padding:5px 9px;gap:6px}
+.replayViewing .replayNow>span{font-size:20px}
+.replayViewing .replayNow small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.replayViewing .replayLayout{flex:1;min-height:0;grid-template-columns:minmax(0,1fr) minmax(260px,300px);gap:12px;align-items:stretch}
+.replayViewing .replayMain{min-height:0;display:flex;flex-direction:column}
+.replayViewing .replayStageFacts{flex:none;margin:0 0 4px;font-size:11px}
+.replayViewing .replayTableSpace{position:relative;flex:1 1 auto;min-height:0}
+.replayViewing .replayTableSpace>.gameFelt.polygonTable{height:100%;min-height:0;max-height:none}
+.replayViewing .replayOutcome{position:absolute;z-index:6;left:50%;bottom:8px;transform:translateX(-50%);width:min(520px,90%);border:1px solid #d5ae61;border-radius:10px;background:#173728f5;box-shadow:0 8px 22px #0009;color:#f0d99b}
+.replayViewing .replayOutcome summary{padding:6px 10px;text-align:center;font-size:11px;font-weight:700;cursor:pointer}
+.replayViewing .replayOutcomeContent{max-height:min(40dvh,240px);overflow-y:auto;padding:0 8px 8px}
+.replayViewing .replayResultBanner,.replayViewing .replayResultGrid{margin-top:4px}
+.replayViewing .replayResultGrid>div{padding:5px;font-size:10px}
+.replayViewing .replayHandArea{flex:none;min-height:0;margin:3px 0 0;padding:3px 7px;border:1px solid #a78c5866;border-radius:10px;background:#112b20}
+.replayViewing .replayHandArea .eyebrow,.replayViewing .replayHandArea small{font-size:9px;letter-spacing:0}
+.replayViewing .replayHand{display:grid;grid-template-columns:repeat(var(--replay-hand-cols),minmax(0,1fr));justify-items:center;align-items:center;gap:2px 3px;min-height:0;overflow:hidden;padding:2px 0}
+.replayViewing .replayHand .playing-card{width:auto;max-width:100%;height:min(8.5dvh,76px);aspect-ratio:2/3}
+.replayViewing .replayHand:has(.playing-card:nth-child(15)) .playing-card{height:min(6.5dvh,55px)}
+.replayViewing .replayTransport{flex:none;gap:5px;margin:3px 0 0;flex-wrap:nowrap}
+.replayViewing .replayTransport button{min-width:0;flex:1;padding:7px 5px;font-size:11px}
+.replayViewing .replayProgress{flex:none;height:4px;margin:4px 0 0}
+.replayViewing .replayCounter{flex:none;margin:1px 0 0;font-size:10px;line-height:1.1}
+.replayViewing .replayAside{position:static;display:flex;flex-direction:column;min-height:0;max-height:none;overflow:hidden;padding:10px}
+.replayViewing .replayAsideTitle{flex:none;display:flex;align-items:center;justify-content:space-between}
+.replayViewing .replayAside h3{margin:1px 0 7px;font-size:19px}
+.replayViewing .replayFilters{flex:none;gap:5px}
+.replayViewing .replayFilters select{padding:5px 7px}
+.replayViewing .replayAsidePlayers{flex:none;max-height:25%;overflow-y:auto;gap:4px;margin-top:8px}
+.replayViewing .replayPlayerCard{padding:5px}
+.replayViewing .replayPlayerFacts{margin:3px 0}
+.replayViewing .replayAside h4{flex:none;margin:8px 0 5px}
+.replayViewing .replaySceneList{flex:1;min-height:0;max-height:none;overflow-y:auto;grid-template-columns:1fr}
+.replayExploreToggle,.replayDrawerClose,.replayDrawerScrim{display:none}
+
+@media(max-width:1000px){
+  .replayViewing .replayLayout{display:flex}
+  .replayViewing .replayMain{flex:1}
+  .replayViewing .replayExploreToggle{display:block;flex:none;align-self:flex-end;margin:0 0 3px;padding:6px 10px;font-size:11px}
+  .replayViewing .replayDrawerScrim{display:block;position:fixed;inset:0;z-index:21;border:0;background:#000a}
+  .replayViewing .replayAside{position:fixed;top:0;right:0;bottom:0;z-index:22;width:min(390px,92vw);max-height:100dvh;visibility:hidden;transform:translateX(110%);transition:transform .2s ease,visibility .2s ease;border-radius:16px 0 0 16px;box-shadow:-15px 0 35px #0009}
+  .replayViewing .replayAside.is-open{visibility:visible;transform:translateX(0)}
+  .replayViewing .replayDrawerClose{display:block;padding:6px 9px}
+  .replayViewing .replayAsidePlayers{max-height:30%}
+}
+@media(max-width:900px){
+  html:has(.replayViewing){overflow:hidden}
+  body:has(.replayViewing){position:fixed;inset:0;width:100%}
+  body:has(.replayViewing) .siteHeader{height:52px;min-height:52px;padding:0 12px}
+  body:has(.replayViewing) main{height:calc(100dvh - 52px);display:flex}
+  .replayViewing{padding:3px 7px calc(3px + env(safe-area-inset-bottom))}
+  .replayViewing .replayBack{margin:0 0 2px;padding:4px 7px}
+  .replayViewing .replayStageHead{min-height:37px}
+  .replayViewing .replayStageHead h2{font-size:17px}
+  .replayViewing .replayStageHead p{font-size:10px}
+  .replayViewing .replayNow{max-width:43%;padding:3px 6px}
+  .replayViewing .replayNow>span{display:none}
+  .replayViewing .replayNow strong{font-size:10px}
+  .replayViewing .replayNow small{font-size:9px}
+  .replayViewing .replayExploreToggle{padding:4px 8px}
+  .replayViewing .replayStageFacts{font-size:10px;gap:3px}
+  .replayViewing .replayHand .playing-card{height:min(8dvh,65px)}
+  .replayViewing .replayHand:has(.playing-card:nth-child(15)) .playing-card{height:min(6dvh,48px)}
+  .replayViewing .replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(28px,7vw,40px);height:clamp(28px,7vw,40px);font-size:19px}
+  .replayViewing .replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(30px,8vw,48px)}
+  .replayViewing .replayStage .polygonTable .tableTrumpSymbol{width:clamp(65px,17vw,105px)}
+}
+@media(max-width:600px){
+  .replayViewing .replayStageHead .eyebrow,.replayViewing .replayNow small{display:none}
+  .replayViewing .replayStageHead{flex-direction:row;align-items:center}
+  .replayViewing .replayNow{max-width:38%}
+  .replayViewing .replayStageFacts{flex-wrap:nowrap;white-space:nowrap;overflow:hidden}
+  .replayViewing .replayStageFacts span{overflow:hidden;text-overflow:ellipsis}
+  .replayViewing .replayHandArea>div:first-child{gap:3px}
+  .replayViewing .replayHandArea small{white-space:nowrap}
+  .replayViewing .replayTransport button{padding:5px 2px;font-size:10px}
+  .replayViewing .replayCounter{display:none}
+  .replayViewing .replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(26px,8vw,34px);height:clamp(26px,8vw,34px);font-size:18px}
+  .replayViewing .replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(27px,8vw,42px)}
+  .replayViewing .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(23px,7vw,35px)}
+}
