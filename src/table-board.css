@@ -6,6 +6,7 @@
 .gameWorkspace .polygonTable.trump-espadas,.replayStage .polygonTable.trump-espadas{--felt-center:#3d6880;--felt-edge:#244756;--felt-ring:#a6cad7}
 .gameWorkspace .polygonTable.trump-bastos,.replayStage .polygonTable.trump-bastos{--felt-center:#24734d;--felt-edge:#145035;--felt-ring:#b9ca85}
 .polygonTable .tableOutline{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 18px 24px #0009)}
+.polygonTable .tableOutlineLandscape{display:none}
 .polygonTable .tableSurface{pointer-events:none}
 .polygonTable .tableOutline{transform:scale(.6);transform-origin:center}
 .polygonTable .tableOuterRim{fill:#4a2c1b;stroke:#21150f;stroke-width:4;vector-effect:non-scaling-stroke}
@@ -77,4 +78,26 @@
   .polygonTable .tableSequenceBadge{padding:3px 4px;font-size:7px}
   .polygonTable .tableSequenceBadge.start span{font-size:9px}
   .polygonTable .tableSequenceBadge.end span{font-size:7px}
+}
+
+@media(min-width:901px){
+  .polygonTable .tableSurface{width:min(calc(100cqw - 88px),calc(180cqh - 234px));height:min(calc(100cqh - 130px),calc(55.556cqw - 48.889px))}
+  .polygonTable .tableOutlinePortrait{display:none}
+  .polygonTable .tableOutlineLandscape{display:block;transform:scale(.78)}
+  .polygonTable .tableSeat{left:var(--desktop-seat-x);top:var(--desktop-seat-y)}
+  .polygonTable .tablePlay{left:var(--desktop-play-x);top:var(--desktop-play-y)}
+  .polygonTable .tableSeat.desk-top{transform:translate(-50%,calc(-100% - 10px))}
+  .polygonTable .tableSeat.desk-bottom{transform:translate(-50%,10px)}
+  .polygonTable .tableSeat.desk-left{transform:translate(-65%,-50%)}
+  .polygonTable .tableSeat.desk-right{transform:translate(-35%,-50%)}
+  .polygonTable .tableSeat{width:clamp(78px,12%,108px)}
+  .polygonTable .tableSeatMarker{height:18px;min-height:18px}
+  .polygonTable .tableSequenceBadge{padding:3px 5px;font-size:8px}
+  .polygonTable .tableSeatHead .playerAvatar,.gamePage .polygonTable .tableSeatHead .playerAvatar{width:40px;height:40px;font-size:23px}
+  .polygonTable .tableSeatHead{gap:1px}
+  .polygonTable .tableSeat>small{font-size:9px}
+  .polygonTable .tableSeat.isTurn .opponentVisibleCards{top:calc(100% + 4px)}
+  .polygonTable .opponentVisibleCards{max-width:110px;overflow:hidden;padding:2px 3px}
+  .polygonTable .opponentVisibleCards .playing-card.small{flex:none;width:24px;height:35px;margin-left:-9px}
+  .polygonTable .opponentVisibleCards .playing-card.small:first-child{margin-left:0}
 }

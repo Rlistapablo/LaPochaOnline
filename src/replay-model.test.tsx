@@ -49,7 +49,7 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect(html).toContain('class="tableOuterRim"');
   expect(html).toContain('class="tableRimHighlight"');
   expect(html).toContain('rotationArrow');
-  expect((html.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
+  expect((html.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
   expect(html).toContain('INICIO');
   expect(html).toContain('FINAL');
   expect(html).not.toContain('replayPlayed');
@@ -64,11 +64,11 @@ it('mantiene las posiciones al rotar el inicio de la ronda',()=>{
   const scenes=buildReplayTimeline(rotated);
   const render=(index:number)=>renderToStaticMarkup(<ReplayBoard replay={rotated} scenes={scenes} index={index} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="a" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
   const first=render(0),second=render(1);
-  expect(first).toContain('style="--seat-x:50%;--seat-y:86.4%" aria-label="Ana. Comienza');
-  expect(second).toContain('style="--seat-x:50%;--seat-y:86.4%" aria-label="Ana. Termina');
-  expect(second).toContain('style="--seat-x:50%;--seat-y:13.6%" aria-label="Bot Pepe. Comienza');
-  expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
-  expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
+  expect(first).toMatch(/style="--seat-x:50%;--seat-y:86\.4%;[^\"]+" aria-label="Ana\. Comienza/);
+  expect(second).toMatch(/style="--seat-x:50%;--seat-y:86\.4%;[^\"]+" aria-label="Ana\. Termina/);
+  expect(second).toMatch(/style="--seat-x:50%;--seat-y:13\.6%;[^\"]+" aria-label="Bot Pepe\. Comienza/);
+  expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
+  expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
 });
 it('reconstruye intercambios, cartas mostradas y robos en la repetición',()=>{
   const altered:ReplayData={...replay,events:[

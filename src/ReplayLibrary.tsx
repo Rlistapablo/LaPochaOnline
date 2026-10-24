@@ -55,10 +55,10 @@ function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:R
       const play=scene.table.find(item=>item.playerId===id);
       const visibleCards=showHands?hand:hand.filter(card=>scene.revealed[id]?.includes(card.id));
       const hiddenCount=showHands?0:Math.min(3,hand.length-visibleCards.length);
-      const seatStyle={'--seat-x':`${vertex.seatX}%`,'--seat-y':`${vertex.seatY}%`} as CSSProperties;
-      const playStyle={'--play-x':`${vertex.playX}%`,'--play-y':`${vertex.playY}%`} as CSSProperties;
+      const seatStyle={'--seat-x':`${vertex.seatX}%`,'--seat-y':`${vertex.seatY}%`,'--desktop-seat-x':`${vertex.desktopSeatX}%`,'--desktop-seat-y':`${vertex.desktopSeatY}%`} as CSSProperties;
+      const playStyle={'--play-x':`${vertex.playX}%`,'--play-y':`${vertex.playY}%`,'--desktop-play-x':`${vertex.desktopPlayX}%`,'--desktop-play-y':`${vertex.desktopPlayY}%`} as CSSProperties;
       const active=scene.nextPlayerId===id;
-      return <Fragment key={id}><div className={`tableSeat seat-${vertex.zone} ${active?'isTurn':''} ${id===focusId?'isMe':''} ${(scene.lives[id]??player.lives_start)===0?'isOut':''}`} style={seatStyle} aria-label={`${player.name}. ${id===startId?'Comienza':id===endId?'Termina':'Continúa'} la secuencia. ${scene.lives[id]??player.lives_start} vidas, ${scene.wins[id]||0} bazas ganadas, ${scene.bids[id]??'sin'} predichas.${active?' Su turno.':''}`}>
+      return <Fragment key={id}><div className={`tableSeat seat-${vertex.zone} desk-${vertex.desktopZone} ${active?'isTurn':''} ${id===focusId?'isMe':''} ${(scene.lives[id]??player.lives_start)===0?'isOut':''}`} style={seatStyle} aria-label={`${player.name}. ${id===startId?'Comienza':id===endId?'Termina':'Continúa'} la secuencia. ${scene.lives[id]??player.lives_start} vidas, ${scene.wins[id]||0} bazas ganadas, ${scene.bids[id]??'sin'} predichas.${active?' Su turno.':''}`}>
         <span className="tableSeatMarker">{id===startId&&<span className="tableSequenceBadge start" aria-label="Inicio de la secuencia"><span aria-hidden="true">▶</span> INICIO</span>}{id===endId&&<span className="tableSequenceBadge end" aria-label="Final de la secuencia"><span aria-hidden="true">■</span> FINAL</span>}</span>
         <div className="tableSeatHead"><span className="playerAvatar">{avatar(player.avatar)}</span><b>{player.name}{id===focusId?' · Tú':''}</b></div>
         <small>❤️ {scene.lives[id]??player.lives_start} <span>🏆 {scene.wins[id]||0}/{scene.bids[id]??'—'}</span></small>

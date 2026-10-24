@@ -43,6 +43,14 @@
 .replayStage .polygonTable .tableSeat.isTurn .replaySeatCards{top:calc(100% + 18px)}
 @media(max-width:1000px){.replayStage .gameFelt.polygonTable{height:clamp(390px,55vh,600px);min-height:390px}}
 @media(max-width:620px){.replayStage .gameFelt.polygonTable{height:clamp(360px,55svh,510px);min-height:360px}.replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(35px,10vw,47px);height:clamp(35px,10vw,47px);font-size:24px}.replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(43px,12vw,58px)}.replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(35px,9vw,46px)}.replayStage .polygonTable .tableTrumpSymbol{width:clamp(82px,22vw,118px)}.replayStage .polygonTable .replaySeatCards{max-width:38vw}.replayStage .polygonTable .replaySeatCards .playing-card.small{width:26px;height:38px}.replayStage .polygonTable .replayPowerList.compact{font-size:8px}}
+@media(min-width:901px){
+  .replayStage .polygonTable .tableSeatHead .playerAvatar{width:40px;height:40px;font-size:23px}
+  .replayStage .polygonTable .replaySeatCards,.replayStage .polygonTable .tableSeat:has(>.replayPowerList.compact)>.replaySeatCards,.replayStage .polygonTable .tableSeat.isTurn>.replaySeatCards,.replayStage .polygonTable .tableSeat.isTurn:has(>.replayPowerList.compact)>.replaySeatCards{top:50%;left:calc(100% + 2px);right:auto;transform:translateY(-50%);max-width:82px}
+  .replayStage .polygonTable .tableSeat.desk-right>.replaySeatCards{left:auto;right:calc(100% + 2px)}
+  .replayStage .polygonTable .replaySeatCards .playing-card.small{width:23px;height:34px;margin-left:-9px}
+  .replayStage .polygonTable .replaySeatCards .playing-card.small:first-child{margin-left:0}
+  .replayStage .polygonTable .replayPowerList.compact,.replayStage .polygonTable .tableSeat.isTurn>.replayPowerList.compact{top:calc(100% + 1px);max-width:120%;font-size:8px}
+}
 
 /* The replay viewer occupies the viewport; long timelines scroll inside its explorer. */
 body:has(.replayViewing){height:100dvh;overflow:hidden}

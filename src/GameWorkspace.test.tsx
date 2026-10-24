@@ -33,11 +33,12 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect(first).toMatch(/aria-label="Ana\. Comienza[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge start"/);
   expect(second).toMatch(/aria-label="Berta\. Comienza[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge start"/);
   expect(second).toMatch(/aria-label="Ana\. Termina[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge end"/);
-  expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
+  expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(4);
   expect(first).toContain('class="tableOuterRim"');
   expect(first).toContain('viewBox="0 0 100 150" preserveAspectRatio="none"');
   expect(first).toMatch(/class="tableOuterRim" d="M50 3 A47 47 [^"]* L97 100 [^"]* L3 50/);
-  expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
+  expect(first).toContain('viewBox="0 0 150 100" preserveAspectRatio="none"');
+  expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(4);
 });
 
 it('reparte entre dos y ocho jugadores por el contorno vertical y pone las cartas delante',()=>{
@@ -51,8 +52,15 @@ it('reparte entre dos y ocho jugadores por el contorno vertical y pone las carta
       expect(vertex.seatY).toBeGreaterThanOrEqual(0);
       expect(vertex.seatY).toBeLessThanOrEqual(100);
       expect(Math.hypot(vertex.playX-50,(vertex.playY-50)*1.5)).toBeLessThan(Math.hypot(vertex.seatX-50,(vertex.seatY-50)*1.5));
+      expect(vertex.desktopSeatX).toBeGreaterThanOrEqual(0);
+      expect(vertex.desktopSeatX).toBeLessThanOrEqual(100);
+      expect(vertex.desktopSeatY).toBeGreaterThanOrEqual(0);
+      expect(vertex.desktopSeatY).toBeLessThanOrEqual(100);
+      expect(Math.hypot((vertex.desktopPlayX-50)*1.5,vertex.desktopPlayY-50)).toBeLessThan(Math.hypot((vertex.desktopSeatX-50)*1.5,vertex.desktopSeatY-50));
     }
     expect(vertices[0].seatX).toBeCloseTo(50);
+    expect(vertices[0].desktopSeatX).toBeCloseTo(50);
+    expect(vertices[0].desktopSeatY).toBeGreaterThan(80);
     expect(vertices[0].seatY).toBeGreaterThan(80);
     if(count%2===0){expect(vertices[count/2].seatX).toBeCloseTo(50);expect(vertices[count/2].seatY).toBeLessThan(20);}
     if(count===4){expect(vertices[1].seatX).toBeGreaterThan(80);expect(vertices[3].seatX).toBeLessThan(20);}
@@ -89,7 +97,7 @@ it('muestra las predicciones ajenas dentro del modal de apuesta',()=>{
   bid(game,first,0,game.version);
   const next=game.players[game.turnIndex].id;
   const html=renderToStaticMarkup(<GameWorkspace game={view(game,next)} userId={next} action={()=>{}}/>);
-  expect((html.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
+  expect((html.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
   expect(html).toContain('bidPopupPredictions');
   expect(html).toContain('0 bazas');
   expect(html).toContain('Pendiente');
