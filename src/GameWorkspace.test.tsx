@@ -61,6 +61,8 @@ it('reparte entre dos y ocho jugadores por el contorno vertical y pone las carta
     expect(vertices[0].seatX).toBeCloseTo(50);
     expect(vertices[0].desktopSeatX).toBeCloseTo(50);
     expect(vertices[0].desktopSeatY).toBeGreaterThan(80);
+    expect(vertices[0].playY).toBeLessThan(70);
+    expect(vertices[0].desktopPlayY).toBeLessThan(76);
     expect(vertices[0].seatY).toBeGreaterThan(80);
     if(count%2===0){expect(vertices[count/2].seatX).toBeCloseTo(50);expect(vertices[count/2].seatY).toBeLessThan(20);}
     if(count===4){expect(vertices[1].seatX).toBeGreaterThan(80);expect(vertices[3].seatX).toBeLessThan(20);}
