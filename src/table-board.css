@@ -105,3 +105,16 @@
   .polygonTable .opponentVisibleCards .playing-card.small{flex:none;width:24px;height:35px;margin-left:-9px}
   .polygonTable .opponentVisibleCards .playing-card.small:first-child{margin-left:0}
 }
+@media(max-width:900px){
+  .polygonTable .tableSurface{width:min(100cqw,calc(78cqh - 101px));height:min(calc(100cqh - 130px),128.205cqw)}
+  .polygonTable .tableOutlinePortrait{transform:scale(.7)}
+  .liveGamePage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small,
+  .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(9vw,calc(8cqh - 10px),37px);height:auto;aspect-ratio:2/3}
+}
+@media(max-width:900px) and (max-height:760px){
+  .polygonTable .tableSeatMarker{height:16px;min-height:16px}
+  .polygonTable .tableSeatHead .playerAvatar,
+  .liveGamePage .polygonTable .tableSeatHead .playerAvatar,
+  .replayStage .polygonTable .tableSeatHead .playerAvatar{width:34px;height:34px;font-size:20px}
+  .polygonTable .tableSeat>small{font-size:8px}
+}

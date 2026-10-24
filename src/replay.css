@@ -144,3 +144,7 @@ body:has(.replayViewing) footer{display:none}
   .replayViewing .replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(27px,8vw,42px)}
   .replayViewing .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(23px,7vw,35px)}
 }
+@media(max-width:900px){
+  .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(9vw,calc(8cqh - 10px),37px);height:auto;aspect-ratio:2/3}
+  .replayViewing .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(8vw,calc(8cqh - 10px),35px)}
+}

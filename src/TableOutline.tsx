@@ -56,14 +56,14 @@ export function tableLayout(ids:string[]):TableLayout{
   const step=perimeter/count;
   const percent=(value:number)=>Math.round(value*10000)/10000;
   const vertices=ids.map((id,index)=>{
-    const seat=inset(pointAt(index*step),.78),play=inset(pointAt(index*step),.34);
+    const seat=inset(pointAt(index*step),.78),play=inset(pointAt(index*step),.43);
     const seatX=percent(seat.x),seatY=percent(seat.y/150*100);
     const desktopSeat=insetDesktop(pointAtDesktop(index*step),.86),desktopPlay=insetDesktop(pointAtDesktop(index*step),.52);
     const desktopSeatX=percent(desktopSeat.x/150*100),desktopSeatY=percent(desktopSeat.y);
     return {id,seatX,seatY,playX:percent(play.x),playY:percent(play.y/150*100),zone:zone(seatX,seatY),desktopSeatX,desktopSeatY,desktopPlayX:percent(desktopPlay.x/150*100),desktopPlayY:percent(desktopPlay.y),desktopZone:zone(desktopSeatX,desktopSeatY)};
   });
   const arrows=count<2?[]:vertices.map((_,index)=>Array.from({length:9},(_,part)=>{
-    const point=inset(pointAt((index+.2+part*.065)*step),.98);
+    const point=inset(pointAt((index+.2+part*.065)*step),.9);
     return `${part?'L':'M'}${point.x} ${point.y}`;
   }).join(' '));
   const desktopArrows=count<2?[]:vertices.map((_,index)=>Array.from({length:9},(_,part)=>{
