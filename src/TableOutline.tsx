@@ -1,5 +1,5 @@
 type Point={x:number;y:number};
-type Vertex={id:string;seatX:number;seatY:number;playX:number;playY:number};
+type Vertex={id:string;seatX:number;seatY:number;playX:number;playY:number;zone:'top'|'bottom'|'left'|'right'};
 export type TableLayout={vertices:Vertex[];arrows:string[]};
 
 const radius=45;
@@ -33,8 +33,10 @@ export function tableLayout(ids:string[]):TableLayout{
   const step=perimeter/count;
   const percent=(value:number)=>Math.round(value*10000)/10000;
   const vertices=ids.map((id,index)=>{
-    const seat=inset(pointAt(index*step),.78),play=inset(pointAt(index*step),.47);
-    return {id,seatX:percent(seat.x),seatY:percent(seat.y/150*100),playX:percent(play.x),playY:percent(play.y/150*100)};
+    const seat=inset(pointAt(index*step),.78),play=inset(pointAt(index*step),.72);
+    const seatX=percent(seat.x),seatY=percent(seat.y/150*100);
+    const zone:Vertex['zone']=seatY<30?'top':seatY>70?'bottom':seatX<50?'left':'right';
+    return {id,seatX,seatY,playX:percent(play.x),playY:percent(play.y/150*100),zone};
   });
   const arrows=count<2?[]:vertices.map((_,index)=>Array.from({length:9},(_,part)=>{
     const point=inset(pointAt((index+.2+part*.065)*step),.91);
