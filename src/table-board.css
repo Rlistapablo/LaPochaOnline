@@ -1,5 +1,6 @@
 .gameWorkspace .gameFelt.polygonTable,.replayStage .gameFelt.polygonTable{--felt-center:#176443;--felt-edge:#0d422f;--felt-ring:#b18d55;position:relative;display:block;min-height:440px;overflow:visible;border:0;border-radius:0;padding:0;background:transparent;box-shadow:none;isolation:isolate;container-type:size}
-.polygonTable .tableSurface{position:absolute;left:50%;top:50%;width:min(100cqw,100cqh);height:min(100cqw,100cqh);transform:translate(-50%,-50%);isolation:isolate}
+.polygonTable .tableSurface{position:absolute;left:50%;top:50%;width:min(100cqw,155cqh);height:min(100cqh,64.516cqw);transform:translate(-50%,-50%);isolation:isolate}
+@media(max-width:900px){.polygonTable .tableSurface{width:min(100cqw,130cqh);height:min(100cqh,76.923cqw)}}
 .gameWorkspace .polygonTable.trump-oros,.replayStage .polygonTable.trump-oros{--felt-center:#69692d;--felt-edge:#3b4826;--felt-ring:#d6b961}
 .gameWorkspace .polygonTable.trump-copas,.replayStage .polygonTable.trump-copas{--felt-center:#743e47;--felt-edge:#482d38;--felt-ring:#df9b8e}
 .gameWorkspace .polygonTable.trump-espadas,.replayStage .polygonTable.trump-espadas{--felt-center:#3d6880;--felt-edge:#244756;--felt-ring:#a6cad7}

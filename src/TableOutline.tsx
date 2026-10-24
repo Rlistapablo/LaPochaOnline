@@ -19,7 +19,7 @@ export function tableLayout(ids:string[]):TableLayout{
 
 export function TableOutline({layout,startId,endId,markerId}:{layout:TableLayout;startId?:string;endId?:string;markerId:string}){
   const {vertices,arrows}=layout;
-  return <svg className="tableOutline" viewBox="0 0 100 100" aria-hidden="true">
+  return <svg className="tableOutline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
     <circle className="tableOuterRim" cx="50" cy="50" r="47"/>
     <circle className="tableRim" cx="50" cy="50" r="44.5"/>
     <circle className="tableRimHighlight" cx="50" cy="50" r="42"/>

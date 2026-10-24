@@ -35,6 +35,7 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect(second).toMatch(/aria-label="Ana\. Termina[^>]+><span class="tableSeatMarker"><span class="tableSequenceBadge end"/);
   expect((first.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
   expect(first).toContain('class="tableOuterRim"');
+  expect(first).toContain('viewBox="0 0 100 100" preserveAspectRatio="none"');
   expect(first).toContain('<circle class="tableOuterRim" cx="50" cy="50" r="47"');
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(2);
 });
