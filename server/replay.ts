@@ -9,6 +9,21 @@ export async function getRematchSettings(code:string,cycle:number,playerId:strin
   return source.settings;
 }
 
+export function orderReplayPlayers<T extends {player_id:string}>(players:T[],events:Array<{type:string;player_id?:string|null;data?:Record<string,unknown>}>):T[]{
+  const started=events.find(event=>event.type==='game_started');
+  const recorded=started?.data?.seatOrder;
+  let ids=Array.isArray(recorded)?recorded.filter((id):id is string=>typeof id==='string'):[];
+  if(!ids.length){
+    const firstRound=events.find(event=>event.type==='round_started')?.data?.order;
+    ids=Array.isArray(firstRound)?firstRound.filter((id):id is string=>typeof id==='string'):[];
+    const host=events.find(event=>event.type==='room_created')?.player_id;
+    const hostIndex=host?ids.indexOf(host):-1;
+    if(hostIndex>0)ids=[...ids.slice(hostIndex),...ids.slice(0,hostIndex)];
+  }
+  const position=new Map(ids.map((id,index)=>[id,index]));
+  return [...players].sort((a,b)=>(position.get(a.player_id)??Number.MAX_SAFE_INTEGER)-(position.get(b.player_id)??Number.MAX_SAFE_INTEGER)||a.player_id.localeCompare(b.player_id));
+}
+
 export async function finalizeReplay(g:Game){
   const found=await pool.query<{id:string}>('SELECT id FROM games WHERE room_code=$1 AND cycle=$2',[g.code,g.cycle]);
   const id=found.rows[0]?.id;
@@ -48,7 +63,7 @@ export async function getReplay(gameId:string,playerId:string,isAdmin=false){
   if(!game||(!isAdmin&&!game.participant&&game.settings?.private!==false))throw Error('Repetición no disponible');
   const players=(await pool.query('SELECT player_id,name,avatar,is_bot,bot_difficulty,lives_start,lives_end,eliminated,won FROM game_players WHERE game_id=$1',[gameId])).rows;
   const events=(await pool.query('SELECT sequence,type,player_id,data,occurred_at FROM game_events WHERE room_code=$1 AND match_cycle=$2 ORDER BY sequence',[game.room_code,game.cycle])).rows;
-  return {game,players,events};
+  return {game,players:orderReplayPlayers(players,events),events};
 }
 
 export async function getReplayByRoom(code:string,cycle:number,playerId:string,isAdmin=false){

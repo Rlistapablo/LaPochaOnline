@@ -1,6 +1,7 @@
 import {AvatarIcon} from './SpanishSuitIcon';
 import {Fragment,useEffect,useMemo,useState,type CSSProperties} from 'react';
 import {CardView,SuitArt} from './CardView';
+import {TableOutline,tableLayout} from './TableOutline';
 import {SUITS} from '../shared/game';
 import {apiPath} from './paths';
 import {readApiResponse} from './api-response';
@@ -41,29 +42,15 @@ function ReplayPlayerCard({player,scene,focused}:{player:ReplayPlayer;scene:Repl
 
 function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:ReplayScene;focusId:string;showHands:boolean}){
   const count=replay.players.length;
-  const vertices=replay.players.map((player,index)=>{
-    const angle=Math.PI/2-index*2*Math.PI/count;
-    const playRadiusX=count===2?0:28,playRadiusY=count===2?14:18;
-    return {player,x:50+46*Math.cos(angle),y:50+44*Math.sin(angle),seatX:50+38*Math.cos(angle),seatY:50+35*Math.sin(angle),playX:50+playRadiusX*Math.cos(angle),playY:50+playRadiusY*Math.sin(angle)};
-  });
-  const points=vertices.map(vertex=>`${vertex.x},${vertex.y}`).join(' ');
-  const arrows=vertices.map((vertex,index)=>{
-    const next=vertices[(index+1)%count];
-    const startX=50+(vertex.x-50)*.88,startY=50+(vertex.y-50)*.88;
-    const endX=50+(next.x-50)*.88,endY=50+(next.y-50)*.88;
-    return {x1:startX+(endX-startX)*.24,y1:startY+(endY-startY)*.24,x2:startX+(endX-startX)*.72,y2:startY+(endY-startY)*.72};
-  });
+  const layout=tableLayout(replay.players.map(player=>player.player_id));
+  const {vertices}=layout;
   const startId=scene.order[0],endId=scene.order.at(-1);
   const trumpSuit=SUITS.find(suit=>suit===scene.trumpSuit);
   return <div className={`table gameFelt polygonTable replayFelt players-${count} ${trumpSuit?`trump-${trumpSuit.toLowerCase()}`:''}`} aria-label={`Mesa de repetición de ${count} jugadores. Sentido antihorario.${trumpSuit?` Triunfo: ${trumpSuit}.`:''}`}>
-    <svg className="tableOutline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      {count===2?<path className="tableRim" d="M50 6 Q100 50 50 94 Q0 50 50 6 Z"/>:<polygon className="tableRim" points={points}/>}
-      {count===2?<>{replay.players[0].player_id!==endId&&<path className="rotationArrow" d="M60 76 Q85 50 60 24" markerEnd="url(#pocha-replay-turn-arrow)"/>}{replay.players[1].player_id!==endId&&<path className="rotationArrow" d="M40 24 Q15 50 40 76" markerEnd="url(#pocha-replay-turn-arrow)"/>}</>:arrows.map((arrow,index)=>replay.players[index].player_id===endId&&replay.players[(index+1)%count].player_id===startId?null:<line className="rotationArrow" key={index} {...arrow} markerEnd="url(#pocha-replay-turn-arrow)"/>)}
-      <defs><marker id="pocha-replay-turn-arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
-    </svg>
+    <TableOutline layout={layout} startId={startId} endId={endId} markerId="pocha-replay-turn-arrow"/>
     <div className="tableCenter">{trumpSuit?<div className="tableTrumpSymbol replayTrumpSymbol" aria-label={`Triunfo de la ronda: ${trumpSuit}`}><SuitArt suit={trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
     {vertices.map(vertex=>{
-      const player=vertex.player,id=player.player_id,hand=scene.hands[id]||[];
+      const id=vertex.id,player=replay.players.find(item=>item.player_id===id)!,hand=scene.hands[id]||[];
       const play=scene.table.find(item=>item.playerId===id);
       const visibleCards=showHands?hand:hand.filter(card=>scene.revealed[id]?.includes(card.id));
       const hiddenCount=showHands?0:Math.min(3,hand.length-visibleCards.length);

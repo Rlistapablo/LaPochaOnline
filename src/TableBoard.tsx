@@ -2,6 +2,7 @@ import {AvatarIcon} from './SpanishSuitIcon';
 import {Fragment,type CSSProperties} from 'react';
 import type {View} from '../shared/game';
 import {CardView,SuitArt} from './CardView';
+import {TableOutline,tableLayout} from './TableOutline';
 import {useVisibleTrick} from './TrickHistory';
 import './table-board.css';
 
@@ -12,25 +13,10 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
   const seats=game.players.map(player=>player.id);
   const count=seats.length;
   const startId=game.order[0],endId=game.order.at(-1);
-  const vertices=seats.map((id,index)=>{
-    const angle=Math.PI/2-index*2*Math.PI/count;
-    const playRadiusX=count===2?0:28,playRadiusY=count===2?14:18;
-    return {id,x:50+46*Math.cos(angle),y:50+44*Math.sin(angle),seatX:50+38*Math.cos(angle),seatY:50+35*Math.sin(angle),playX:50+playRadiusX*Math.cos(angle),playY:50+playRadiusY*Math.sin(angle)};
-  });
-  const points=vertices.map(vertex=>`${vertex.x},${vertex.y}`).join(' ');
-  const lens=count===2;
-  const arrows=vertices.map((vertex,index)=>{
-    const next=vertices[(index+1)%count];
-    const startX=50+(vertex.x-50)*.88,startY=50+(vertex.y-50)*.88;
-    const endX=50+(next.x-50)*.88,endY=50+(next.y-50)*.88;
-    return {x1:startX+(endX-startX)*.24,y1:startY+(endY-startY)*.24,x2:startX+(endX-startX)*.72,y2:startY+(endY-startY)*.72};
-  });
+  const layout=tableLayout(seats);
+  const {vertices}=layout;
   return <div className={`table gameFelt polygonTable players-${count} ${game.trumpSuit?`trump-${game.trumpSuit.toLowerCase()}`:''}`} aria-label={`Tapete de ${count} jugadores. Sentido antihorario.${game.trumpSuit?` Triunfo: ${game.trumpSuit}.`:''}`}>
-    <svg className="tableOutline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      {lens?<path className="tableRim" d="M50 6 Q100 50 50 94 Q0 50 50 6 Z"/>:<polygon className="tableRim" points={points}/>}
-      {lens?<>{seats[0]!==endId&&<path className="rotationArrow" d="M60 76 Q85 50 60 24" markerEnd="url(#pocha-turn-arrow)"/>}{seats[1]!==endId&&<path className="rotationArrow" d="M40 24 Q15 50 40 76" markerEnd="url(#pocha-turn-arrow)"/>}</>:arrows.map((arrow,index)=>seats[index]===endId&&seats[(index+1)%count]===startId?null:<line className="rotationArrow" key={index} {...arrow} markerEnd="url(#pocha-turn-arrow)"/>)}
-      <defs><marker id="pocha-turn-arrow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
-    </svg>
+    <TableOutline layout={layout} startId={startId} endId={endId} markerId="pocha-turn-arrow"/>
     <div className="tableCenter">{game.trumpSuit?<div className="tableTrumpSymbol" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
     {vertices.map(vertex=>{
       const player=game.players.find(item=>item.id===vertex.id)!;

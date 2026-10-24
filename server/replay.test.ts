@@ -2,7 +2,7 @@ import {beforeEach,expect,it,vi} from 'vitest';
 
 const {query,connect,release}=vi.hoisted(()=>({query:vi.fn(),connect:vi.fn(),release:vi.fn()}));
 vi.mock('./db.js',()=>({pool:{connect,query}}));
-import {deleteReplay,deleteReplays,getRematchSettings,getReplayByRoom} from './replay';
+import {deleteReplay,deleteReplays,getRematchSettings,getReplayByRoom,orderReplayPlayers} from './replay';
 
 beforeEach(()=>{
   query.mockReset();connect.mockReset();release.mockReset();
@@ -69,4 +69,16 @@ it('recupera las mismas reglas para un participante de una sala privada terminad
 it('impide usar una sala privada ajena como origen de revancha',async()=>{
   query.mockResolvedValue({rows:[{settings:{private:true},participant:false}]});
   await expect(getRematchSettings('ABC123',2,'other-player')).rejects.toThrow('Revancha no disponible');
+});
+
+it('mantiene el orden original de los asientos en una repetición',()=>{
+  const players=[{player_id:'b'},{player_id:'c'},{player_id:'a'}];
+  const events=[{type:'game_started',data:{seatOrder:['a','b','c']}}];
+  expect(orderReplayPlayers(players,events).map(player=>player.player_id)).toEqual(['a','b','c']);
+});
+
+it('recupera el orden de partidas antiguas a partir de la primera ronda',()=>{
+  const players=[{player_id:'b'},{player_id:'c'},{player_id:'a'}];
+  const events=[{type:'room_created',player_id:'a'},{type:'round_started',data:{order:['c','a','b']}}];
+  expect(orderReplayPlayers(players,events).map(player=>player.player_id)).toEqual(['a','b','c']);
 });

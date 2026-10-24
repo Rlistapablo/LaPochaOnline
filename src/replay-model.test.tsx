@@ -46,6 +46,8 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect(html).toContain('As de Oros');
   expect((html.match(/class="tablePlay/g)||[])).toHaveLength(2);
   expect(html).toContain('polygonTable replayFelt players-2');
+  expect(html).toContain('class="tableOuterRim"');
+  expect(html).toContain('class="tableRimHighlight"');
   expect(html).toContain('rotationArrow');
   expect((html.match(/class="rotationArrow"/g)||[])).toHaveLength(1);
   expect(html).toContain('INICIO');
