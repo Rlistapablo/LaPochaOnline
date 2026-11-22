@@ -68,11 +68,11 @@ export function tableLayout(ids:string[]):TableLayout{
     return {id,seatX,seatY,playX:percent(play.x),playY:percent(play.y/150*100),zone:zone(seatX,seatY),desktopSeatX,desktopSeatY,desktopPlayX:percent(desktopPlay.x/150*100),desktopPlayY:percent(desktopPlay.y),desktopZone:zone(desktopSeatX,desktopSeatY)};
   });
   const arrows=count<2?[]:vertices.map((_,index)=>Array.from({length:9},(_,part)=>{
-    const point=inset(pointAt((index+.2+part*.065)*step),.9);
+    const point=inset(pointAt((index+.32+part*.04)*step),.9);
     return `${part?'L':'M'}${point.x} ${point.y}`;
   }).join(' '));
   const desktopArrows=count<2?[]:vertices.map((_,index)=>Array.from({length:9},(_,part)=>{
-    const point=insetDesktop(pointAtDesktop((index+.2+part*.065)*step),1.04);
+    const point=insetDesktop(pointAtDesktop((index+.32+part*.04)*step),1.04);
     return `${part?'L':'M'}${point.x} ${point.y}`;
   }).join(' '));
   return {vertices,arrows,desktopArrows};
@@ -89,7 +89,7 @@ export function TableOutline({layout,startId,endId,markerId}:{layout:TableLayout
   </svg>
   <svg className="tableRotation tableRotationPortrait" viewBox="0 0 100 150" preserveAspectRatio="none" aria-hidden="true">
     {visibleArrows(arrows,'portrait')}
-    <defs><marker id={`${markerId}-portrait`} markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
+    <defs><marker id={`${markerId}-portrait`} markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5 Z" fill="#ffe69a"/></marker></defs>
   </svg>
   <svg className="tableOutline tableOutlineLandscape" viewBox="0 0 150 100" preserveAspectRatio="none" aria-hidden="true">
     <path className="tableOuterRim" d={desktopOutline(47)}/>
@@ -98,7 +98,7 @@ export function TableOutline({layout,startId,endId,markerId}:{layout:TableLayout
   </svg>
   <svg className="tableRotation tableRotationLandscape" viewBox="0 0 150 100" preserveAspectRatio="none" aria-hidden="true">
     {visibleArrows(desktopArrows,'landscape')}
-    <defs><marker id={`${markerId}-landscape`} markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 Z" fill="#ffe69a"/></marker></defs>
+    <defs><marker id={`${markerId}-landscape`} markerWidth="5" markerHeight="5" refX="4.5" refY="2.5" orient="auto"><path d="M0 0 L5 2.5 L0 5 Z" fill="#ffe69a"/></marker></defs>
   </svg>
   </>;
 }
