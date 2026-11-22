@@ -1,8 +1,29 @@
-import {describe,it,expect} from 'vitest';
-import {makeDeck,createGame,addPlayer,takeOverBot,replaceLeaverWithBot,returnToBotSeat,start,bid,play,finishTrickPause,advance,rematch,finishGame,oneCardMode,allowedBids,assertIntegrity,view,trickWinner,schedule,penaltyForRound,VALUES,type Settings} from './game';
+import {describe,it,expect,vi} from 'vitest';
+import {makeDeck,createGame,addPlayer,movePlayer,takeOverBot,replaceLeaverWithBot,returnToBotSeat,start,bid,play,finishTrickPause,advance,rematch,finishGame,oneCardMode,allowedBids,assertIntegrity,view,trickWinner,schedule,penaltyForRound,VALUES,type Settings} from './game';
 const settings:Settings={name:'test',private:true,maxPlayers:4,maxCards:5,lives:3,penalty:'normal',oneCard:'hidden',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
 function game(){const g=createGame('TEST',{id:'a',name:'A',avatar:'🃏',connected:true},{...settings});addPlayer(g,{id:'b',name:'B',avatar:'🃏',connected:true});return g;}
 describe('motor físico',()=>{
+ it('permite al anfitrión fijar el orden de los asientos antes de comenzar',()=>{
+  const g=game();addPlayer(g,{id:'c',name:'C',avatar:'',connected:true});
+  expect(()=>movePlayer(g,'b','c',-1)).toThrow();
+  movePlayer(g,'a','c',-1);
+  expect(g.players.map(p=>p.id)).toEqual(['a','c','b']);
+  expect(()=>movePlayer(g,'a','a',-1)).toThrow();
+  start(g);
+  expect(g.players.map(p=>p.id)).toEqual(['a','c','b']);
+  expect(g.pendingEvents?.find(event=>event.type==='game_started')?.data.seatOrder).toEqual(['a','c','b']);
+  expect(()=>movePlayer(g,'a','c',1)).toThrow();
+ });
+ it('sortea el orden de los asientos solo cuando empieza la partida',()=>{
+  const g=game();addPlayer(g,{id:'c',name:'C',avatar:'',connected:true});addPlayer(g,{id:'d',name:'D',avatar:'',connected:true});
+  g.settings.seatOrder='random';
+  expect(()=>movePlayer(g,'a','d',-1)).toThrow();
+  expect(g.players.map(p=>p.id)).toEqual(['a','b','c','d']);
+  const random=vi.spyOn(crypto,'getRandomValues').mockImplementation(((values:Uint32Array)=>{values[0]=0;return values;}) as typeof crypto.getRandomValues);
+  try{start(g);}finally{random.mockRestore();}
+  expect(g.players.map(p=>p.id)).toEqual(['b','c','d','a']);
+  expect(g.pendingEvents?.find(event=>event.type==='game_started')?.data.seatOrder).toEqual(['b','c','d','a']);
+ });
  it('releva con un bot al jugador que sale y conserva sus cartas y turno',()=>{
   const g=game();start(g);
   const seat=g.players[g.turnIndex],cards=[...seat.hand],turn=g.turnIndex;
