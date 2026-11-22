@@ -42,7 +42,7 @@
 .replayStage .polygonTable .replaySeatCards .playing-card.small:first-child{margin-left:0}
 .replayStage .polygonTable .tableSeat.isTurn .replaySeatCards{top:calc(100% + 18px)}
 @media(max-width:1000px){.replayStage .gameFelt.polygonTable{height:clamp(390px,55vh,600px);min-height:390px}}
-@media(max-width:620px){.replayStage .gameFelt.polygonTable{height:clamp(360px,55svh,510px);min-height:360px}.replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(35px,10vw,47px);height:clamp(35px,10vw,47px);font-size:24px}.replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(43px,12vw,58px)}.replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(35px,9vw,46px)}.replayStage .polygonTable .tableTrumpSymbol{width:clamp(82px,22vw,118px)}.replayStage .polygonTable .replaySeatCards{max-width:38vw}.replayStage .polygonTable .replaySeatCards .playing-card.small{width:26px;height:38px}.replayStage .polygonTable .replayPowerList.compact{font-size:8px}}
+@media(max-width:620px){.replayStage .gameFelt.polygonTable{height:clamp(360px,55svh,510px);min-height:360px}.replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(35px,10vw,47px);height:clamp(35px,10vw,47px);font-size:24px}.replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(48px,13vw,64px)}.replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(35px,9vw,46px)}.replayStage .polygonTable .tableTrumpSymbol{width:clamp(82px,22vw,118px)}.replayStage .polygonTable .replaySeatCards{max-width:38vw}.replayStage .polygonTable .replaySeatCards .playing-card.small{width:26px;height:38px}.replayStage .polygonTable .replayPowerList.compact{font-size:8px}}
 @media(min-width:901px){
   .replayStage .polygonTable .tableSeatHead .playerAvatar{width:40px;height:40px;font-size:23px}
   .replayStage .polygonTable .replaySeatCards,.replayStage .polygonTable .tableSeat:has(>.replayPowerList.compact)>.replaySeatCards,.replayStage .polygonTable .tableSeat.isTurn>.replaySeatCards,.replayStage .polygonTable .tableSeat.isTurn:has(>.replayPowerList.compact)>.replaySeatCards{top:50%;left:calc(100% + 2px);right:auto;transform:translateY(-50%);max-width:82px}
@@ -127,7 +127,7 @@ body:has(.replayViewing) footer{display:none}
   .replayViewing .replayHand .playing-card{height:min(8dvh,65px)}
   .replayViewing .replayHand:has(.playing-card:nth-child(15)) .playing-card{height:min(6dvh,48px)}
   .replayViewing .replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(28px,7vw,40px);height:clamp(28px,7vw,40px);font-size:19px}
-  .replayViewing .replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(30px,8vw,48px)}
+  .replayViewing .replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(42px,11vw,58px)}
   .replayViewing .replayStage .polygonTable .tableTrumpSymbol{width:clamp(65px,17vw,105px)}
 }
 @media(max-width:600px){
@@ -141,12 +141,12 @@ body:has(.replayViewing) footer{display:none}
   .replayViewing .replayTransport button{padding:5px 2px;font-size:10px}
   .replayViewing .replayCounter{display:none}
   .replayViewing .replayStage .polygonTable .tableSeatHead .playerAvatar{width:clamp(26px,8vw,34px);height:clamp(26px,8vw,34px);font-size:18px}
-  .replayViewing .replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(27px,8vw,42px)}
+  .replayViewing .replayStage .polygonTable .tablePlay .playing-card.small{width:clamp(42px,11vw,58px)}
   .replayViewing .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:clamp(23px,7vw,35px)}
 }
 @media(max-width:900px){
-  .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(9vw,calc(8cqh - 10px),37px);height:auto;aspect-ratio:2/3}
-  .replayViewing .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(8vw,calc(8cqh - 10px),35px)}
+  .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(10vw,calc(8cqh - 5px),42px);height:auto;aspect-ratio:2/3}
+  .replayViewing .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(10vw,calc(8cqh - 5px),40px)}
 }
 
 /* Full hands live in their own inspector; seat fans only summarize the hand. */
