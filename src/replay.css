@@ -148,3 +148,46 @@ body:has(.replayViewing) footer{display:none}
   .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(9vw,calc(8cqh - 10px),37px);height:auto;aspect-ratio:2/3}
   .replayViewing .replayStage .polygonTable:is(.players-6,.players-7,.players-8) .tablePlay .playing-card.small{width:min(8vw,calc(8cqh - 10px),35px)}
 }
+
+/* Full hands live in their own inspector; seat fans only summarize the hand. */
+.replayViewTools{display:flex;justify-content:flex-end;gap:6px;flex:none;margin:0 0 3px}
+.replayViewTools .replayHandsOpen{padding:6px 10px;font-size:11px}
+.replayStage .polygonTable .replaySeatCards{position:absolute}
+.replaySeatCardCount{position:absolute;top:-5px;right:-5px;z-index:2;display:grid;place-items:center;min-width:18px;height:18px;padding:0 3px;border:1px solid #f2d894;border-radius:10px;background:#15382a;color:#ffe4a5;font-size:9px;font-weight:800;text-shadow:none}
+.replayHandsBackdrop{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:clamp(8px,2dvh,22px);background:#020c09db;backdrop-filter:blur(5px)}
+.replayHandsDialog{display:flex;flex-direction:column;width:min(1120px,100%);height:min(88dvh,920px);min-height:0;padding:18px;border:1px solid #d7b76f;border-radius:18px;background:#102a20;box-shadow:0 25px 65px #000c;overflow:hidden}
+.replayHandsHeading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex:none;padding:0 2px 12px;border-bottom:1px solid #e6c47b45}
+.replayHandsHeading h3{margin:2px 0 3px;color:#f2dfac;font:700 clamp(23px,3vw,32px) 'Playfair Display',serif}
+.replayHandsHeading p{margin:0;color:#bcd0bd;font-size:12px}
+.replayHandsHeading button{flex:none;padding:8px 12px;font-size:12px}
+.replayHandsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:12px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 3px 4px}
+.replayHandsPlayer{min-width:0;padding:10px;border:1px solid #55725a;border-radius:13px;background:#19382a}
+.replayHandsPlayer.isFocus{border-color:#dbbc75}
+.replayHandsPlayerHead{display:flex;align-items:center;gap:8px;margin-bottom:9px;color:#f4e8ce}
+.replayHandsPlayerHead .playerAvatar{width:30px;height:30px;font-size:18px}
+.replayHandsPlayerHead strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+.replayHandsPlayerHead>span:last-child{margin-left:auto;color:#d4c49b;font-size:11px;white-space:nowrap}
+.replayHandsCards{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));justify-items:center;align-items:start;gap:8px 5px;min-height:24px}
+.replayHandsCard{display:grid;justify-items:center;width:100%;min-width:0;cursor:zoom-in}
+.replayHandsCard .playing-card{width:min(100%,64px);height:auto;aspect-ratio:2/3;pointer-events:auto}
+.replayHandsCard:focus-within .playing-card{outline:2px solid #ffe8a8;outline-offset:2px}
+.replayCardZoom{position:fixed;right:clamp(20px,4vw,65px);bottom:clamp(20px,4vh,50px);z-index:2;display:grid;justify-items:center;gap:8px;width:190px;padding:12px;border:1px solid #e9c77f;border-radius:14px;background:#0d241bf2;box-shadow:0 16px 45px #000c;color:#f9eac9;text-align:center;pointer-events:none}
+.replayCardZoom.isPinned{pointer-events:auto}
+.replayCardZoom>div{display:grid;gap:2px;font-size:12px}
+.replayCardZoom>div span{color:#d5c398}
+.replayCardZoom .playing-card{width:140px;height:210px;pointer-events:none}
+.replayCardZoom>button{padding:6px 10px;font-size:11px}
+@media(max-width:700px){
+  .replayHandsBackdrop{padding:4px}
+  .replayHandsDialog{width:100%;height:calc(100dvh - 8px);padding:10px 8px 12px;border-radius:13px}
+  .replayHandsHeading{align-items:center;padding-bottom:8px}
+  .replayHandsHeading h3{font-size:23px}
+  .replayHandsHeading p{font-size:10px;line-height:1.2}
+  .replayHandsHeading button{padding:7px 9px;font-size:11px}
+  .replayHandsGrid{grid-template-columns:1fr;gap:8px;padding-top:8px}
+  .replayHandsPlayer{padding:8px}
+  .replayHandsCards{grid-template-columns:repeat(auto-fill,minmax(43px,1fr));gap:6px 4px}
+  .replayHandsCard .playing-card{max-width:56px}
+  .replayCardZoom{left:50%;right:auto;bottom:calc(16px + env(safe-area-inset-bottom));transform:translateX(-50%);width:168px;padding:9px}
+  .replayCardZoom .playing-card{width:110px;height:165px}
+}

@@ -56,6 +56,17 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect(html).toContain('role="progressbar"');
   expect(html).toContain('Mostrar todas las manos');
 });
+it('muestra todas las cartas de manos largas en el visor de repetición',()=>{
+  const ana=[ace,...(['2','3','4','5'] as const).map(value=>({id:`Oros_${value}`,suit:'Oros' as const,value}))];
+  const bot=[two,...(['3','4','5','6'] as const).map(value=>({id:`Copas_${value}`,suit:'Copas' as const,value}))];
+  const longReplay:ReplayData={...replay,events:[event(1,'round_started',{roundIndex:0,cards:5,order:['a','b'],hands:{a:ana,b:bot},lives:{a:3,b:3}})]};
+  const html=renderToStaticMarkup(<ReplayBoard replay={longReplay} scenes={buildReplayTimeline(longReplay)} index={0} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="a" setFocusId={()=>{}} showHands={true} setShowHands={()=>{}}/>);
+  expect(html).toContain('aria-label="Todas las manos de la repetición"');
+  expect(html).toContain('Pasa el cursor por una carta para ampliarla');
+  expect((html.match(/class="replayHandsCard"/g)||[])).toHaveLength(10);
+  expect(html).toContain('Ver todas las manos');
+  expect(html).toContain('replaySeatCardCount');
+});
 it('mantiene las posiciones al rotar el inicio de la ronda',()=>{
   const rotated:ReplayData={...replay,events:[
     event(1,'round_started',{roundIndex:0,cards:1,order:['a','b'],hands:{a:[ace],b:[two]},lives:{a:3,b:3}}),

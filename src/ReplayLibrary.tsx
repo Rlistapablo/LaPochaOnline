@@ -2,7 +2,7 @@ import {AvatarIcon} from './SpanishSuitIcon';
 import {Fragment,useEffect,useLayoutEffect,useMemo,useState,type CSSProperties} from 'react';
 import {CardView,SuitArt} from './CardView';
 import {TableOutline,tableLayout} from './TableOutline';
-import {SUITS} from '../shared/game';
+import {SUITS,type Card} from '../shared/game';
 import {apiPath} from './paths';
 import {readApiResponse} from './api-response';
 import {buildReplayTimeline,type ReplayData,type ReplayPlayer,type ReplayScene} from './replay-model';
@@ -53,7 +53,7 @@ function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:R
     {vertices.map(vertex=>{
       const id=vertex.id,player=replay.players.find(item=>item.player_id===id)!,hand=scene.hands[id]||[];
       const play=scene.table.find(item=>item.playerId===id);
-      const visibleCards=showHands?hand:hand.filter(card=>scene.revealed[id]?.includes(card.id));
+      const visibleCards=showHands?hand.slice(0,3):hand.filter(card=>scene.revealed[id]?.includes(card.id));
       const hiddenCount=showHands?0:Math.min(3,hand.length-visibleCards.length);
       const seatStyle={'--seat-x':`${vertex.seatX}%`,'--seat-y':`${vertex.seatY}%`,'--desktop-seat-x':`${vertex.desktopSeatX}%`,'--desktop-seat-y':`${vertex.desktopSeatY}%`} as CSSProperties;
       const playStyle={'--play-x':`${vertex.playX}%`,'--play-y':`${vertex.playY}%`,'--desktop-play-x':`${vertex.desktopPlayX}%`,'--desktop-play-y':`${vertex.desktopPlayY}%`} as CSSProperties;
@@ -64,7 +64,7 @@ function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:R
         <small>❤️ {scene.lives[id]??player.lives_start} <span>🏆 {scene.wins[id]||0}/{scene.bids[id]??'—'}</span></small>
         <ReplayPowers scene={scene} id={id} compact/>
         {active&&<strong className="tableTurnIndicator">{scene.type==='bid'?'PREDICE':'JUEGA'}</strong>}
-        {id!==focusId&&hand.length>0&&<div className="opponentVisibleCards replaySeatCards">{visibleCards.map(card=><CardView key={card.id} card={card} small/>)}{Array.from({length:hiddenCount},(_,index)=><CardView key={index} card={null} hidden small/>)}</div>}
+        {id!==focusId&&hand.length>0&&<div className="opponentVisibleCards replaySeatCards" aria-label={`${player.name}: ${hand.length} cartas${showHands?', consulta la vista de todas las manos':''}`}>{visibleCards.map(card=><CardView key={card.id} card={card} small/>)}{Array.from({length:hiddenCount},(_,index)=><CardView key={index} card={null} hidden small/>)}{showHands&&<span className="replaySeatCardCount">{hand.length}</span>}</div>}
       </div>{play&&<div className={`tablePlay ${scene.winnerId===id?'isWinningPlay':''}`} style={playStyle} aria-label={`${player.name} jugó en posición ${scene.table.indexOf(play)+1}`}><CardView card={play.card} small declaredValue={play.declaredValue}/></div>}</Fragment>;
     })}
     </div>
@@ -72,7 +72,7 @@ function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:R
 }
 
 export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,focusId,setFocusId,showHands,setShowHands}:{replay:ReplayData;scenes:ReplayScene[];index:number;setIndex:(n:number)=>void;playing:boolean;setPlaying:(value:boolean)=>void;focusId:string;setFocusId:(id:string)=>void;showHands:boolean;setShowHands:(value:boolean)=>void}){
-  const [drawerOpen,setDrawerOpen]=useState(false);
+  const [drawerOpen,setDrawerOpen]=useState(false),[inspecting,setInspecting]=useState(showHands),[preview,setPreview]=useState<{card:Card;owner:string;pinned:boolean}|null>(null);
   const scene=scenes[index];
   if(!scene)return <div className="panel replayEmpty">Esta partida se guardó antes de activar el registro detallado de eventos.</div>;
   const name=(id?:string)=>replay.players.find(player=>player.player_id===id)?.name||'Jugador';
@@ -82,6 +82,9 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
   const selectedTrick=['round_started','bid'].includes(scene.type)?-1:scene.trickIndex;
   const focus=replay.players.find(player=>player.player_id===focusId)||replay.players[0];
   const focusHand=scene.hands[focus?.player_id]||[];
+  const openHands=()=>{setPlaying(false);setDrawerOpen(false);setPreview(null);setInspecting(true);};
+  const toggleHands=(checked:boolean)=>{setShowHands(checked);if(checked)openHands();else{setInspecting(false);setPreview(null);}};
+  useEffect(()=>{if(!inspecting)return;const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape'){setPreview(null);setInspecting(false);}};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey);},[inspecting]);
   const jump=(position:number)=>{setPlaying(false);setIndex(position);setDrawerOpen(false);};
   const jumpTrick=(value:number)=>{
     if(value<0){jump(roundStarts.find(entry=>entry.item.roundIndex===scene.roundIndex)?.position??index);return;}
@@ -89,7 +92,7 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
   };
   return <div className="replayStage">
     <div className="replayStageHead"><div><span className="eyebrow">REPETICIÓN · {replay.game.room_code}</span><h2>{replay.game.room_name||'Partida de La Pocha'}</h2><p>Ronda {scene.roundIndex+1} · ciclo {scene.wave+1} · {scene.cards} {scene.cards===1?'carta':'cartas'} · {time(scene.at)}</p></div><div className="replayNow"><span>{scene.type==='trick_won'?'🏆':scene.type==='card_played'?'🃏':scene.type==='bid'?'🎯':'✦'}</span><div><strong>{scene.title}</strong><small>{scene.detail}</small></div></div></div>
-    <button className="secondary replayExploreToggle" type="button" onClick={()=>setDrawerOpen(true)} aria-expanded={drawerOpen} aria-controls="replay-situations">☰ Situaciones</button>
+    <div className="replayViewTools"><button className="secondary replayExploreToggle" type="button" onClick={()=>setDrawerOpen(true)} aria-expanded={drawerOpen} aria-controls="replay-situations">☰ Situaciones</button>{showHands&&<button className="secondary replayHandsOpen" type="button" onClick={openHands}>🃏 Ver todas las manos</button>}</div>
     <div className="replayLayout">
       <div className="replayMain">
         <div className="replayStageFacts"><span>Baza {Math.min(scene.trickIndex+1,scene.cards)} de {scene.cards}{scene.trumpSuit?' · 👑 '+scene.trumpSuit:''}</span><span>{scene.nextPlayerId?'Le toca a '+name(scene.nextPlayerId):scene.winnerId?'Ganó '+name(scene.winnerId):'Situación '+(index+1)+' de '+scenes.length}</span></div>
@@ -105,8 +108,13 @@ export function ReplayBoard({replay,scenes,index,setIndex,playing,setPlaying,foc
         <p className="replayCounter">Situación {index+1} de {scenes.length}</p>
       </div>
       {drawerOpen&&<button className="replayDrawerScrim" type="button" aria-label="Cerrar situaciones" onClick={()=>setDrawerOpen(false)}/>}
-      <aside id="replay-situations" className={`panel replayAside ${drawerOpen?'is-open':''}`}><div className="replayAsideTitle"><div><span className="eyebrow">EXPLORAR LA PARTIDA</span><h3>Situaciones</h3></div><button className="secondary replayDrawerClose" type="button" onClick={()=>setDrawerOpen(false)} aria-label="Cerrar situaciones">✕</button></div><div className="replayFilters"><label>Ronda<select value={scene.roundIndex} onChange={event=>jump(roundStarts.find(entry=>entry.item.roundIndex===Number(event.target.value))?.position??0)}>{roundStarts.map(entry=><option key={entry.item.sequence} value={entry.item.roundIndex}>Ronda {entry.item.roundIndex+1} · {entry.item.cards} cartas</option>)}</select></label><label>Baza<select value={selectedTrick} onChange={event=>jumpTrick(Number(event.target.value))}><option value={-1}>Reparto y predicciones</option>{tricks.map(value=><option key={value} value={value}>Baza {value+1}</option>)}</select></label><label>Ver como<select value={focus?.player_id||''} onChange={event=>setFocusId(event.target.value)}>{replay.players.map(player=><option key={player.player_id} value={player.player_id}>{player.name}</option>)}</select></label><label className="replayReveal"><input type="checkbox" checked={showHands} onChange={event=>setShowHands(event.target.checked)}/> Mostrar todas las manos</label></div><div className="replayAsidePlayers">{replay.players.map(player=><ReplayPlayerCard key={player.player_id} player={player} scene={scene} focused={player.player_id===focus?.player_id}/>)}</div><h4>Momentos de la ronda</h4><div className="replaySceneList">{currentRoundScenes.map(({item,position})=><button className={position===index?'selected':''} key={item.sequence} onClick={()=>jump(position)} aria-current={position===index?'step':undefined}><span className="replaySceneIcon">{item.type==='round_started'?'✦':item.type==='bid'?'🎯':item.type==='card_played'?'🃏':item.type==='trick_won'?'🏆':item.type==='round_ended'?'❤️':item.type==='cards_exchanged'?'↔':item.type==='exchange_declined'||item.type==='exchange_skipped'?'✕':item.type==='card_stolen'?'✋':item.type==='hands_reshuffled'?'✦':item.type==='cards_revealed'?'👁':'★'}</span><span><strong>{item.title}</strong><small>{item.detail}</small></span><time>{time(item.at)}</time></button>)}</div></aside>
+      <aside id="replay-situations" className={`panel replayAside ${drawerOpen?'is-open':''}`}><div className="replayAsideTitle"><div><span className="eyebrow">EXPLORAR LA PARTIDA</span><h3>Situaciones</h3></div><button className="secondary replayDrawerClose" type="button" onClick={()=>setDrawerOpen(false)} aria-label="Cerrar situaciones">✕</button></div><div className="replayFilters"><label>Ronda<select value={scene.roundIndex} onChange={event=>jump(roundStarts.find(entry=>entry.item.roundIndex===Number(event.target.value))?.position??0)}>{roundStarts.map(entry=><option key={entry.item.sequence} value={entry.item.roundIndex}>Ronda {entry.item.roundIndex+1} · {entry.item.cards} cartas</option>)}</select></label><label>Baza<select value={selectedTrick} onChange={event=>jumpTrick(Number(event.target.value))}><option value={-1}>Reparto y predicciones</option>{tricks.map(value=><option key={value} value={value}>Baza {value+1}</option>)}</select></label><label>Ver como<select value={focus?.player_id||''} onChange={event=>setFocusId(event.target.value)}>{replay.players.map(player=><option key={player.player_id} value={player.player_id}>{player.name}</option>)}</select></label><label className="replayReveal"><input type="checkbox" checked={showHands} onChange={event=>toggleHands(event.target.checked)}/> Mostrar todas las manos</label></div><div className="replayAsidePlayers">{replay.players.map(player=><ReplayPlayerCard key={player.player_id} player={player} scene={scene} focused={player.player_id===focus?.player_id}/>)}</div><h4>Momentos de la ronda</h4><div className="replaySceneList">{currentRoundScenes.map(({item,position})=><button className={position===index?'selected':''} key={item.sequence} onClick={()=>jump(position)} aria-current={position===index?'step':undefined}><span className="replaySceneIcon">{item.type==='round_started'?'✦':item.type==='bid'?'🎯':item.type==='card_played'?'🃏':item.type==='trick_won'?'🏆':item.type==='round_ended'?'❤️':item.type==='cards_exchanged'?'↔':item.type==='exchange_declined'||item.type==='exchange_skipped'?'✕':item.type==='card_stolen'?'✋':item.type==='hands_reshuffled'?'✦':item.type==='cards_revealed'?'👁':'★'}</span><span><strong>{item.title}</strong><small>{item.detail}</small></span><time>{time(item.at)}</time></button>)}</div></aside>
     </div>
+    {showHands&&inspecting&&<div className="replayHandsBackdrop" onClick={()=>{setInspecting(false);setPreview(null);}}><section className="replayHandsDialog panel" role="dialog" aria-modal="true" aria-label="Todas las manos de la repetición" onClick={event=>event.stopPropagation()}>
+      <div className="replayHandsHeading"><div><span className="eyebrow">RONDA {scene.roundIndex+1} · SITUACIÓN {index+1}</span><h3>Todas las manos</h3><p>Pasa el cursor por una carta para ampliarla. En móvil, tócala.</p></div><button className="secondary" type="button" onClick={()=>{setInspecting(false);setPreview(null);}} aria-label="Cerrar todas las manos">✕ Cerrar</button></div>
+      <div className="replayHandsGrid">{replay.players.map(player=>{const cards=scene.hands[player.player_id]||[];return <section className={`replayHandsPlayer ${player.player_id===focus?.player_id?'isFocus':''}`} key={player.player_id}><div className="replayHandsPlayerHead"><span className="playerAvatar">{avatar(player.avatar)}</span><strong>{player.name}</strong><span>{cards.length} {cards.length===1?'carta':'cartas'}</span></div><div className="replayHandsCards">{cards.length?cards.map((card,position)=><span className="replayHandsCard" key={`${card.id}-${position}`} onMouseEnter={()=>setPreview({card,owner:player.name,pinned:false})} onMouseLeave={()=>setPreview(current=>current?.pinned?current:null)} onFocus={()=>setPreview({card,owner:player.name,pinned:false})} onBlur={()=>setPreview(current=>current?.pinned?current:null)}><CardView card={card} onClick={()=>setPreview({card,owner:player.name,pinned:true})}/></span>):<small className="muted">Sin cartas en esta situación</small>}</div></section>;})}</div>
+      {preview&&<aside className={`replayCardZoom ${preview.pinned?'isPinned':''}`} aria-label={`Carta ampliada de ${preview.owner}`}><div><strong>{preview.owner}</strong><span>{preview.card.id.startsWith('joker')?'Comodín':`${preview.card.value} de ${preview.card.suit}`}</span></div><CardView card={preview.card}/>{preview.pinned&&<button className="secondary" type="button" onClick={()=>setPreview(null)} aria-label="Cerrar carta ampliada">Cerrar carta</button>}</aside>}
+    </section></div>}
   </div>;
 }
 
