@@ -96,7 +96,25 @@ async function archiveFinishedRoom(g:Game){
   io.emit('rooms',publicRooms());
 }
 async function mutate(g:Game,fn:()=>void){
-  async function apply(step:()=>void){const was=g.phase,previousTrick=g.lastTrick;step();const completedTrick=!!g.lastTrick&&g.lastTrick!==previousTrick;if(completedTrick)g.revealUntil=Date.now()+TRICK_REVEAL_MS;await saveRoom(g);if(was!=='finished'&&g.phase==='finished'){await persist(g);await finalizeReplay(g);}if(completedTrick)g.revealUntil=Date.now()+TRICK_REVEAL_MS;publish(g);if(g.phase==='finished')await archiveFinishedRoom(g);}
+  async function apply(step:()=>void){
+    const before=structuredClone(g),was=g.phase,previousTrick=g.lastTrick;
+    let completedTrick=false;
+    try{
+      step();
+      completedTrick=!!g.lastTrick&&g.lastTrick!==previousTrick;
+      if(completedTrick)g.revealUntil=Date.now()+TRICK_REVEAL_MS;
+      await saveRoom(g);
+    }catch(error){
+      const state=g as unknown as Record<string,unknown>;
+      for(const key of Object.keys(state))delete state[key];
+      Object.assign(g,before);
+      throw error;
+    }
+    if(was!=='finished'&&g.phase==='finished'){await persist(g);await finalizeReplay(g);}
+    if(completedTrick)g.revealUntil=Date.now()+TRICK_REVEAL_MS;
+    publish(g);
+    if(g.phase==='finished')await archiveFinishedRoom(g);
+  }
   await apply(fn);
   let guard=0;
   while(!endRequests.has(g.code)&&['exchange','reveal','bid','play'].includes(g.phase)&&(preparationActor(g)||g.players[g.turnIndex])?.bot){
