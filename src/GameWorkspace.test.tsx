@@ -138,11 +138,34 @@ it('mantiene visible la baza terminada y oculta el siguiente turno durante la pa
   }
   game.revealUntil=Date.now()+5000;
   const html=renderToStaticMarkup(<GameWorkspace game={view(game,game.lastTrick!.winnerId)} userId={game.lastTrick!.winnerId} action={()=>{}}/>);
-  expect(html).toContain('Baza terminada · la siguiente empieza en unos segundos');
+  expect(html).toContain('Baza 1 de 2');
+  expect(html).toContain('Baza terminada · ganó');
   expect(html).toContain('Baza terminada · espera a la siguiente');
   expect((html.match(/class="tablePlay /g)||[])).toHaveLength(2);
   expect(html).not.toContain('class="tableTurnIndicator"');
   expect(html).not.toContain('Jugar carta</button>');
+});
+
+it('enseña todas las cartas de la última baza antes de abrir el resultado',()=>{
+  const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:1,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
+  const game=createGame('PAUSE',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
+  addPlayer(game,{id:'b',name:'Berta',avatar:'🃏',connected:true});
+  start(game);
+  while(game.phase==='bid')bid(game,game.players[game.turnIndex].id,0,game.version);
+  while(game.phase==='play'){
+    const player=game.players[game.turnIndex];
+    play(game,player.id,player.hand[0].id,undefined,game.version);
+  }
+  game.revealUntil=Date.now()+5000;
+  const html=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
+  expect(html).toContain('Baza 1 de 1');
+  expect(html).toContain('Baza terminada · ganó');
+  expect((html.match(/class="tablePlay /g)||[])).toHaveLength(2);
+  expect(html).not.toContain('resultPopupBackdrop');
+  expect(html).not.toContain('resultOpenButton');
+  game.revealUntil=Date.now()-1;
+  const after=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
+  expect(after).toContain('resultPopupBackdrop');
 });
 
 it('reserva las cartas de bazas anteriores para cuando termine la partida',()=>{

@@ -12,7 +12,8 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
   const {plays,revealing}=useVisibleTrick(game);
   const seats=game.players.map(player=>player.id);
   const count=seats.length;
-  const startId=game.order[0],endId=game.order.at(-1);
+  const visibleOrder=revealing&&game.lastTrick?game.lastTrick.plays.map(play=>play.playerId):game.order;
+  const startId=visibleOrder[0],endId=visibleOrder.at(-1);
   const layout=tableLayout(seats);
   const {vertices}=layout;
   return <div className={`table gameFelt polygonTable players-${count} ${game.trumpSuit?`trump-${game.trumpSuit.toLowerCase()}`:''}`} aria-label={`Tapete de ${count} jugadores. Sentido antihorario.${game.trumpSuit?` Triunfo: ${game.trumpSuit}.`:''}`}>
