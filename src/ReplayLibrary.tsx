@@ -1,7 +1,7 @@
 import {AvatarIcon} from './SpanishSuitIcon';
 import {Fragment,useEffect,useLayoutEffect,useMemo,useState,type CSSProperties} from 'react';
 import {CardView,SuitArt} from './CardView';
-import {TableOutline,tableLayout} from './TableOutline';
+import {TableOutline,tableLayout,seatsFromViewer} from './TableOutline';
 import {SUITS,type Card} from '../shared/game';
 import {apiPath} from './paths';
 import {readApiResponse} from './api-response';
@@ -42,7 +42,7 @@ function ReplayPlayerCard({player,scene,focused}:{player:ReplayPlayer;scene:Repl
 
 function ReplayTable({replay,scene,focusId,showHands}:{replay:ReplayData;scene:ReplayScene;focusId:string;showHands:boolean}){
   const count=replay.players.length;
-  const layout=tableLayout(replay.players.map(player=>player.player_id));
+  const layout=tableLayout(seatsFromViewer(replay.players.map(player=>player.player_id),focusId));
   const {vertices}=layout;
   const startId=scene.order[0],endId=scene.order.at(-1);
   const trumpSuit=SUITS.find(suit=>suit===scene.trumpSuit);

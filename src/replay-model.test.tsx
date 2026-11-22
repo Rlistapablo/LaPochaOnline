@@ -56,6 +56,14 @@ it('muestra la mesa y el menú de situaciones con los datos reconstruidos',()=>{
   expect(html).toContain('role="progressbar"');
   expect(html).toContain('Mostrar todas las manos');
 });
+
+it('orienta la repetición desde el jugador cuya mano se está consultando',()=>{
+  const scenes=buildReplayTimeline(replay);
+  const html=renderToStaticMarkup(<ReplayBoard replay={replay} scenes={scenes} index={0} setIndex={()=>{}} playing={false} setPlaying={()=>{}} focusId="b" setFocusId={()=>{}} showHands={false} setShowHands={()=>{}}/>);
+  expect(html).toMatch(/class="tableSeat[^"]*isMe[^"]*" style="--seat-x:50%;--seat-y:86\.4%;[^"]+" aria-label="Bot Pepe\./);
+  expect(html).toMatch(/style="--seat-x:50%;--seat-y:13\.6%;[^"]+" aria-label="Ana\./);
+  expect(html).toContain('class="opponentVisibleCards replaySeatCards"');
+});
 it('muestra todas las cartas de manos largas en el visor de repetición',()=>{
   const ana=[ace,...(['2','3','4','5'] as const).map(value=>({id:`Oros_${value}`,suit:'Oros' as const,value}))];
   const bot=[two,...(['3','4','5','6'] as const).map(value=>({id:`Copas_${value}`,suit:'Copas' as const,value}))];

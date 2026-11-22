@@ -2,7 +2,7 @@ import {AvatarIcon} from './SpanishSuitIcon';
 import {Fragment,type CSSProperties} from 'react';
 import type {View} from '../shared/game';
 import {CardView,SuitArt} from './CardView';
-import {TableOutline,tableLayout} from './TableOutline';
+import {TableOutline,tableLayout,seatsFromViewer} from './TableOutline';
 import {useVisibleTrick} from './TrickHistory';
 import './table-board.css';
 
@@ -10,7 +10,7 @@ const avatarOf=(raw:string)=>{try{const data=JSON.parse(raw);return data.image?<
 
 export function TableBoard({game,userId}:{game:View;userId:string}){
   const {plays,revealing}=useVisibleTrick(game);
-  const seats=game.players.map(player=>player.id);
+  const seats=seatsFromViewer(game.players.map(player=>player.id),userId);
   const count=seats.length;
   const visibleOrder=revealing&&game.lastTrick?game.lastTrick.plays.map(play=>play.playerId):game.order;
   const startId=visibleOrder[0],endId=visibleOrder.at(-1);

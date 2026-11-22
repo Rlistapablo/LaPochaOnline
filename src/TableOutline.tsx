@@ -3,6 +3,11 @@ type Zone='top'|'bottom'|'left'|'right';
 type Vertex={id:string;seatX:number;seatY:number;playX:number;playY:number;zone:Zone;desktopSeatX:number;desktopSeatY:number;desktopPlayX:number;desktopPlayY:number;desktopZone:Zone};
 export type TableLayout={vertices:Vertex[];arrows:string[];desktopArrows:string[]};
 
+export function seatsFromViewer(ids:string[],viewerId:string):string[]{
+  const index=ids.indexOf(viewerId);
+  return index<=0?ids:[...ids.slice(index),...ids.slice(0,index)];
+}
+
 const radius=45;
 const straight=50;
 const quarter=Math.PI*radius/2;

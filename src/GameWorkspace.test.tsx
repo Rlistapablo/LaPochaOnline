@@ -41,6 +41,21 @@ it('mantiene los asientos al rotar el inicio y el final de la secuencia',()=>{
   expect((second.match(/class="rotationArrow"/g)||[])).toHaveLength(4);
 });
 
+it('orienta la mesa desde el asiento de cada jugador sin mover las manos reveladas',()=>{
+  const settings:Settings={name:'Mesa',private:true,maxPlayers:4,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes:{vision:'rivals'}};
+  const game=createGame('SEATS',{id:'a',name:'Ana',avatar:'',connected:true},settings);
+  for(const [id,name] of [['b','Berta'],['c','Cora'],['d','Dani']])addPlayer(game,{id,name,avatar:'',connected:true});
+  start(game);
+  for(const player of game.players){
+    const html=renderToStaticMarkup(<TableBoard game={view(game,player.id)} userId={player.id}/>);
+    const seat=html.match(new RegExp(`class="tableSeat[^"]*isMe[^"]*" style="([^"]+)" aria-label="${player.name}\\.`))?.[1];
+    expect(seat).toContain('--seat-y:86.4%');
+    expect(seat).toContain('--desktop-seat-y:88.7%');
+    expect((html.match(/class="opponentVisibleCards"/g)||[])).toHaveLength(3);
+  }
+  expect(game.players.map(player=>player.id)).toEqual(['a','b','c','d']);
+});
+
 it('reparte entre dos y ocho jugadores por el contorno vertical y pone las cartas delante',()=>{
   for(let count=2;count<=8;count++){
     const ids=Array.from({length:count},(_,index)=>String(index));
