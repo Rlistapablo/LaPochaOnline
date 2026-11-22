@@ -47,3 +47,15 @@
 .playing-card.small .pipField{inset:14px 4px 11px}.playing-card.small.is-figure .card-illustration{inset:20px 3px 10px}
 @media(max-width:800px){.pipField{inset:18px 6px 15px}.playing-card.is-figure .card-illustration{inset:24px 5px 13px}}
 @media(max-width:520px){.card-index{top:5px;left:6px}.card-index strong{font-size:14px}.card-index i{font-size:7px}.card-pintas{height:2px}.pipField{inset:16px 5px 12px}.playing-card.is-figure .card-illustration{inset:22px 4px 11px}.playing-card.small .pipField{inset:12px 3px 9px}.playing-card.small.is-figure .card-illustration{inset:18px 2px 9px}}
+.playing-card.deck-clasica{border:0;border-radius:5px;background:#fff;box-shadow:0 2px 0 #8b7753,1px 5px 12px #07140fa6}
+.playing-card.deck-clasica::before,.playing-card.deck-clasica::after{display:none}
+.playing-card.deck-clasica .deckSheetFace{display:block;width:100%;height:100%}
+.playing-card.deck-clasica .declared-value{z-index:2}
+.deckStyleChooser{margin:26px 0;padding:20px;border:1px solid #b69354;border-radius:16px;background:#102d22}
+.deckStyleChooser h2{margin:0 0 5px}.deckStyleChooser p{margin:0 0 16px}
+.deckStyleOptions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:12px}
+.deckStyleOption{display:flex;flex-direction:column;align-items:center;gap:15px;padding:18px 12px;border:1px solid #53715a;border-radius:12px;background:#17382a}
+.deckStyleOption.selected{border:2px solid #e8c474;box-shadow:0 0 0 2px #e8c47433}
+.deckStylePreview{display:flex;align-items:center;justify-content:center;gap:8px;min-height:142px}
+.deckStyleOption>button{width:100%;max-width:210px}
+@media(max-width:520px){.deckStyleChooser{padding:14px}.deckStyleOptions{gap:8px}.deckStyleOption{padding:12px 5px;gap:10px}.deckStylePreview{gap:4px;min-height:93px}}
