@@ -163,7 +163,7 @@
   .liveGamePage .gameTurnMessage{min-width:0;margin:0;padding:0;border:0;background:none;font-size:11px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .liveGamePage .modeBadges{position:absolute;top:65px;left:50%;z-index:5;transform:translateX(-50%);display:flex;flex-wrap:nowrap;max-width:90%;margin:0;gap:3px;pointer-events:none}
   .liveGamePage .modeBadges span{padding:2px 5px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .liveGamePage .mobileGameTools{position:static;flex:none;flex-direction:column;align-items:flex-end;gap:3px;width:100%;margin:0;padding:3px 3px 2px;filter:none}
+  .liveGamePage .mobileGameTools{position:sticky;top:0;right:auto;bottom:auto;flex:none;flex-direction:row;justify-content:flex-end;align-items:center;gap:7px;width:100%;margin:0;padding:3px;filter:none}
   .liveGamePage .mobileGameTools button{min-height:32px;padding:4px 7px;border-radius:9px;font-size:10px;box-shadow:0 2px 8px #0007}
   .liveGamePage .mobileGameTools button b{min-width:16px;height:16px;font-size:9px}
   .liveGamePage .gameLayout{flex:1;min-height:0;display:block;margin:0}
@@ -253,7 +253,7 @@
   .liveGamePage .bidPopupClose{top:5px;right:5px;width:44px;height:44px;font-size:23px;touch-action:manipulation}
   .liveGamePage .bidPopupPredictions{margin-bottom:11px;padding:7px}
   .liveGamePage .bidPopupPredictions span{font-size:10px;padding:4px 6px}
-  .liveGamePage .mobileGameTools{position:relative;z-index:27}
+  .liveGamePage .mobileGameTools{z-index:27}
   .liveGamePage .mobileGameTools button{min-height:44px;touch-action:manipulation}
   .liveGamePage .gameMain .playConfirm button{min-height:44px;touch-action:manipulation}
   .liveGamePage .gameMain .hand .playing-card{touch-action:manipulation}
