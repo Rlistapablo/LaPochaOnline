@@ -47,9 +47,9 @@
 .playing-card.small .pipField{inset:14px 4px 11px}.playing-card.small.is-figure .card-illustration{inset:20px 3px 10px}
 @media(max-width:800px){.pipField{inset:18px 6px 15px}.playing-card.is-figure .card-illustration{inset:24px 5px 13px}}
 @media(max-width:520px){.card-index{top:5px;left:6px}.card-index strong{font-size:14px}.card-index i{font-size:7px}.card-pintas{height:2px}.pipField{inset:16px 5px 12px}.playing-card.is-figure .card-illustration{inset:22px 4px 11px}.playing-card.small .pipField{inset:12px 3px 9px}.playing-card.small.is-figure .card-illustration{inset:18px 2px 9px}}
-.playing-card.deck-clasica{border:0;border-radius:5px;background:#fff;box-shadow:0 2px 0 #8b7753,1px 5px 12px #07140fa6}
+.playing-card.deck-clasica{border:1px solid #29231d;border-radius:5px;background:#fff;box-shadow:0 2px 0 #8b7753,1px 5px 12px #07140fa6}
 .playing-card.deck-clasica::before,.playing-card.deck-clasica::after{display:none}
-.playing-card.deck-clasica .deckSheetFace{display:block;width:100%;height:100%}
+.playing-card.deck-clasica .deckSheetFace{display:block;width:100%;height:100%;filter:contrast(1.09) saturate(1.08)}
 .playing-card.deck-clasica .declared-value{z-index:2}
 .deckStyleChooser{margin:26px 0;padding:20px;border:1px solid #b69354;border-radius:16px;background:#102d22}
 .deckStyleChooser h2{margin:0 0 5px}.deckStyleChooser p{margin:0 0 16px}

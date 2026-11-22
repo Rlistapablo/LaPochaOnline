@@ -15,12 +15,13 @@ const cells:Record<NonNullable<Card['suit']>,Record<Value,Cell>>={
 };
 
 export function deckSheetCell(card:Card|null,hidden=false):Cell|undefined{
-  if(hidden||!card)return [9,3];
+  if(hidden||!card)return undefined;
+  if(card.id.startsWith('joker'))return [9,3];
   if(!card.suit||!card.value)return undefined;
   return cells[card.suit][card.value];
 }
 
 export function DeckSheetFace({cell}:{cell:Cell}){
   const [column,row]=cell;
-  return <svg className="deckSheetFace" viewBox={`${14+column*148.5} ${11+row*222} 144 218`} preserveAspectRatio="none" aria-hidden="true"><image href={barajaSheet} width="1500" height="1125"/></svg>;
+  return <svg className="deckSheetFace" viewBox={`${14+column*148.6} ${11+row*222.2} 144 219`} preserveAspectRatio="none" aria-hidden="true"><image href={barajaSheet} width="1500" height="1128"/></svg>;
 }

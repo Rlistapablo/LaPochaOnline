@@ -62,7 +62,7 @@ export function CardView({card,onClick,small=false,hidden=false,declaredValue}:{
   const label=back?'Carta boca abajo':joker?`Comodín${declaredValue?`, valor ${declaredValue}`:''}`:`${card?.value} de ${suit}`;
   const cell=deckStyle==='clasica'?deckSheetCell(card,hidden):undefined;
   return <motion.button type="button" aria-label={label} whileHover={onClick?{y:-9,rotate:-1}:undefined} whileTap={onClick?{scale:.97}:undefined} onClick={onClick} disabled={!onClick} className={`playing-card ${small?'small':''} ${back?'is-back':''} ${joker?'is-joker':''} ${figure?'is-figure':''} ${suit?`suit-${suit.toLowerCase()}`:''} ${cell?'deck-clasica':''} ${onClick?'can-play':''}`}>
-    {cell?<DeckSheetFace cell={cell}/>:back?<><span className="card-back-frame"><span className="card-back-core">✦<small>LA POCHA</small>✦</span></span></>:<>
+    {cell?<><DeckSheetFace cell={cell}/>{declaredValue&&<span className="declared-value">{declaredValue}</span>}</>:back?<><span className="card-back-frame"><span className="card-back-core">✦<small>LA POCHA</small>✦</span></span></>:<>
       <span className="card-pintas card-pintas-top"/><span className="card-pintas card-pintas-bottom"/>
       <span className="card-filigree top-left">❧</span><span className="card-filigree bottom-right">❧</span>
       <span className="card-index"><strong>{joker?'★':figure?figure==='Sota'?10:figure==='Caballo'?11:12:card!.value}</strong><i>{joker?'✦':suit?.slice(0,1)}</i></span>
