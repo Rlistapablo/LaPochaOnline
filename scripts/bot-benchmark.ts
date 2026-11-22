@@ -1,5 +1,5 @@
 import {pathToFileURL} from 'node:url';
-import {createGame,addPlayer,start,advance,assertIntegrity,bid,play,type Settings,type Game,type Modes} from '../shared/game.js';
+import {createGame,addPlayer,start,advance,finishTrickPause,assertIntegrity,bid,play,type Settings,type Game,type Modes} from '../shared/game.js';
 import {runBotTurn} from '../server/bot.js';
 import {expertConfig,hardConfig,type ExpertConfig} from '../server/montecarlo.js';
 import * as legacy from './legacy/bot-v1.js';
@@ -10,6 +10,7 @@ const botLevel = (level: string) => (level === LEGACY_LEVEL ? 'hard' : level) as
 
 function drive(g: Game, levelById: Map<string, string>) {
   for (let guard = 0; guard < 1000; guard++) {
+    if(g.phase==='trickPause'){finishTrickPause(g);continue;}
     const actor = g.players[g.turnIndex];
     if ((g.phase === 'bid' || g.phase === 'play') && actor?.bot && levelById.get(actor.id) === LEGACY_LEVEL) {
       if (g.phase === 'bid') bid(g, actor.id, legacy.chooseBotBid(g, actor), g.version);

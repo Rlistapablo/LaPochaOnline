@@ -15,8 +15,8 @@ export function useVisibleTrick(game:View){
     const timer=setTimeout(()=>setNow(Date.now()),remaining+30);
     return()=>clearTimeout(timer);
   },[game.revealUntil]);
-  const revealing=!game.table.length&&!!game.lastTrick&&!!game.revealUntil&&now<game.revealUntil;
-  const plays:Play[]=revealing?game.lastTrick!.plays:game.table;
+  const revealing=game.phase==='trickPause'||!game.table.length&&!!game.lastTrick&&!!game.revealUntil&&now<game.revealUntil;
+  const plays:Play[]=game.phase==='trickPause'?game.table:revealing?game.lastTrick!.plays:game.table;
   return {plays,revealing};
 }
 

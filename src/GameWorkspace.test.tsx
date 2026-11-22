@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {addPlayer,bid,createGame,play,start,view,type Settings} from '../shared/game';
+import {addPlayer,bid,createGame,play,finishTrickPause,start,view,type Settings} from '../shared/game';
 import {GameWorkspace} from './GameWorkspace';
 import {TrickHistory} from './TrickHistory';
 import {CardView} from './CardView';
@@ -164,6 +164,10 @@ it('enseña todas las cartas de la última baza antes de abrir el resultado',()=
   expect(html).not.toContain('resultPopupBackdrop');
   expect(html).not.toContain('resultOpenButton');
   game.revealUntil=Date.now()-1;
+  const stillPaused=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
+  expect((stillPaused.match(/class="tablePlay /g)||[])).toHaveLength(2);
+  expect(stillPaused).not.toContain('resultPopupBackdrop');
+  finishTrickPause(game);
   const after=renderToStaticMarkup(<GameWorkspace game={view(game,'a')} userId="a" action={()=>{}}/>);
   expect(after).toContain('resultPopupBackdrop');
 });

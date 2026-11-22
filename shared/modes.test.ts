@@ -1,9 +1,9 @@
 import {expect,it} from 'vitest';
-import {active,addPlayer,advance,assertIntegrity,bid,configuredDeck,createGame,declineExchange,finishGame,normalizeModes,offerExchange,play,preparationActor,rematch,reshuffleHands,selectExchange,selectReveal,start,stealCard,trickWinnerWithTrump,validateModes,view,type Game,type Modes,type Settings} from './game';
+import {active,addPlayer,advance,finishTrickPause,assertIntegrity,bid,configuredDeck,createGame,declineExchange,finishGame,normalizeModes,offerExchange,play,preparationActor,rematch,reshuffleHands,selectExchange,selectReveal,start,stealCard,trickWinnerWithTrump,validateModes,view,type Game,type Modes,type Settings} from './game';
 
 const settings=(modes:Modes):Settings=>({name:'Modos',private:true,maxPlayers:3,maxCards:1,jokerCount:2,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false,modes});
 function game(modes:Modes,players=2){const g=createGame('MODOS',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings(modes));addPlayer(g,{id:'b',name:'Beto',avatar:'🃏',connected:true});if(players===3)addPlayer(g,{id:'c',name:'Cora',avatar:'🃏',connected:true});start(g);return g;}
-function completeOneCardRound(g:Game){while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,0,g.version);while(g.phase==='play'){const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}}
+function completeOneCardRound(g:Game){while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,0,g.version);while(g.phase==='play'||g.phase==='trickPause'){if(g.phase==='trickPause'){finishTrickPause(g);continue;}const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}}
 
 it('intercambia cartas escogidas por ambos antes de predecir y conserva la baraja',()=>{
   const g=game({exchangeEveryWaves:1,exchangeCount:1});expect(g.phase).toBe('exchange');
@@ -123,7 +123,7 @@ it('entrega poderes solo tras rachas de predicciones exactas y los limpia en la 
     const winner=trickWinnerWithTrump(order.map(p=>({playerId:p.id,card:p.hand[0],declaredValue:p.hand[0].id.startsWith('joker')?'2':undefined})),g.trumpSuit);
     const bidValue=Number((winner===target.id)===makeExact);
     while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,bidValue,g.version);
-    while(g.phase==='play'){const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}
+    while(g.phase==='play'||g.phase==='trickPause'){if(g.phase==='trickPause'){finishTrickPause(g);continue;}const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}
   };
   round(true);
   expect(target.cleanRounds).toBe(1);
@@ -169,7 +169,7 @@ it('recupera una vida al acertar y entrega acciones por racha de rondas con baza
   const winner=trickWinnerWithTrump([{playerId:first.id,card:first.hand[0],declaredValue:first.hand[0].id.startsWith('joker')?'2':undefined},{playerId:second.id,card:second.hand[0],declaredValue:second.hand[0].id.startsWith('joker')?'2':undefined}]);
   g.players.find(p=>p.id===winner)!.lives=2;
   while(g.phase==='bid')bid(g,g.players[g.turnIndex].id,1,g.version);
-  while(g.phase==='play'){const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}
+  while(g.phase==='play'||g.phase==='trickPause'){if(g.phase==='trickPause'){finishTrickPause(g);continue;}const p=g.players[g.turnIndex],card=p.hand[0];play(g,p.id,card.id,card.id.startsWith('joker')?'2':undefined,g.version);}
   const p=g.players.find(p=>p.id===winner)!;
   expect(p.lives).toBe(3);expect(p.steals).toBe(1);expect(p.reshuffles).toBe(1);
 });

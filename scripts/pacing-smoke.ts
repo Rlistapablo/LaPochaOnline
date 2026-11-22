@@ -7,7 +7,7 @@ const states:{state:any;at:number}[]=[];
 socket.on('state',state=>states.push({state,at:Date.now()}));
 const connected=new Promise<void>((resolve,reject)=>{socket.once('connect',()=>resolve());socket.once('connect_error',reject);});
 const emit=(event:string,...args:unknown[])=>new Promise<any>((resolve,reject)=>socket.emit(event,...args,(result:any)=>result?.error?reject(Error(result.error)):resolve(result)));
-async function waitFor(predicate:(state:any)=>boolean,from=0){for(let i=0;i<100;i++){const match=states.slice(from).find(x=>predicate(x.state));if(match)return match;await new Promise(r=>setTimeout(r,50));}throw Error('No llegó el estado esperado');}
+async function waitFor(predicate:(state:any)=>boolean,from=0){for(let i=0;i<200;i++){const match=states.slice(from).find(x=>predicate(x.state));if(match)return match;await new Promise(r=>setTimeout(r,50));}throw Error('No llegó el estado esperado');}
 try{
   await connected;
   const {code}=await emit('create',{name:'Ritmo de cartas',private:true,maxPlayers:2,maxCards:1,lives:5,oneCard:'visible',turnSeconds:30});
@@ -28,8 +28,11 @@ try{
   const completed=await waitFor(s=>s.lastTrick&&s.tricks.length===1,playIndex);
   if(!first||(botLed?(!botLeadStart||first.at-botLeadStart.at<900):completed.at-first.at<900))throw Error('La carta del bot apareció demasiado rápido');
   if(completed.state.revealUntil-completed.at<4400)throw Error('La baza no permanece visible durante cinco segundos');
+  if(completed.state.phase!=='trickPause'||completed.state.table.length!==2||completed.state.turnId)throw Error('La baza completa no queda sobre la mesa');
   const expectedFirst=botLed?completed.state.players.find((p:any)=>p.bot)?.id:guest.user.id;
   if(completed.state.tricks[0].plays.length!==2||completed.state.tricks[0].plays[0].playerId!==expectedFirst)throw Error('Orden de cartas incorrecto');
+  const next=await waitFor(s=>s.phase==='roundEnd'||s.phase==='finished',states.length);
+  if(next.at-completed.at<4400)throw Error('La siguiente fase llegó antes de mostrar todas las cartas');
   console.log('Cartas de bots espaciadas, baza visible y orden de jugadas correctos.');
   socket.emit('leave',code);
 }finally{socket.disconnect();}

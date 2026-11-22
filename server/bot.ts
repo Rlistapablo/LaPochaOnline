@@ -1,4 +1,4 @@
-import {Game,Player,VALUES,Value,Card,allowedBids,bid,play,view,isJoker,rank,configuredDeck,active,offerExchange,declineExchange,selectExchange,selectReveal,preparationActor,stealCard,reshuffleHands,turnOrder} from '../shared/game.js';
+import {Game,Player,VALUES,Value,Card,allowedBids,bid,play,finishTrickPause,view,isJoker,rank,configuredDeck,active,offerExchange,declineExchange,selectExchange,selectReveal,preparationActor,stealCard,reshuffleHands,turnOrder} from '../shared/game.js';
 import {chooseExpertBid,chooseExpertPlay,expertConfig,hardConfig} from './montecarlo.js';
 
 type Option={card:Card;value?:Value;rank:number};
@@ -203,4 +203,4 @@ export function runBotTurn(g:Game){
   else{const choice=chooseBotPlay(g,p);play(g,p.id,choice.card.id,choice.value,g.version);}
   return true;
 }
-export function runBots(g:Game){let guard=0;while(guard++<1000&&runBotTurn(g)){}if(guard>=1000)throw Error('Bucle de bots');}
+export function runBots(g:Game){let guard=0;while(guard++<1000){if(g.phase==='trickPause'){finishTrickPause(g);continue;}if(!runBotTurn(g))break;}if(guard>=1000)throw Error('Bucle de bots');}
