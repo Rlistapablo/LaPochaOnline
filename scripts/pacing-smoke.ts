@@ -27,7 +27,7 @@ try{
   const first=botLed?botFirst:await waitFor(s=>s.table.length===1,playIndex);
   const completed=await waitFor(s=>s.lastTrick&&s.tricks.length===1,playIndex);
   if(!first||(botLed?(!botLeadStart||first.at-botLeadStart.at<900):completed.at-first.at<900))throw Error('La carta del bot apareció demasiado rápido');
-  if(completed.state.revealUntil-completed.at<2400)throw Error('La baza no permanece visible');
+  if(completed.state.revealUntil-completed.at<4400)throw Error('La baza no permanece visible durante cinco segundos');
   const expectedFirst=botLed?completed.state.players.find((p:any)=>p.bot)?.id:guest.user.id;
   if(completed.state.tricks[0].plays.length!==2||completed.state.tricks[0].plays[0].playerId!==expectedFirst)throw Error('Orden de cartas incorrecto');
   console.log('Cartas de bots espaciadas, baza visible y orden de jugadas correctos.');

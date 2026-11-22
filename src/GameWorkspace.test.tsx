@@ -1,6 +1,6 @@
 import {it,expect} from 'vitest';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {addPlayer,bid,createGame,start,view,type Settings} from '../shared/game';
+import {addPlayer,bid,createGame,play,start,view,type Settings} from '../shared/game';
 import {GameWorkspace} from './GameWorkspace';
 import {TrickHistory} from './TrickHistory';
 import {CardView} from './CardView';
@@ -124,6 +124,25 @@ it('muestra orden, turno y progreso de bazas con datos del servidor',()=>{
   expect(markup).toContain('Información');
   expect(markup).toContain('Abrir habilidades especiales, 3 disponibles');
   expect(markup).not.toContain('class="panel specialActions"');
+});
+
+it('mantiene visible la baza terminada y oculta el siguiente turno durante la pausa',()=>{
+  const settings:Settings={name:'Mesa',private:true,maxPlayers:2,maxCards:2,jokerCount:0,lives:3,penalty:'normal',oneCard:'visible',bots:0,difficulty:'normal',turnSeconds:30,sounds:false};
+  const game=createGame('PAUSE',{id:'a',name:'Ana',avatar:'🃏',connected:true},settings);
+  addPlayer(game,{id:'b',name:'Berta',avatar:'🃏',connected:true});
+  start(game);
+  while(game.phase==='bid')bid(game,game.players[game.turnIndex].id,0,game.version);
+  while(game.table.length<2&&game.tricks.length===0){
+    const player=game.players[game.turnIndex];
+    play(game,player.id,player.hand[0].id,undefined,game.version);
+  }
+  game.revealUntil=Date.now()+5000;
+  const html=renderToStaticMarkup(<GameWorkspace game={view(game,game.lastTrick!.winnerId)} userId={game.lastTrick!.winnerId} action={()=>{}}/>);
+  expect(html).toContain('Baza terminada · la siguiente empieza en unos segundos');
+  expect(html).toContain('Baza terminada · espera a la siguiente');
+  expect((html.match(/class="tablePlay /g)||[])).toHaveLength(2);
+  expect(html).not.toContain('class="tableTurnIndicator"');
+  expect(html).not.toContain('Jugar carta</button>');
 });
 
 it('reserva las cartas de bazas anteriores para cuando termine la partida',()=>{

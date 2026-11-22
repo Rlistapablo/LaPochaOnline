@@ -21,7 +21,7 @@ export function TableBoard({game,userId}:{game:View;userId:string}){
     <div className="tableCenter">{game.trumpSuit?<div className="tableTrumpSymbol" aria-label={`Triunfo de la ronda: ${game.trumpSuit}`}><SuitArt suit={game.trumpSuit}/></div>:<span className="feltTitle">LA POCHA</span>}</div>
     {vertices.map(vertex=>{
       const player=game.players.find(item=>item.id===vertex.id)!;
-      const active=game.turnId===player.id&&['bid','play'].includes(game.phase);
+      const active=game.turnId===player.id&&['bid','play'].includes(game.phase)&&!revealing;
       const style={'--seat-x':`${vertex.seatX}%`,'--seat-y':`${vertex.seatY}%`,'--desktop-seat-x':`${vertex.desktopSeatX}%`,'--desktop-seat-y':`${vertex.desktopSeatY}%`} as CSSProperties;
       const play=plays.find(item=>item.playerId===player.id);
       const playStyle={'--play-x':`${vertex.playX}%`,'--play-y':`${vertex.playY}%`,'--desktop-play-x':`${vertex.desktopPlayX}%`,'--desktop-play-y':`${vertex.desktopPlayY}%`} as CSSProperties;

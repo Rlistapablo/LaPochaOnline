@@ -46,7 +46,7 @@ const rooms=new Map<string,Game>();
 const timers=new Map<string,{version:number;timer:NodeJS.Timeout}>();
 const departureTimers=new Map<string,NodeJS.Timeout>();
 const endRequests=new Set<string>();
-const BOT_STEP_MS=1200,TRICK_REVEAL_MS=3000;
+const BOT_STEP_MS=1200,TRICK_REVEAL_MS=5000;
 const pause=(ms:number)=>new Promise<void>(resolve=>setTimeout(resolve,ms));
 function publish(g:Game){for(const p of g.players)io.to(`${g.code}:${p.id}`).emit('state',view(g,p.id));io.to(`${g.code}:spectators`).emit('state',view(g));io.emit('rooms',publicRooms());scheduleTimeout(g);}
 function scheduleTimeout(g:Game){
